@@ -45,6 +45,15 @@ protected: // Enhanced Input Section
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* IA_Jump;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* IA_Jog;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* IA_Sprint;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* IA_Crouch;
+
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
 
@@ -53,6 +62,15 @@ protected: // Enhanced Input Section
 
 	UFUNCTION()
 	void Jump(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void Jog(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void Sprint(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void Crouch(const FInputActionValue& Value);
 
 private: // References
 	
