@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+/* Interfaces*/
+#include "Interfaces/PlayerInputInterface.h"
+
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
-class PROJECT_RPG_API APlayerCharacter : public ACharacter
+class PROJECT_RPG_API APlayerCharacter : public ACharacter, public IPlayerInputInterface
 {
 	GENERATED_BODY()
 
@@ -35,5 +38,28 @@ private:
 
 private:
 
+	// References
+	class UCharacterMovementComponent* CharacterMovementComponent;
 
+private:
+
+	// Interface Functions
+
+	UFUNCTION()
+	virtual void PII_Jump_Implementation(bool bShouldJump) override;
+
+	UFUNCTION()
+	virtual void PII_Jog_Implementation(bool bShouldJog) override;
+	UPROPERTY()
+	bool bJogging;
+
+	UFUNCTION()
+	virtual void PII_StartSprint_Implementation(bool bShouldSprint) override;
+	UFUNCTION()
+	virtual void PII_StopSprint_Implementation(bool bShouldSprint) override;
+
+	UFUNCTION()
+	virtual void PII_Crouch_Implementation(bool bShouldCrouch) override;
+	UPROPERTY()
+	bool bCrouching;
 };

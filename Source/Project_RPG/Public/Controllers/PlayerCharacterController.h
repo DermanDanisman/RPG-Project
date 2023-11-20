@@ -6,13 +6,15 @@
 #include "GameFramework/PlayerController.h"
 /* Enhanced Input */
 #include "InputActionValue.h"
+/* Interfaces*/
+#include "Interfaces/PlayerInputInterface.h"
 #include "PlayerCharacterController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_RPG_API APlayerCharacterController : public APlayerController
+class PROJECT_RPG_API APlayerCharacterController : public APlayerController, public IPlayerInputInterface
 {
 	GENERATED_BODY()
 
@@ -67,7 +69,10 @@ protected: // Enhanced Input Section
 	void Jog(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void Sprint(const FInputActionValue& Value);
+	void StartSprint(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void StopSprint(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void Crouch(const FInputActionValue& Value);

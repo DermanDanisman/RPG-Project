@@ -22,4 +22,19 @@ class PROJECT_RPG_API IPlayerInputInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
+	void PII_Jump(bool bShouldJump);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
+	void PII_Jog(bool bShouldJog);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
+	void PII_StartSprint(bool bShouldSprint);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
+	void PII_StopSprint(bool bShouldSprint);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
+	void PII_Crouch(bool bShouldCrouch);
 };

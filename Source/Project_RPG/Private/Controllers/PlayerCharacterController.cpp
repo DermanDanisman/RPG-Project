@@ -54,8 +54,11 @@ void APlayerCharacterController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &APlayerCharacterController::Jump);
 		// Jogging
 		EnhancedInputComponent->BindAction(IA_Jog, ETriggerEvent::Started, this, &APlayerCharacterController::Jog);
-		// Sprinting
-		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayerCharacterController::Sprint);
+		// Start Sprinting
+		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayerCharacterController::StartSprint);
+		// Stop Sprinting
+		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &APlayerCharacterController::StopSprint);
+		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Canceled, this, &APlayerCharacterController::StopSprint);
 		// Crouching
 		EnhancedInputComponent->BindAction(IA_Crouch, ETriggerEvent::Started, this, &APlayerCharacterController::Crouch);
 	}
@@ -99,30 +102,37 @@ void APlayerCharacterController::Look(const FInputActionValue& Value)
 // Input Function responsible for characters jumping
 void APlayerCharacterController::Jump(const FInputActionValue& Value)
 {
-	if (ControlledCharacter)
-	{
-		ControlledCharacter->Jump();
-	}
+	const bool bShouldJump = Value.Get<bool>();
+	IPlayerInputInterface::Execute_PII_Jump(ControlledCharacter, bShouldJump);
 }
 
 // Input Function responsible for characters jogging
 void APlayerCharacterController::Jog(const FInputActionValue& Value)
 {
 	const bool bShouldJog = Value.Get<bool>();
+	IPlayerInputInterface::Execute_PII_Jog(ControlledCharacter, bShouldJog);
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Jog On")));
 }
 
 // Input Function responsible for characters sprinting
-void APlayerCharacterController::Sprint(const FInputActionValue& Value)
+void APlayerCharacterController::StartSprint(const FInputActionValue& Value)
 {
 	const bool bShouldSprint = Value.Get<bool>();
+	IPlayerInputInterface::Execute_PII_StartSprint(ControlledCharacter, bShouldSprint);
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Sprinting")));
+}
+
+void APlayerCharacterController::StopSprint(const FInputActionValue& Value)
+{
+	const bool bShouldSprint = Value.Get<bool>();
+	IPlayerInputInterface::Execute_PII_StopSprint(ControlledCharacter, bShouldSprint);
 }
 
 // Input Function responsible for characters crouching
 void APlayerCharacterController::Crouch(const FInputActionValue& Value)
 {
 	const bool bShouldCrouch = Value.Get<bool>();
+	IPlayerInputInterface::Execute_PII_Crouch(ControlledCharacter, bShouldCrouch);
 }
 
 // Function for Moving character to the floor at the begining of the game
@@ -139,11 +149,13 @@ void APlayerCharacterController::MoveToFloor()
 
 		FVector FindFloorResultVector = FVector(0.f, 0.f, FindFloorResult.FloorDist) + ControlledCharacter->GetCapsuleComponent()->GetComponentLocation();
 
-		ControlledCharacter->TeleportTo(FindFloorResultVector, ControlledCharacter->GetActorRotation());
-		ControlledCharacter->GetCharacterMovement()->MaxStepHeight = InitialStepHeight;
+		if (FindFloorResult.bBlockingHit)
+		{
+			ControlledCharacter->TeleportTo(FindFloorResultVector, ControlledCharacter->GetActorRotation());
+			ControlledCharacter->GetCharacterMovement()->MaxStepHeight = InitialStepHeight;
 
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Move To Floor Executed")));
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Move To Floor Executed")));
+		}
 	}
-
 }
 
