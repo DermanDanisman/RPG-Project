@@ -36,10 +36,21 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* ViewCamera;
 
+	UPROPERTY(VisibleAnywhere)
+	class USkeletalMeshComponent* HairMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	class UGroomComponent* HairGroomComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	class UGroomComponent* EyebrowsGroomComponent;
+
+
 private:
 
 	// References
-	class UCharacterMovementComponent* CharacterMovementComponent;
+	UPROPERTY()
+	class UCharacterMovementComponent* CharacterMovementComponent = nullptr;
 
 private:
 
@@ -51,7 +62,7 @@ private:
 	UFUNCTION()
 	virtual void PII_Jog_Implementation(bool bShouldJog) override;
 	UPROPERTY()
-	bool bJogging;
+	bool bJogging = false;
 
 	UFUNCTION()
 	virtual void PII_StartSprint_Implementation(bool bShouldSprint) override;
@@ -61,5 +72,5 @@ private:
 	UFUNCTION()
 	virtual void PII_Crouch_Implementation(bool bShouldCrouch) override;
 	UPROPERTY()
-	bool bCrouching;
+	bool bCrouching = false;
 };
