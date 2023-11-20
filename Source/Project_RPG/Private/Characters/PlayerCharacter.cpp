@@ -2,6 +2,10 @@
 
 
 #include "Characters/PlayerCharacter.h"
+/* Game Framework */
+#include "GameFramework/SpringArmComponent.h"
+/* Camera */
+#include "Camera/CameraComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -9,6 +13,11 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("USpringArmComponent"));
+	CameraSpringArm->SetupAttachment(GetRootComponent());
+
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("UCameraComponent"));
+	ViewCamera->SetupAttachment(CameraSpringArm);
 }
 
 // Called when the game starts or when spawned

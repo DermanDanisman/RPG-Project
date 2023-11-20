@@ -27,5 +27,13 @@ protected:
 
 private:	
 
+	UPROPERTY(VisibleAnywhere)
+	class USpringArmComponent* CameraSpringArm;
+
+	UPROPERTY(VisibleAnywhere)
+	class UCameraComponent* ViewCamera;
+
+private:
+
 
 };

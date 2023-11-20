@@ -76,4 +76,8 @@ private: // References
 	
 	UPROPERTY()
 	class ACharacter* ControlledCharacter;
+
+private:
+
+	void MoveToFloor();
 };
