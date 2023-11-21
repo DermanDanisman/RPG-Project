@@ -21,7 +21,12 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
-	GetMovementComponent()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->JumpZVelocity = JumpVelocity;
+	GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = CrouchingSpeed;
+
 
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(GetRootComponent());
@@ -46,9 +51,6 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// Get Character Movement Component
-	CharacterMovementComponent = Cast<UCharacterMovementComponent>(GetCharacterMovement());
 }
 
 // Called every frame
@@ -74,16 +76,16 @@ void APlayerCharacter::PII_Jump_Implementation(bool bShouldJump)
 
 void APlayerCharacter::PII_Jog_Implementation(bool bShouldJog)
 {
-	if (CharacterMovementComponent)
+	if (GetCharacterMovement())
 	{
 		if (!bJogging)
 		{
-			CharacterMovementComponent->MaxWalkSpeed = 350.f;
+			GetCharacterMovement()->MaxWalkSpeed = 350.f;
 			bJogging = true;
 		}
 		else
 		{
-			CharacterMovementComponent->MaxWalkSpeed = 150.f;
+			GetCharacterMovement()->MaxWalkSpeed = 150.f;
 			bJogging = false;
 		}
 	}
@@ -91,18 +93,18 @@ void APlayerCharacter::PII_Jog_Implementation(bool bShouldJog)
 
 void APlayerCharacter::PII_StartSprint_Implementation(bool bShouldSprint)
 {
-	if (CharacterMovementComponent)
+	if (GetCharacterMovement())
 	{
-		if (!bIsCrouched) CharacterMovementComponent->MaxWalkSpeed = 500.f;
+		if (!bIsCrouched) GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
 }
 
 void APlayerCharacter::PII_StopSprint_Implementation(bool bShouldSprint)
 {
-	if (CharacterMovementComponent)
+	if (GetCharacterMovement())
 	{
-		if (bJogging) CharacterMovementComponent->MaxWalkSpeed = 350.f;
-		else CharacterMovementComponent->MaxWalkSpeed = 150.f;
+		if (bJogging) GetCharacterMovement()->MaxWalkSpeed = 350.f;
+		else GetCharacterMovement()->MaxWalkSpeed = 150.f;
 	}
 }
 
