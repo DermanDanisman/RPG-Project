@@ -80,12 +80,12 @@ void APlayerCharacter::PII_Jog_Implementation(bool bShouldJog)
 	{
 		if (!bJogging)
 		{
-			GetCharacterMovement()->MaxWalkSpeed = 350.f;
+			GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
 			bJogging = true;
 		}
 		else
 		{
-			GetCharacterMovement()->MaxWalkSpeed = 150.f;
+			GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 			bJogging = false;
 		}
 	}
@@ -95,7 +95,7 @@ void APlayerCharacter::PII_StartSprint_Implementation(bool bShouldSprint)
 {
 	if (GetCharacterMovement())
 	{
-		if (!bIsCrouched) GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		if (!bIsCrouched) GetCharacterMovement()->MaxWalkSpeed = SprintingSpeed;
 	}
 }
 
@@ -103,8 +103,8 @@ void APlayerCharacter::PII_StopSprint_Implementation(bool bShouldSprint)
 {
 	if (GetCharacterMovement())
 	{
-		if (bJogging) GetCharacterMovement()->MaxWalkSpeed = 350.f;
-		else GetCharacterMovement()->MaxWalkSpeed = 150.f;
+		if (bJogging) GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
+		else GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 	}
 }
 
