@@ -56,7 +56,7 @@ private:
 	bool bJogging = false;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Properties")
-	float JumpVelocity = 420.f;
+	float JumpVelocity = 520.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Properties")
 	float WalkingSpeed = 147.f;
