@@ -154,7 +154,7 @@ void APlayerCharacterController::MoveToFloor()
 			ControlledCharacter->TeleportTo(FindFloorResultVector, ControlledCharacter->GetActorRotation());
 			ControlledCharacter->GetCharacterMovement()->MaxStepHeight = InitialStepHeight;
 
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Move To Floor Executed")));
+			//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Move To Floor Executed")));
 		}
 	}
 }

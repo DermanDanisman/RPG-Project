@@ -28,6 +28,14 @@
 		{
 			"Name": "HairStrands",
 			"Enabled": true
+		},
+		{
+			"Name": "SkeletalMeshModelingTools",
+			"Enabled": true
+		},
+		{
+			"Name": "AnimationWarping",
+			"Enabled": true
 		}
 	]
 }

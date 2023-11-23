@@ -31,6 +31,9 @@ public:
 
 	UFUNCTION()
 	bool IsMovementWithinThresholds(float MinCurrentSpeed, float MinMaxSpeed, float MinInputAcceleration);
+
+	UFUNCTION()
+	void UpdateLocomotionValues(FName CurveName);
 public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "References")
@@ -46,6 +49,9 @@ public:
 	float GroundSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Data")
+	float Direction;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Essential Data")
 	float MaxSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Data")
@@ -54,6 +60,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Data")
 	bool bIsFalling;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Essential Data")
+	bool bOrientRotationToMovement;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	ELocomotionState LocomotionState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float PlayRate;
 };
