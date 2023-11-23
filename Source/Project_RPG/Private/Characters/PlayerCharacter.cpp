@@ -25,6 +25,7 @@ APlayerCharacter::APlayerCharacter()
 
 	/* Creating Actor Components */
 	CharacterMovementDataComponent = CreateDefaultSubobject<UCharacterMovementDataComponent>(TEXT("CharacterMovementDataComponent"));
+	CharacterMovementDataComponent->SetComponentTickEnabled(false);
 
 	/* Control Settings */
 	bUseControllerRotationPitch = false;

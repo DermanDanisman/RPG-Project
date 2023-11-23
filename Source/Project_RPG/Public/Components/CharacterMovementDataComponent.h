@@ -49,7 +49,8 @@ protected:
 private:
 
 	/* References */
-	class ACharacter* Character;
+	UPROPERTY(VisibleAnywhere, Category = "References")
+	class ACharacter* Character = nullptr;
 
 	/* Movement Essential Data */
 

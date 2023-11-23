@@ -98,4 +98,6 @@ void UPlayerCharacterAnimInstance::UpdateLocomotionValues(FName CurveName)
 {
 	float ClampedCurveValues = UKismetMathLibrary::Clamp(GetCurveValue(CurveName), 50.f, 1000.f);
 	PlayRate = UKismetMathLibrary::SafeDivide(GroundSpeed, ClampedCurveValues);
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("PlayRate: %f"), PlayRate));
+
 }
