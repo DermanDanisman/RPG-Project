@@ -11,6 +11,11 @@
 #include "Components/SkeletalMeshComponent.h"
 /* Hair Strands Core */
 #include "GroomComponent.h"
+/* Enums */
+#include "Enums/LocomotionState.h"
+/* Actor Components */
+#include "Components/CharacterMovementDataComponent.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -18,15 +23,15 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	/* Creating Actor Components */
+	CharacterMovementDataComponent = CreateDefaultSubobject<UCharacterMovementDataComponent>(TEXT("CharacterMovementDataComponent"));
+
+	/* Control Settings */
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->JumpZVelocity = JumpVelocity;
-	GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = CrouchingSpeed;
-
 
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(GetRootComponent());
@@ -51,6 +56,10 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCharacterMovement()->JumpZVelocity = CharacterMovementDataComponent->GetJumpVelocity();
+	GetCharacterMovement()->MaxWalkSpeed = CharacterMovementDataComponent->GetWalkSpeed();
+	GetCharacterMovement()->MaxWalkSpeedCrouched = CharacterMovementDataComponent->GetCrouchSpeed();
 }
 
 // Called every frame
@@ -76,35 +85,40 @@ void APlayerCharacter::PII_Jump_Implementation(bool bShouldJump)
 
 void APlayerCharacter::PII_Jog_Implementation(bool bShouldJog)
 {
-	if (GetCharacterMovement())
+	if (CharacterMovementDataComponent)
 	{
-		if (!bJogging)
+		if (!CharacterMovementDataComponent->GetJoggingBool())
 		{
-			GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
-			bJogging = true;
+			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Jogging);
+			CharacterMovementDataComponent->SetJoggingBool(true);
 		}
 		else
 		{
-			GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
-			bJogging = false;
+			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Walking);
+			CharacterMovementDataComponent->SetJoggingBool(false);
 		}
 	}
 }
 
 void APlayerCharacter::PII_StartSprint_Implementation(bool bShouldSprint)
 {
-	if (GetCharacterMovement())
+	if (CharacterMovementDataComponent)
 	{
-		if (!bIsCrouched) GetCharacterMovement()->MaxWalkSpeed = SprintingSpeed;
+		if (!bIsCrouched) CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Sprinting);
 	}
 }
 
 void APlayerCharacter::PII_StopSprint_Implementation(bool bShouldSprint)
 {
-	if (GetCharacterMovement())
+	if (CharacterMovementDataComponent)
 	{
-		if (bJogging) GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
-		else GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+		CharacterMovementDataComponent->SetJoggingBool(true);
+
+		if (GetCharacterMovement())
+		{
+			if (CharacterMovementDataComponent->GetJoggingBool()) CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Jogging); //GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
+			else CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Walking); //GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+		}
 	}
 }
 

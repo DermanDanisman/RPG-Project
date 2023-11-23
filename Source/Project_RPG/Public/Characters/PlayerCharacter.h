@@ -45,30 +45,15 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UGroomComponent* EyebrowsGroomComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	class UCharacterMovementDataComponent* CharacterMovementDataComponent;
+
 private:
 
 	// Interface Functions
 
 	/// <summary>
 	/// Movement Input Interface Functions
-	
-	UPROPERTY(EditAnywhere, Category = "Movement Properties")
-	bool bJogging = false;
-
-	UPROPERTY(EditAnywhere, Category = "Movement Properties")
-	float JumpVelocity = 520.f;
-
-	UPROPERTY(EditAnywhere, Category = "Movement Properties")
-	float WalkingSpeed = 147.f;
-
-	UPROPERTY(EditAnywhere, Category = "Movement Properties")
-	float JoggingSpeed = 427.f;
-
-	UPROPERTY(EditAnywhere, Category = "Movement Properties")
-	float SprintingSpeed = 627.f;
-
-	UPROPERTY(EditAnywhere, Category = "Movement Properties")
-	float CrouchingSpeed = 247.f;
 
 	UFUNCTION()
 	virtual void PII_Jump_Implementation(bool bShouldJump) override;
@@ -83,8 +68,7 @@ private:
 
 	UFUNCTION()
 	virtual void PII_Crouch_Implementation(bool bShouldCrouch) override;
-	UPROPERTY()
-	bool bCrouching = false;
+
 
 	/// Movement Input Interface Functions
 	/// </summary>
