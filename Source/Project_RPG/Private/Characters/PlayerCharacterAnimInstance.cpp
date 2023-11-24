@@ -8,32 +8,73 @@
 /* Kismet */
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+/* Animation */
+#include "Animation/CachedAnimData.h"
 
 void UPlayerCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 	SetReferences();
+	SetCachedAnimStateData();
 }
 
 void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
 
+	DeltaTimeX = DeltaTime;
+
 	if (PlayerCharacter)
 	{
 		SetEssentialMovementData();
 		DetermineLocomotionState();
-		UpdateLocomotionValues(FName("MoveData_Speed"));
+		//UpdateLocomotionValues(FName("MoveData_Speed"));
+
+		if (LocomotionState == ELocomotionState::Walking)
+		{
+			UpdateOnWalkEntry();
+			UpdateLocomotionValues(FName("MoveData_Speed"));
+		}
+		else if (LocomotionState == ELocomotionState::Jogging)
+		{
+			UpdateOnJogEntry();
+			UpdateLocomotionValues(FName("MoveData_Speed"));
+		}
+	}
+}
+
+void UPlayerCharacterAnimInstance::NativePostEvaluateAnimation()
+{
+	if (PlayerCharacter)
+	{
+		UpdateCharacterRotation();
+		ResetTransitions();
 	}
 }
 
 void UPlayerCharacterAnimInstance::SetReferences()
 {
+	AnimInstance = Cast<UAnimInstance>(this);
 	PlayerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
 	if (PlayerCharacter)
 	{
 		CharacterMovementComponent = Cast<UCharacterMovementComponent>(PlayerCharacter->GetCharacterMovement());
 	}
+}
+
+void UPlayerCharacterAnimInstance::SetCachedAnimStateData()
+{
+	LocomotionStateData.StateMachineName = FName("Main States");
+	LocomotionStateData.StateName = FName("On Ground");
+
+	WalkStateData.StateMachineName = FName("Ground Locomotion");
+	WalkStateData.StateName = FName("Walk");
+
+	JogStateData.StateMachineName = FName("Ground Locomotion");
+	JogStateData.StateName = FName("Jog");
+
+	SprintStateData.StateMachineName = FName("Ground Locomotion");
+	SprintStateData.StateName = FName("Sprint");
 }
 
 /* This function updates various movement-related properties: Velocity, 
@@ -98,6 +139,95 @@ void UPlayerCharacterAnimInstance::UpdateLocomotionValues(FName CurveName)
 {
 	float ClampedCurveValues = UKismetMathLibrary::Clamp(GetCurveValue(CurveName), 50.f, 1000.f);
 	PlayRate = UKismetMathLibrary::SafeDivide(GroundSpeed, ClampedCurveValues);
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("PlayRate: %f"), PlayRate));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("PlayRate: %f"), PlayRate));
 
+}
+
+void UPlayerCharacterAnimInstance::UpdateOnWalkEntry()
+{
+	if (GroundSpeed < 50.f)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Update On Walk Entry")));
+		StartRotation = PlayerCharacter->GetActorRotation();
+		PrimaryTargetRotation = SecondaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
+		WalkStartAngle = UKismetMathLibrary::NormalizedDeltaRotator(PrimaryTargetRotation, StartRotation).Yaw;
+		bPlayWalkStart = true;
+	}
+	else
+	{
+		ResetTargetRotations();
+	}
+}
+
+void UPlayerCharacterAnimInstance::UpdateOnJogEntry()
+{
+	if (GroundSpeed < 200.f)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Update On Jog Entry")));
+		StartRotation = PlayerCharacter->GetActorRotation();
+		PrimaryTargetRotation = SecondaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
+		JogStartAngle = UKismetMathLibrary::NormalizedDeltaRotator(PrimaryTargetRotation, StartRotation).Yaw;
+		bPlayJogStart = true;
+	}
+	else
+	{
+		ResetTargetRotations();
+	}
+}
+
+void UPlayerCharacterAnimInstance::ResetTargetRotations()
+{
+	PrimaryTargetRotation = SecondaryTargetRotation = PlayerCharacter->GetActorRotation();
+}
+
+FRotator UPlayerCharacterAnimInstance::GetTargetRotation()
+{
+	if (bDoInputVectorRotation)
+	{
+		return FRotator(0.f, UKismetMathLibrary::MakeRotFromX(InputVector).Yaw, 0.f);
+	}
+	else
+	{
+		return FRotator(0.f, UKismetMathLibrary::MakeRotFromX(Velocity).Yaw, 0.f);
+	}
+}
+
+void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
+{
+	if (!PlayerCharacter->HasAnyRootMotion() && LocomotionStateData.IsMachineRelevant(*AnimInstance))
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("LocomotionStateData is Relevant")));
+		switch (LocomotionState)
+		{
+		case ELocomotionState::Idle:
+			break;
+		case ELocomotionState::Walking:
+			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
+			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
+			PlayerCharacter->SetActorRotation(UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, SecondaryTargetRotation.Yaw + (GetCurveValue(FName("MoveData_WalkRotationDelta")) / WalkStateData.GetGlobalWeight(*AnimInstance))));
+			break;
+		case ELocomotionState::Jogging:
+			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
+			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
+			PlayerCharacter->SetActorRotation(UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, SecondaryTargetRotation.Yaw + (GetCurveValue(FName("MoveData_JogRotationDelta")) / WalkStateData.GetGlobalWeight(*AnimInstance))));
+			break;
+		case ELocomotionState::Sprinting:
+			break;
+		case ELocomotionState::EW_MAX:
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("LocomotionStateData is NOT Relevant")));
+		ResetTargetRotations();
+	}
+}
+
+void UPlayerCharacterAnimInstance::ResetTransitions()
+{
+	bPlayWalkStart = false;
+	bPlayJogStart = false;
 }

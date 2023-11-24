@@ -30,10 +30,10 @@ protected:
 
 private:	
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	class USpringArmComponent* CameraSpringArm;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	class UCameraComponent* ViewCamera;
 
 	UPROPERTY(VisibleAnywhere)

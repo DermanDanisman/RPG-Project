@@ -6,7 +6,10 @@
 #include "Animation/AnimInstance.h"
 /* Enums */
 #include "Enums/LocomotionState.h"
+/* Animation */
+#include "Animation/CachedAnimData.h"
 #include "PlayerCharacterAnimInstance.generated.h"
+
 
 /**
  * 
@@ -19,9 +22,13 @@ class PROJECT_RPG_API UPlayerCharacterAnimInstance : public UAnimInstance
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
+	virtual void NativePostEvaluateAnimation() override;
 
 	UFUNCTION()
 	void SetReferences();
+
+	UFUNCTION()
+	void SetCachedAnimStateData();
 
 	UFUNCTION()
 	void SetEssentialMovementData();
@@ -34,6 +41,25 @@ public:
 
 	UFUNCTION()
 	void UpdateLocomotionValues(FName CurveName);
+
+	UFUNCTION()
+	void UpdateOnWalkEntry();
+
+	UFUNCTION()
+	void UpdateOnJogEntry();
+
+	UFUNCTION()
+	void ResetTargetRotations();
+
+	UFUNCTION()
+	FRotator GetTargetRotation();
+
+	UFUNCTION()
+	void UpdateCharacterRotation();
+
+	UFUNCTION()
+	void ResetTransitions();
+
 public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "References")
@@ -41,6 +67,12 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "References")
 	class UCharacterMovementComponent* CharacterMovementComponent;
+
+	UPROPERTY(BlueprintReadOnly, Category = "References")
+	UAnimInstance* AnimInstance;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Essential Data")
+	float DeltaTimeX;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Data")
 	FVector Velocity;
@@ -68,4 +100,43 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	float PlayRate;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float WalkStartAngle;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float JogStartAngle;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+	bool bDoInputVectorRotation = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+	FRotator StartRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+	FRotator PrimaryTargetRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+	FRotator SecondaryTargetRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+	bool bPlayWalkStart;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Rotation")
+	bool bPlayJogStart;
+
+	UPROPERTY(BlueprintReadOnly, Category = "State Data")
+	FCachedAnimStateData LocomotionStateData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "State Data")
+	FCachedAnimStateData WalkStateData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "State Data")
+	FCachedAnimStateData JogStateData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "State Data")
+	FCachedAnimStateData SprintStateData;
+
+
+
 };
