@@ -35,17 +35,24 @@ void UCharacterMovementDataComponent::SetMovementMode(ELocomotionState Locomotio
 {
 	if (Character)
 	{
-		if (LocomotionState == ELocomotionState::Walking)
+		switch (LocomotionState)
 		{
+		case ELocomotionState::Idle:
+			Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+			break;
+		case ELocomotionState::Walking:
 			Character->GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
-		}
-		else if (LocomotionState == ELocomotionState::Jogging)
-		{
+			break;
+		case ELocomotionState::Jogging:
 			Character->GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
-		}
-		else
-		{
+			break;
+		case ELocomotionState::Sprinting:
 			Character->GetCharacterMovement()->MaxWalkSpeed = SprintingSpeed;
+			break;
+		case ELocomotionState::EW_MAX:
+			break;
+		default:
+			break;
 		}
 	}
 }

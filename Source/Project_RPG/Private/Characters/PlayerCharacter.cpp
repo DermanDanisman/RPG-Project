@@ -17,6 +17,7 @@
 #include "Components/CharacterMovementDataComponent.h"
 
 
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -32,7 +33,7 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(GetRootComponent());
@@ -117,8 +118,14 @@ void APlayerCharacter::PII_StopSprint_Implementation(bool bShouldSprint)
 
 		if (GetCharacterMovement())
 		{
-			if (CharacterMovementDataComponent->GetJoggingBool()) CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Jogging); //GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
-			else CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Walking); //GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+			if (CharacterMovementDataComponent->GetJoggingBool())
+			{
+				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Jogging);
+			}
+			else
+			{
+				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Walking);
+			}
 		}
 	}
 }

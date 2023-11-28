@@ -11,6 +11,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 /* Components */
 #include "Components/CapsuleComponent.h"
+/* Kismet */
+#include "Kismet/KismetMathLibrary.h"
 
 
 APlayerCharacterController::APlayerCharacterController()
@@ -74,9 +76,13 @@ void APlayerCharacterController::Move(const FInputActionValue& Value)
 		const FRotator Rotation = GetControlRotation();
 		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
+		//FRotator ForwardMakeRot = UKismetMathLibrary::MakeRotator(0.f, 0.f, Rotation.Yaw);
+		//FVector ForwardDirection = UKismetMathLibrary::GetForwardVector(ForwardMakeRot);
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		GetPawn()->AddMovementInput(ForwardDirection, MoveDirectionValue.Y);
 
+		//FRotator RightMakeRot = UKismetMathLibrary::MakeRotator(0.f, 0.f, Rotation.Yaw);
+		//FVector RightDirection = UKismetMathLibrary::GetRightVector(RightMakeRot);
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		GetPawn()->AddMovementInput(RightDirection, MoveDirectionValue.X);
 	}
