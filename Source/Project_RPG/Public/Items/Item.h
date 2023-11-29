@@ -24,6 +24,17 @@ protected:
 
 protected:
 
+	/* Delegate Binded Functions */
+	UFUNCTION()
+	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+protected:
+
+	/* Item Movement */
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
 	float Amplitude = 0.25f;
 
@@ -42,6 +53,9 @@ private:
 	float RunningTime;
 
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* ItemMesh;
+	class UStaticMeshComponent* ItemMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	class USphereComponent* SphereComponent;
 
 };

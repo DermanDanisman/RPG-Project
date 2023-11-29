@@ -49,6 +49,9 @@ public:
 	void UpdateOnJogEntry();
 
 	UFUNCTION(BlueprintCallable)
+	void UpdateOnSprintEntry();
+
+	UFUNCTION(BlueprintCallable)
 	void ResetTargetRotations();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
@@ -113,6 +116,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locomotion")
 	float JogStartAngle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locomotion")
+	float SprintStartAngle;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion")
 	bool bPlayWalkStart;
 
@@ -120,10 +126,16 @@ public:
 	bool bPlayJogStart;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locomotion")
+	bool bPlaySprintStart;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locomotion")
 	bool bWalkOnEntryFlag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locomotion")
 	bool bJogOnEntryFlag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locomotion")
+	bool bSprintOnEntryFlag;
 
 	/* Rotation Category */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation")

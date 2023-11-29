@@ -28,6 +28,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	{
 		SetEssentialMovementData();
 		DetermineLocomotionState();
+		UpdateLocomotionValues(FName("MoveData_Speed"));
 
 
 		if (LocomotionState == ELocomotionState::Idle)
@@ -43,6 +44,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 				UpdateOnWalkEntry();
 				bWalkOnEntryFlag = true;
 				bJogOnEntryFlag = false;
+				bSprintOnEntryFlag = false;
 			}
 		}
 		else if (LocomotionState == ELocomotionState::Jogging)
@@ -50,14 +52,23 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 			if (!bJogOnEntryFlag)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("bJogOnEntryFlag")));
-
 				UpdateOnJogEntry();
 				bJogOnEntryFlag = true;
 				bWalkOnEntryFlag = false;
+				bSprintOnEntryFlag = false;
 			}
 		}
-
-		UpdateLocomotionValues(FName("MoveData_Speed"));
+		else if (LocomotionState == ELocomotionState::Sprinting)
+		{
+			if (!bSprintOnEntryFlag)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("bSprintOnEntryFlag")));
+				UpdateOnSprintEntry();
+				bJogOnEntryFlag = false;
+				bWalkOnEntryFlag = false;
+				bSprintOnEntryFlag = true;
+			}
+		}
 	}
 }
 
@@ -134,7 +145,7 @@ void UPlayerCharacterAnimInstance::DetermineLocomotionState()
 			}
 			else
 			{
-				if (IsMovementWithinThresholds(350.f, 500.f, 0.5f)) LocomotionState = ELocomotionState::Sprinting;
+				if (IsMovementWithinThresholds(350.f, 500.f, 0.75f)) LocomotionState = ELocomotionState::Sprinting;
 				else if (IsMovementWithinThresholds(1.0f, 300.f, 0.5f)) LocomotionState = ELocomotionState::Jogging;
 				else if (IsMovementWithinThresholds(1.0f, 0.0f, 0.01f)) LocomotionState = ELocomotionState::Walking;
 				else LocomotionState = ELocomotionState::Idle;
@@ -188,13 +199,33 @@ void UPlayerCharacterAnimInstance::UpdateOnJogEntry()
 		PrimaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
 		SecondaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
 		JogStartAngle = UKismetMathLibrary::NormalizedDeltaRotator(PrimaryTargetRotation, StartRotation).Yaw;
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Jog Start Angle: %f "), JogStartAngle));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Jog Start Angle: %f "), JogStartAngle));
 		bPlayJogStart = true;
 	}
 	else
 	{
 		ResetTargetRotations();
 	}
+}
+
+/* Similar to UpdateOnWalkEntry, but for sprinting. It updates target rotations and flags when the character starts sprinting.*/
+void UPlayerCharacterAnimInstance::UpdateOnSprintEntry()
+{
+	if (GroundSpeed < 400.f)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Update On Sprint Entry")));
+		StartRotation = PlayerCharacter->GetActorRotation();
+		PrimaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
+		SecondaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
+		SprintStartAngle = UKismetMathLibrary::NormalizedDeltaRotator(PrimaryTargetRotation, StartRotation).Yaw;
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Jog Start Angle: %f "), JogStartAngle));
+		bPlaySprintStart = true;
+	}
+	else
+	{
+		ResetTargetRotations();
+	}
+
 }
 
 /* Resets the target rotations to the character's current rotation. This is used to reset the orientation after specific movements or animations.*/
@@ -224,7 +255,12 @@ void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
 {
 	if (!PlayerCharacter->HasAnyRootMotion() && LocomotionStateData.IsMachineRelevant(*AnimInstance))
 	{
-		if (LocomotionState == ELocomotionState::Walking)
+		switch (LocomotionState)
+		{
+		case ELocomotionState::Idle:
+			return;
+			break;
+		case ELocomotionState::Walking:
 		{
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
@@ -232,21 +268,38 @@ void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
 			float NormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_WalkRotationDelta")), WalkStateData.GetGlobalWeight(*AnimInstance));
 			float CharacterRotationYaw = SecondaryTargetRotation.Yaw + NormalizedWalkRotationDelta;
 			FRotator CharacterRotation = FRotator(SecondaryTargetRotation.Pitch, CharacterRotationYaw, SecondaryTargetRotation.Roll); //UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, CharacterRotationYaw);
-			
+
 			PlayerCharacter->SetActorRotation(CharacterRotation);
-			//PlayerCharacter->SetActorRotation(UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, (SecondaryTargetRotation.Yaw + (UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_WalkRotationDelta")), WalkStateData.GetGlobalWeight(*AnimInstance))))));
+			break;
 		}
-		else if (LocomotionState == ELocomotionState::Jogging)
+		case ELocomotionState::Jogging:
 		{
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
 
-			float NormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_JogRotationDelta")), JogStateData.GetGlobalWeight(*AnimInstance));
-			float CharacterRotationYaw = SecondaryTargetRotation.Yaw + NormalizedWalkRotationDelta;
-			FRotator CharacterRotation = FRotator(SecondaryTargetRotation.Pitch, CharacterRotationYaw, SecondaryTargetRotation.Roll); //UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, CharacterRotationYaw);
-			
-			PlayerCharacter->SetActorRotation(CharacterRotation);
-			//PlayerCharacter->SetActorRotation(UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, (SecondaryTargetRotation.Yaw + (UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_JogRotationDelta")), JogStateData.GetGlobalWeight(*AnimInstance))))));
+			float JogNormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_JogRotationDelta")), JogStateData.GetGlobalWeight(*AnimInstance));
+			float JogCharacterRotationYaw = SecondaryTargetRotation.Yaw + JogNormalizedWalkRotationDelta;
+			FRotator JogCharacterRotation = FRotator(SecondaryTargetRotation.Pitch, JogCharacterRotationYaw, SecondaryTargetRotation.Roll); //UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, CharacterRotationYaw);
+
+			PlayerCharacter->SetActorRotation(JogCharacterRotation);
+			break;
+		}
+		case ELocomotionState::Sprinting:
+		{
+			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
+			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
+
+			// MoveData_JogRotationDelta needs to be change when proper Sprinting animations come
+			float SprintNormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_JogRotationDelta")), SprintStateData.GetGlobalWeight(*AnimInstance));
+			float SprintCharacterRotationYaw = SecondaryTargetRotation.Yaw + SprintNormalizedWalkRotationDelta;
+			FRotator SprintCharacterRotation = FRotator(SecondaryTargetRotation.Pitch, SprintCharacterRotationYaw, SecondaryTargetRotation.Roll); //UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, CharacterRotationYaw);
+
+			PlayerCharacter->SetActorRotation(SprintCharacterRotation);
+			break;
+		}
+		case ELocomotionState::EW_MAX:
+			return;
+			break;
 		}
 	}
 	else
