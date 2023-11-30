@@ -76,6 +76,7 @@ void UPlayerCharacterAnimInstance::NativePostEvaluateAnimation()
 {
 	if (PlayerCharacter && !bOrientRotationToMovement)
 	{
+		// Disable Character Rotation When Strafing
 		UpdateCharacterRotation();
 		ResetTransitions();
 	}
@@ -169,6 +170,7 @@ void UPlayerCharacterAnimInstance::UpdateLocomotionValues(FName CurveName)
 {
 	float ClampedCurveValues = UKismetMathLibrary::Clamp(GetCurveValue(CurveName), 50.f, 1000.f);
 	PlayRate = UKismetMathLibrary::SafeDivide(GroundSpeed, ClampedCurveValues);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("PlayRate: %f "), PlayRate));
 }
 
 /* Updates target rotations and other variables when the character starts walking. It calculates angles and sets flags for walk start animations.*/
@@ -265,7 +267,7 @@ void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
 
-			float NormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_WalkRotationDelta")), WalkStateData.GetGlobalWeight(*AnimInstance));
+			float NormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_WalkRotationDelta")), WalkStateData.GetGlobalWeight(*AnimInstance)); //MoveData_WalkRotationDelta
 			float CharacterRotationYaw = SecondaryTargetRotation.Yaw + NormalizedWalkRotationDelta;
 			FRotator CharacterRotation = FRotator(SecondaryTargetRotation.Pitch, CharacterRotationYaw, SecondaryTargetRotation.Roll); //UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, CharacterRotationYaw);
 

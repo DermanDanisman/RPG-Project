@@ -64,7 +64,7 @@ private:
 	float WalkingSpeed = 147.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Essential Data")
-	float JoggingSpeed = 427.f;
+	float JoggingSpeed = 800.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Essential Data")
 	float SprintingSpeed = 627.f;
