@@ -56,6 +56,12 @@ protected: // Enhanced Input Section
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* IA_Crouch;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* IA_Pickup;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* IA_AttackOrEquip;
+
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
 
@@ -76,6 +82,12 @@ protected: // Enhanced Input Section
 
 	UFUNCTION()
 	void Crouch(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void Pickup(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void AttackOrEquipWeapon(const FInputActionValue& Value);
 
 private: // References
 	

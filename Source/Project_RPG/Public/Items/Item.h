@@ -4,10 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+/* Interfaces */
+#include "Interfaces/PlayerInputInterface.h"
+#include "Interfaces/ReferencesInterface.h"
+
 #include "Item.generated.h"
 
 UCLASS()
-class PROJECT_RPG_API AItem : public AActor
+class PROJECT_RPG_API AItem : public AActor, public IPlayerInputInterface, public IReferencesInterface
 {
 	GENERATED_BODY()
 	
@@ -47,7 +51,7 @@ protected:
 	UFUNCTION(BlueprintPure)
 	float TransformedCos();
 
-private:
+protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Delta Time")
 	float RunningTime;
@@ -60,5 +64,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* SphereComponent;
+
+	// Add this Mapping Context when in contact with items
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputMappingContext* ItemMappingContext;
 
 };

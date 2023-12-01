@@ -5,6 +5,12 @@
 /* Components */
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+/* Player Character */
+#include "Characters/PlayerCharacter.h"
+/* Enhanced Input */
+//#include "EnhancedInputSubsystems.h"
+//#include "InputAction.h"
+//#include "EnhancedInputComponent.h"
 
 // Sets default values
 AItem::AItem()
@@ -45,13 +51,53 @@ void AItem::Tick(float DeltaTime)
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	const FString OtherActorName = OtherActor->GetName();
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Other Actor Name: %s"), *OtherActorName));
+	if (OtherActor)
+	{
+		// Check if OtherActor implements IPlayerInputInterface
+		if (OtherActor->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+		{
+			if (ItemMappingContext)
+			{
+				// Adding Input Mapping Context for item to be picked up when overlapped
+				IPlayerInputInterface::Execute_PII_AddInputMappingContext(OtherActor, ItemMappingContext);
+			}
+		}
+
+		// Check if OtherActor implements IReferencesInterface
+		if (OtherActor->GetClass()->ImplementsInterface(UReferencesInterface::StaticClass()))
+		{
+			APlayerCharacter* PlayerCharacter = IReferencesInterface::Execute_RI_GetPlayerCharacter(OtherActor);
+			if (PlayerCharacter)
+			{
+				PlayerCharacter->SetOverlappingItem(this);
+			}
+		}
+	}
 }
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (OtherActor)
+	{
+		// Check if OtherActor implements IPlayerInputInterface
+		if (OtherActor->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+		{
+			if (ItemMappingContext)
+			{
+				IPlayerInputInterface::Execute_PII_RemoveInputMappingContext(OtherActor, ItemMappingContext);
+			}
+		}
 
+		// Check if OtherActor implements IReferencesInterface
+		if (OtherActor->GetClass()->ImplementsInterface(UReferencesInterface::StaticClass()))
+		{
+			APlayerCharacter* PlayerCharacter = IReferencesInterface::Execute_RI_GetPlayerCharacter(OtherActor);
+			if (PlayerCharacter)
+			{
+				PlayerCharacter->SetOverlappingItem(nullptr);
+			}
+		}
+	}
 }
 
 float AItem::TransformedSin()

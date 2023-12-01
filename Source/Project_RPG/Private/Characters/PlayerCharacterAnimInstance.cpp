@@ -31,12 +31,12 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		UpdateLocomotionValues(FName("MoveData_Speed"));
 
 
-		if (LocomotionState == ELocomotionState::Idle)
+		if (LocomotionState == ELocomotionState::ELS_Idle)
 		{
 			bWalkOnEntryFlag = false;
 			bJogOnEntryFlag = false;
 		}
-		else if (LocomotionState == ELocomotionState::Walking)
+		else if (LocomotionState == ELocomotionState::ELS_Walking)
 		{
 			if (!bWalkOnEntryFlag)
 			{
@@ -47,7 +47,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 				bSprintOnEntryFlag = false;
 			}
 		}
-		else if (LocomotionState == ELocomotionState::Jogging)
+		else if (LocomotionState == ELocomotionState::ELS_Jogging)
 		{
 			if (!bJogOnEntryFlag)
 			{
@@ -58,7 +58,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 				bSprintOnEntryFlag = false;
 			}
 		}
-		else if (LocomotionState == ELocomotionState::Sprinting)
+		else if (LocomotionState == ELocomotionState::ELS_Sprinting)
 		{
 			if (!bSprintOnEntryFlag)
 			{
@@ -74,7 +74,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 void UPlayerCharacterAnimInstance::NativePostEvaluateAnimation()
 {
-	if (PlayerCharacter && !bOrientRotationToMovement)
+	if (PlayerCharacter && !bOrientRotationToMovement && CharacterState == ECharacterState::ECS_Unequipped)
 	{
 		// Disable Character Rotation When Strafing
 		UpdateCharacterRotation();
@@ -126,7 +126,9 @@ void UPlayerCharacterAnimInstance::SetEssentialMovementData()
 		InputVector = UKismetMathLibrary::ClampVectorSize(CharacterMovementComponent->GetLastInputVector(), 0.f, 1.f);
 		bIsFalling = CharacterMovementComponent->IsFalling();
 		bOrientRotationToMovement = CharacterMovementComponent->bOrientRotationToMovement;
+		bUseControllerDesiredRotation = CharacterMovementComponent->bUseControllerDesiredRotation;
 		CharacterYawRotationRate = CharacterMovementComponent->RotationRate.Yaw;
+		CharacterState = PlayerCharacter->GetCharacterState();
 	}
 }
 
@@ -142,14 +144,14 @@ void UPlayerCharacterAnimInstance::DetermineLocomotionState()
 			FVector NormalizedCurrentAcceleration = CharacterMovementComponent->GetCurrentAcceleration().GetSafeNormal();
 			if (UKismetMathLibrary::Dot_VectorVector(NormalizedVelocity, NormalizedCurrentAcceleration) < -0.5f)
 			{
-				LocomotionState = ELocomotionState::Idle;
+				LocomotionState = ELocomotionState::ELS_Idle;
 			}
 			else
 			{
-				if (IsMovementWithinThresholds(350.f, 500.f, 0.75f)) LocomotionState = ELocomotionState::Sprinting;
-				else if (IsMovementWithinThresholds(1.0f, 300.f, 0.5f)) LocomotionState = ELocomotionState::Jogging;
-				else if (IsMovementWithinThresholds(1.0f, 0.0f, 0.01f)) LocomotionState = ELocomotionState::Walking;
-				else LocomotionState = ELocomotionState::Idle;
+				if (IsMovementWithinThresholds(350.f, 500.f, 0.75f)) LocomotionState = ELocomotionState::ELS_Sprinting;
+				else if (IsMovementWithinThresholds(1.0f, 300.f, 0.5f)) LocomotionState = ELocomotionState::ELS_Jogging;
+				else if (IsMovementWithinThresholds(1.0f, 0.0f, 0.01f)) LocomotionState = ELocomotionState::ELS_Walking;
+				else LocomotionState = ELocomotionState::ELS_Idle;
 			}
 		}
 	}
@@ -170,7 +172,7 @@ void UPlayerCharacterAnimInstance::UpdateLocomotionValues(FName CurveName)
 {
 	float ClampedCurveValues = UKismetMathLibrary::Clamp(GetCurveValue(CurveName), 50.f, 1000.f);
 	PlayRate = UKismetMathLibrary::SafeDivide(GroundSpeed, ClampedCurveValues);
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("PlayRate: %f "), PlayRate));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("PlayRate: %f "), PlayRate));
 }
 
 /* Updates target rotations and other variables when the character starts walking. It calculates angles and sets flags for walk start animations.*/
@@ -234,7 +236,7 @@ void UPlayerCharacterAnimInstance::UpdateOnSprintEntry()
 void UPlayerCharacterAnimInstance::ResetTargetRotations()
 {
 	PrimaryTargetRotation = SecondaryTargetRotation = PlayerCharacter->GetActorRotation();
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("ResetTargetRotations")));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("ResetTargetRotations")));
 }
 
 FRotator UPlayerCharacterAnimInstance::GetTargetRotation()
@@ -259,10 +261,10 @@ void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
 	{
 		switch (LocomotionState)
 		{
-		case ELocomotionState::Idle:
+		case ELocomotionState::ELS_Idle:
 			return;
 			break;
-		case ELocomotionState::Walking:
+		case ELocomotionState::ELS_Walking:
 		{
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
@@ -274,7 +276,7 @@ void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
 			PlayerCharacter->SetActorRotation(CharacterRotation);
 			break;
 		}
-		case ELocomotionState::Jogging:
+		case ELocomotionState::ELS_Jogging:
 		{
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
@@ -286,7 +288,7 @@ void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
 			PlayerCharacter->SetActorRotation(JogCharacterRotation);
 			break;
 		}
-		case ELocomotionState::Sprinting:
+		case ELocomotionState::ELS_Sprinting:
 		{
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
@@ -299,7 +301,7 @@ void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
 			PlayerCharacter->SetActorRotation(SprintCharacterRotation);
 			break;
 		}
-		case ELocomotionState::EW_MAX:
+		case ELocomotionState::ELS_MAX:
 			return;
 			break;
 		}

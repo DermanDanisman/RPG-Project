@@ -37,4 +37,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
 	void PII_Crouch(bool bShouldCrouch);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Item Interaction Inputs")
+	void PII_Pickup(bool bShouldPickup);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Weapon Interaction Inputs")
+	void PII_AttackOrEquipWeapon(bool bShouldAttack);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Mapping Context")
+	void PII_AddInputMappingContext(UInputMappingContext* InputMappingContext);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Mapping Context")
+	void PII_RemoveInputMappingContext(UInputMappingContext* InputMappingContext);
 };

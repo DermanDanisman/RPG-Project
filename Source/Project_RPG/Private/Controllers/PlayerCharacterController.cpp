@@ -63,6 +63,10 @@ void APlayerCharacterController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Canceled, this, &APlayerCharacterController::StopSprint);
 		// Crouching
 		EnhancedInputComponent->BindAction(IA_Crouch, ETriggerEvent::Started, this, &APlayerCharacterController::Crouch);
+		// Pickup
+		EnhancedInputComponent->BindAction(IA_Pickup, ETriggerEvent::Started, this, &APlayerCharacterController::Pickup);
+		// Attack Or Equip Weapon
+		EnhancedInputComponent->BindAction(IA_AttackOrEquip, ETriggerEvent::Started, this, &APlayerCharacterController::AttackOrEquipWeapon);
 	}
 }
 
@@ -109,14 +113,20 @@ void APlayerCharacterController::Look(const FInputActionValue& Value)
 void APlayerCharacterController::Jump(const FInputActionValue& Value)
 {
 	const bool bShouldJump = Value.Get<bool>();
-	IPlayerInputInterface::Execute_PII_Jump(ControlledCharacter, bShouldJump);
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		IPlayerInputInterface::Execute_PII_Jump(ControlledCharacter, bShouldJump);
+	}
 }
 
 // Input Function responsible for characters jogging
 void APlayerCharacterController::Jog(const FInputActionValue& Value)
 {
 	const bool bShouldJog = Value.Get<bool>();
-	IPlayerInputInterface::Execute_PII_Jog(ControlledCharacter, bShouldJog);
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		IPlayerInputInterface::Execute_PII_Jog(ControlledCharacter, bShouldJog);
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Jog On")));
 }
 
@@ -124,21 +134,49 @@ void APlayerCharacterController::Jog(const FInputActionValue& Value)
 void APlayerCharacterController::StartSprint(const FInputActionValue& Value)
 {
 	const bool bShouldSprint = Value.Get<bool>();
-	IPlayerInputInterface::Execute_PII_StartSprint(ControlledCharacter, bShouldSprint);
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		IPlayerInputInterface::Execute_PII_StartSprint(ControlledCharacter, bShouldSprint);
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Sprinting")));
 }
 
 void APlayerCharacterController::StopSprint(const FInputActionValue& Value)
 {
 	const bool bShouldSprint = Value.Get<bool>();
-	IPlayerInputInterface::Execute_PII_StopSprint(ControlledCharacter, bShouldSprint);
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		IPlayerInputInterface::Execute_PII_StopSprint(ControlledCharacter, bShouldSprint);
+	}
 }
 
 // Input Function responsible for characters crouching
 void APlayerCharacterController::Crouch(const FInputActionValue& Value)
 {
 	const bool bShouldCrouch = Value.Get<bool>();
-	IPlayerInputInterface::Execute_PII_Crouch(ControlledCharacter, bShouldCrouch);
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		IPlayerInputInterface::Execute_PII_Crouch(ControlledCharacter, bShouldCrouch);
+	}
+}
+
+void APlayerCharacterController::Pickup(const FInputActionValue& Value)
+{
+	const bool bShouldPickup = Value.Get<bool>();
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		IPlayerInputInterface::Execute_PII_Pickup(ControlledCharacter, bShouldPickup);
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Pickup")));
+}
+
+void APlayerCharacterController::AttackOrEquipWeapon(const FInputActionValue& Value)
+{
+	const bool bShouldAttack = Value.Get<bool>();
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		IPlayerInputInterface::Execute_PII_AttackOrEquipWeapon(ControlledCharacter, bShouldAttack);
+	}
 }
 
 // Function for Moving character to the floor at the begining of the game

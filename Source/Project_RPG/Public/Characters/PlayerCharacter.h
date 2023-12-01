@@ -6,11 +6,14 @@
 #include "GameFramework/Character.h"
 /* Interfaces*/
 #include "Interfaces/PlayerInputInterface.h"
-
+#include "Interfaces/ReferencesInterface.h"
+/* Enums */
+#include "Enums/CharacterState.h"
 #include "PlayerCharacter.generated.h"
 
+
 UCLASS()
-class PROJECT_RPG_API APlayerCharacter : public ACharacter, public IPlayerInputInterface
+class PROJECT_RPG_API APlayerCharacter : public ACharacter, public IPlayerInputInterface, public IReferencesInterface
 {
 	GENERATED_BODY()
 
@@ -23,6 +26,14 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+
+	UFUNCTION()
+	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
+
+	UFUNCTION()
+	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -50,6 +61,23 @@ private:
 
 private:
 
+	/* References */
+	UPROPERTY()
+	class APlayerController* PlayerController;
+
+private:
+
+	UPROPERTY(VisibleInstanceOnly)
+	class AItem* OverlappingItem;
+
+	UPROPERTY(VisibleInstanceOnly)
+	class AWeapon* GrabbedWeapon;
+
+	UPROPERTY(VisibleInstanceOnly)
+	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+
+private:
+
 	// Interface Functions
 
 	/// <summary>
@@ -69,7 +97,48 @@ private:
 	UFUNCTION()
 	virtual void PII_Crouch_Implementation(bool bShouldCrouch) override;
 
-
 	/// Movement Input Interface Functions
+	/// </summary>
+	
+	/// <summary>
+	/// Action Input Interface Functions
+	
+	UFUNCTION()
+	virtual void PII_AttackOrEquipWeapon_Implementation(bool bShouldAttack) override;
+
+	/// Action Input Interface Functions
+	/// </summary>
+	
+	/// <summary>
+	/// Item Input Interface Functions 
+	
+	UFUNCTION()
+	virtual void PII_Pickup_Implementation(bool bShouldPickup) override;
+
+	/// Item Input Interface Functions 
+	/// </summary>	
+	
+	/// <summary>
+	/// Input Mapping Context Manupilation Functions
+
+	UFUNCTION()
+	virtual void PII_AddInputMappingContext_Implementation(UInputMappingContext* InputMappingContext);
+
+	UFUNCTION()
+	virtual void PII_RemoveInputMappingContext_Implementation(UInputMappingContext* InputMappingContext);
+	
+	/// Input Mapping Context Manupilation Functions
+	/// </summary>
+
+	/// <summary>
+	/// References Interface Functions
+
+	UFUNCTION()
+	virtual APlayerCharacter* RI_GetPlayerCharacter_Implementation() const override;
+
+	UFUNCTION()
+	virtual APlayerController* RI_GetPlayerController_Implementation() const override;
+
+	/// References Interface Functions
 	/// </summary>
 };

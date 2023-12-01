@@ -37,23 +37,34 @@ void UCharacterMovementDataComponent::SetMovementMode(ELocomotionState Locomotio
 	{
 		switch (LocomotionState)
 		{
-		case ELocomotionState::Idle:
+		case ELocomotionState::ELS_Idle:
 			Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 			break;
-		case ELocomotionState::Walking:
+		case ELocomotionState::ELS_Walking:
 			Character->GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 			break;
-		case ELocomotionState::Jogging:
+		case ELocomotionState::ELS_Jogging:
 			Character->GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
 			break;
-		case ELocomotionState::Sprinting:
+		case ELocomotionState::ELS_Sprinting:
 			Character->GetCharacterMovement()->MaxWalkSpeed = SprintingSpeed;
 			break;
-		case ELocomotionState::EW_MAX:
+		case ELocomotionState::ELS_MAX:
 			break;
 		default:
 			break;
 		}
+	}
+}
+
+
+void UCharacterMovementDataComponent::SetCharacterMovementRotationSettings(bool bOrientRotationToMovement, bool bUseControllerDesiredRotation, float YawRotationRate)
+{
+	if (Character)
+	{
+		Character->GetCharacterMovement()->bOrientRotationToMovement = bOrientRotationToMovement;
+		Character->GetCharacterMovement()->bUseControllerDesiredRotation = bUseControllerDesiredRotation;
+		Character->GetCharacterMovement()->RotationRate = FRotator(0.f, YawRotationRate, 0.f);
 	}
 }
 

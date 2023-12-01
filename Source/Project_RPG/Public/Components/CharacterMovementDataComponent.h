@@ -28,19 +28,22 @@ public:
 
 	/* Getters and Setters */
 	UFUNCTION()
-	float GetJumpVelocity() { return JumpVelocity; }
+	FORCEINLINE float GetJumpVelocity() { return JumpVelocity; }
 
 	UFUNCTION()
-	float GetWalkSpeed() { return WalkingSpeed; }
+	FORCEINLINE float GetWalkSpeed() { return WalkingSpeed; }
 
 	UFUNCTION()
-	float GetCrouchSpeed() { return CrouchingSpeed; }
+	FORCEINLINE float GetCrouchSpeed() { return CrouchingSpeed; }
 
 	UFUNCTION()
-	void SetJoggingBool(bool bShouldJog) { bJogging = bShouldJog; }
+	FORCEINLINE void SetJoggingBool(bool bShouldJog) { bJogging = bShouldJog; }
 
 	UFUNCTION()
-	bool GetJoggingBool() { return bJogging; }
+	FORCEINLINE bool GetJoggingBool() { return bJogging; }
+
+	UFUNCTION()
+	void SetCharacterMovementRotationSettings(bool bOrientRotationToMovement, bool bUseControllerDesiredRotation, float YawRotationRate);
 
 protected:
 	// Called when the game starts
@@ -64,7 +67,7 @@ private:
 	float WalkingSpeed = 147.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Essential Data")
-	float JoggingSpeed = 800.f;
+	float JoggingSpeed = 427.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Essential Data")
 	float SprintingSpeed = 627.f;

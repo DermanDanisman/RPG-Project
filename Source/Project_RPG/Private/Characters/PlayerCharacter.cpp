@@ -2,6 +2,7 @@
 
 
 #include "Characters/PlayerCharacter.h"
+#include "Controllers/PlayerCharacterController.h"
 /* Game Framework */
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -15,6 +16,13 @@
 #include "Enums/LocomotionState.h"
 /* Actor Components */
 #include "Components/CharacterMovementDataComponent.h"
+/* Enhanced Input */
+#include "EnhancedInputSubsystems.h"
+#include "InputAction.h"
+#include "EnhancedInputComponent.h"
+/* Item */
+#include "Items/Item.h"
+#include "Items/Weapons/Weapon.h"
 
 
 
@@ -33,7 +41,7 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
+	CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, false, 0.0f);
 
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(GetRootComponent());
@@ -58,6 +66,8 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerController = Cast<APlayerController>(GetController());
 
 	GetCharacterMovement()->JumpZVelocity = CharacterMovementDataComponent->GetJumpVelocity();
 	GetCharacterMovement()->MaxWalkSpeed = CharacterMovementDataComponent->GetWalkSpeed();
@@ -91,12 +101,12 @@ void APlayerCharacter::PII_Jog_Implementation(bool bShouldJog)
 	{
 		if (!CharacterMovementDataComponent->GetJoggingBool())
 		{
-			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Jogging);
+			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging);
 			CharacterMovementDataComponent->SetJoggingBool(true);
 		}
 		else
 		{
-			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Walking);
+			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Walking);
 			CharacterMovementDataComponent->SetJoggingBool(false);
 		}
 	}
@@ -106,7 +116,7 @@ void APlayerCharacter::PII_StartSprint_Implementation(bool bShouldSprint)
 {
 	if (CharacterMovementDataComponent)
 	{
-		if (!bIsCrouched) CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Sprinting);
+		if (!bIsCrouched) CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Sprinting);
 	}
 }
 
@@ -120,11 +130,11 @@ void APlayerCharacter::PII_StopSprint_Implementation(bool bShouldSprint)
 		{
 			if (CharacterMovementDataComponent->GetJoggingBool())
 			{
-				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Jogging);
+				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging);
 			}
 			else
 			{
-				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::Walking);
+				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Walking);
 			}
 		}
 	}
@@ -135,5 +145,76 @@ void APlayerCharacter::PII_Crouch_Implementation(bool bShouldCrouch)
 	if (!bIsCrouched) Crouch();
 	else if (bIsCrouched) UnCrouch();
 }
+
+void APlayerCharacter::PII_AttackOrEquipWeapon_Implementation(bool bShouldAttack)
+{
+	if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+	{
+		CharacterState = ECharacterState::ECS_OneHandedSword;
+		CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+	}
+}
+
 /// Movement Input Functions
 /// </summary>
+
+
+/// <summary>
+/// Item Interaction Input Functions
+void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
+{
+	if (OverlappingItem)
+	{
+		AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
+		if (OverlappingWeapon)
+		{
+			OverlappingWeapon->Equip(GetMesh(), FName("WeaponHolsterSocket"));
+			GrabbedWeapon = OverlappingWeapon;
+			SetOverlappingItem(nullptr);
+		}
+	}
+}
+
+/// Item Interaction Input Functions
+/// </summary>
+
+
+/// <summary>
+/// Add and Remove Input Mapping Context Functions
+void APlayerCharacter::PII_AddInputMappingContext_Implementation(UInputMappingContext* InputMappingContext)
+{
+	if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+		if (Subsystem)
+		{
+			Subsystem->AddMappingContext(InputMappingContext, 0);
+		}
+	}
+}
+
+void APlayerCharacter::PII_RemoveInputMappingContext_Implementation(UInputMappingContext* InputMappingContext)
+{
+	if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+		if (Subsystem)
+		{
+			Subsystem->RemoveMappingContext(InputMappingContext);
+		}
+	}
+}
+
+/// Add and Remove Input Mapping Context Functions
+/// </summary>
+APlayerCharacter* APlayerCharacter::RI_GetPlayerCharacter_Implementation() const
+{
+	return const_cast<APlayerCharacter*>(this);
+}
+
+APlayerController* APlayerCharacter::RI_GetPlayerController_Implementation() const
+{
+	return PlayerController;
+}
+
+

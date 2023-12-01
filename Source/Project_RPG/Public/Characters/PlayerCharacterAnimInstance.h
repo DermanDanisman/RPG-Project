@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 /* Enums */
 #include "Enums/LocomotionState.h"
+#include "Enums/CharacterState.h"
 /* Animation */
 #include "Animation/CachedAnimData.h"
 #include "PlayerCharacterAnimInstance.generated.h"
@@ -83,6 +84,9 @@ public:
 	FVector Velocity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential Data")
+	FVector InputVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential Data")
 	float GroundSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential Data")
@@ -95,13 +99,16 @@ public:
 	float CharacterYawRotationRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential Data")
-	FVector InputVector;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential Data")
 	bool bIsFalling;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential Data")
 	bool bOrientRotationToMovement;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential Data")
+	bool bUseControllerDesiredRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Essential Data")
+	ECharacterState CharacterState;
 
 	/* Locomotion Category */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locomotion")

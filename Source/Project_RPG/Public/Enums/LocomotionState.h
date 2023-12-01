@@ -5,10 +5,10 @@
 UENUM(BlueprintType)
 enum class ELocomotionState : uint8
 {
-	Idle UMETA(DisplayName = "Idle"),
-	Walking UMETA(DisplayName = "Walking"),
-	Jogging UMETA(DisplayName = "Jogging"),
-	Sprinting UMETA(DisplayName = "Sprinting"),
+	ELS_Idle UMETA(DisplayName = "Idle"),
+	ELS_Walking UMETA(DisplayName = "Walking"),
+	ELS_Jogging UMETA(DisplayName = "Jogging"),
+	ELS_Sprinting UMETA(DisplayName = "Sprinting"),
 
-	EW_MAX UMETA(DisplayName = "DefaultMAX")
+	ELS_MAX UMETA(DisplayName = "DefaultMAX")
 };
