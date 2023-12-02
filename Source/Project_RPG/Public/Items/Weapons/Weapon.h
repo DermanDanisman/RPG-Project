@@ -30,6 +30,12 @@ public:
 
 	UFUNCTION()
 	void Equip(USceneComponent* InParent, FName InSocketName);
+
+	UFUNCTION(BlueprintCallable)
+	void DrawWeapon(USceneComponent* InParent, FName InSocketName);
+
+	UFUNCTION(BlueprintCallable)
+	void HolsterWeapon(USceneComponent* InParent, FName InSocketName);
 	
 protected:
 

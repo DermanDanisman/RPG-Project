@@ -42,7 +42,10 @@ public:
 	void PII_Pickup(bool bShouldPickup);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Weapon Interaction Inputs")
-	void PII_AttackOrEquipWeapon(bool bShouldAttack);
+	void PII_AttackOrDrawWeapon(bool bShouldAttack);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Weapon Interaction Inputs")
+	void PII_HolsterWeapon(bool bShouldHolster);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Mapping Context")
 	void PII_AddInputMappingContext(UInputMappingContext* InputMappingContext);

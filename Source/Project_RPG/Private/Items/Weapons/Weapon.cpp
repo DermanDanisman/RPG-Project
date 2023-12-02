@@ -24,3 +24,15 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void AWeapon::DrawWeapon(USceneComponent* InParent, FName InSocketName)
+{
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+	ItemMesh->AttachToComponent(InParent, AttachmentRules, InSocketName);
+}
+
+void AWeapon::HolsterWeapon(USceneComponent* InParent, FName InSocketName)
+{
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+	ItemMesh->AttachToComponent(InParent, AttachmentRules, InSocketName);
+}
+

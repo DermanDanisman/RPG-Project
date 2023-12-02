@@ -66,7 +66,9 @@ void APlayerCharacterController::SetupInputComponent()
 		// Pickup
 		EnhancedInputComponent->BindAction(IA_Pickup, ETriggerEvent::Started, this, &APlayerCharacterController::Pickup);
 		// Attack Or Equip Weapon
-		EnhancedInputComponent->BindAction(IA_AttackOrEquip, ETriggerEvent::Started, this, &APlayerCharacterController::AttackOrEquipWeapon);
+		EnhancedInputComponent->BindAction(IA_AttackOrDraw, ETriggerEvent::Started, this, &APlayerCharacterController::AttackOrDrawWeapon);
+		// Holster Weapon
+		EnhancedInputComponent->BindAction(IA_HolsterWeapon, ETriggerEvent::Started, this, &APlayerCharacterController::HolsterWeapon);
 	}
 }
 
@@ -170,12 +172,21 @@ void APlayerCharacterController::Pickup(const FInputActionValue& Value)
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Pickup")));
 }
 
-void APlayerCharacterController::AttackOrEquipWeapon(const FInputActionValue& Value)
+void APlayerCharacterController::AttackOrDrawWeapon(const FInputActionValue& Value)
 {
 	const bool bShouldAttack = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_AttackOrEquipWeapon(ControlledCharacter, bShouldAttack);
+		IPlayerInputInterface::Execute_PII_AttackOrDrawWeapon(ControlledCharacter, bShouldAttack);
+	}
+}
+
+void APlayerCharacterController::HolsterWeapon(const FInputActionValue& Value)
+{
+	const bool bShouldHolster = Value.Get<bool>();
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		IPlayerInputInterface::Execute_PII_HolsterWeapon(ControlledCharacter, bShouldHolster);
 	}
 }
 

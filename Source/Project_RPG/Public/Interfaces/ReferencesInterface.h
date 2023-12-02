@@ -28,4 +28,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player Character References")
 	APlayerController* RI_GetPlayerController() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player Character References")
+	AWeapon* RI_GetPlayerGrabbedWeapon() const;
 };

@@ -35,6 +35,9 @@ public:
 	UFUNCTION()
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE AWeapon* GetGrabbedWeapon() { return GrabbedWeapon; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -59,6 +62,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UCharacterMovementDataComponent* CharacterMovementDataComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	class UCharacterWeaponComponent* CharacterWeaponComponent;
+
 private:
 
 	/* References */
@@ -67,14 +73,25 @@ private:
 
 private:
 
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Category = "References")
 	class AItem* OverlappingItem;
 
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Category = "References")
 	class AWeapon* GrabbedWeapon;
 
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Category = "References")
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+
+	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	class UAnimMontage* DrawOneHandedSwordMontage;
+
+	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	class UAnimMontage* HolsterOneHandedSwordMontage;
+
+private:
+
+	UFUNCTION(BlueprintCallable)
+	void SetCharacterState(ECharacterState CharacterStateEnum);
 
 private:
 
@@ -104,8 +121,10 @@ private:
 	/// Action Input Interface Functions
 	
 	UFUNCTION()
-	virtual void PII_AttackOrEquipWeapon_Implementation(bool bShouldAttack) override;
+	virtual void PII_AttackOrDrawWeapon_Implementation(bool bShouldAttack) override;
 
+	UFUNCTION()
+	virtual void PII_HolsterWeapon_Implementation(bool bShouldHolster) override;
 	/// Action Input Interface Functions
 	/// </summary>
 	
@@ -138,6 +157,9 @@ private:
 
 	UFUNCTION()
 	virtual APlayerController* RI_GetPlayerController_Implementation() const override;
+
+	UFUNCTION()
+	virtual AWeapon* RI_GetPlayerGrabbedWeapon_Implementation() const override;
 
 	/// References Interface Functions
 	/// </summary>

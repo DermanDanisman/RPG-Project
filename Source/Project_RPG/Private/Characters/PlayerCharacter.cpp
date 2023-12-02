@@ -16,6 +16,7 @@
 #include "Enums/LocomotionState.h"
 /* Actor Components */
 #include "Components/CharacterMovementDataComponent.h"
+#include "Components/CharacterWeaponComponent.h"
 /* Enhanced Input */
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
@@ -23,6 +24,8 @@
 /* Item */
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
+/* Animation */
+#include "Animation/AnimMontage.h"
 
 
 
@@ -35,6 +38,8 @@ APlayerCharacter::APlayerCharacter()
 	/* Creating Actor Components */
 	CharacterMovementDataComponent = CreateDefaultSubobject<UCharacterMovementDataComponent>(TEXT("CharacterMovementDataComponent"));
 	CharacterMovementDataComponent->SetComponentTickEnabled(false);
+
+	CharacterWeaponComponent = CreateDefaultSubobject<UCharacterWeaponComponent>(TEXT("CharacterWeaponComponent"));
 
 	/* Control Settings */
 	bUseControllerRotationPitch = false;
@@ -146,16 +151,35 @@ void APlayerCharacter::PII_Crouch_Implementation(bool bShouldCrouch)
 	else if (bIsCrouched) UnCrouch();
 }
 
-void APlayerCharacter::PII_AttackOrEquipWeapon_Implementation(bool bShouldAttack)
+/// Movement Input Functions
+/// </summary>
+
+
+/// <summary>
+/// Action Input Functions
+void APlayerCharacter::PII_AttackOrDrawWeapon_Implementation(bool bShouldAttack)
 {
-	if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+	if (GrabbedWeapon)
 	{
-		CharacterState = ECharacterState::ECS_OneHandedSword;
-		CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+		if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+		{
+			CharacterWeaponComponent->PlayDrawWeaponMontage(DrawOneHandedSwordMontage);
+		}
 	}
 }
 
-/// Movement Input Functions
+void APlayerCharacter::PII_HolsterWeapon_Implementation(bool bShouldHolster)
+{
+	if (GrabbedWeapon)
+	{
+		if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+		{
+			CharacterWeaponComponent->PlayHolsterWeaponMontage(HolsterOneHandedSwordMontage);
+		}
+	}
+}
+
+/// Action Input Functions
 /// </summary>
 
 
@@ -207,6 +231,8 @@ void APlayerCharacter::PII_RemoveInputMappingContext_Implementation(UInputMappin
 
 /// Add and Remove Input Mapping Context Functions
 /// </summary>
+
+
 APlayerCharacter* APlayerCharacter::RI_GetPlayerCharacter_Implementation() const
 {
 	return const_cast<APlayerCharacter*>(this);
@@ -217,4 +243,30 @@ APlayerController* APlayerCharacter::RI_GetPlayerController_Implementation() con
 	return PlayerController;
 }
 
+AWeapon* APlayerCharacter::RI_GetPlayerGrabbedWeapon_Implementation() const
+{
+	if (GrabbedWeapon) return GrabbedWeapon;
+	else return nullptr;
+}
+
+void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
+{
+	if (CharacterStateEnum == ECharacterState::ECS_Unequipped)
+	{
+		CharacterState = ECharacterState::ECS_Unequipped;
+		CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, false, 0.f);
+	}
+	else
+	{
+		if (GrabbedWeapon)
+		{
+			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+			{
+				CharacterState = ECharacterState::ECS_OneHandedSword;
+				CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+			}
+		}
+	}
+
+}
 
