@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
+#include "Interfaces/ReferencesInterface.h"
 #include "HolsterWeaponAnimNotify.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_RPG_API UHolsterWeaponAnimNotify : public UAnimNotify
+class PROJECT_RPG_API UHolsterWeaponAnimNotify : public UAnimNotify, public IReferencesInterface
 {
 	GENERATED_BODY()
 	

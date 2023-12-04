@@ -51,6 +51,9 @@ protected:
 	UFUNCTION(BlueprintPure)
 	float TransformedCos();
 
+	UFUNCTION()
+	void SimulatePhysics(bool bShouldSimulatePhysics);
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Delta Time")

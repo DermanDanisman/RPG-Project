@@ -39,8 +39,6 @@ APlayerCharacter::APlayerCharacter()
 	CharacterMovementDataComponent = CreateDefaultSubobject<UCharacterMovementDataComponent>(TEXT("CharacterMovementDataComponent"));
 	CharacterMovementDataComponent->SetComponentTickEnabled(false);
 
-	CharacterWeaponComponent = CreateDefaultSubobject<UCharacterWeaponComponent>(TEXT("CharacterWeaponComponent"));
-
 	/* Control Settings */
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -154,45 +152,6 @@ void APlayerCharacter::PII_Crouch_Implementation(bool bShouldCrouch)
 /// Movement Input Functions
 /// </summary>
 
-
-/// <summary>
-/// Action Input Functions
-void APlayerCharacter::PII_Attack_Implementation(bool bShouldAttack)
-{
-	if (GrabbedWeapon)
-	{
-		if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
-		{
-			CharacterWeaponComponent->PlayAttackMontage(AttackMontage);
-		}
-	}
-}
-
-void APlayerCharacter::PII_DrawWeapon_Implementation(bool bShouldDraw)
-{
-	if (GrabbedWeapon)
-	{
-		if (!CharacterWeaponComponent->bDrawWeapon)
-		{
-			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
-			{
-				CharacterWeaponComponent->PlayDrawWeaponMontage(DrawOneHandedSwordMontage);
-			}
-		}
-		else
-		{
-			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
-			{
-				CharacterWeaponComponent->PlayHolsterWeaponMontage(HolsterOneHandedSwordMontage);
-			}
-		}
-	}
-}
-
-/// Action Input Functions
-/// </summary>
-
-
 /// <summary>
 /// Item Interaction Input Functions
 void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
@@ -203,7 +162,9 @@ void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
 		if (OverlappingWeapon)
 		{
 			OverlappingWeapon->Equip(GetMesh(), FName("HipWeaponHolsterSocket"));
+			OverlappingWeapon->SetOwner(this);
 			GrabbedWeapon = OverlappingWeapon;
+			GrabbedWeapon->GetCharacterWeaponComponent()->SetOwnerAsPlayer();
 			SetOverlappingItem(nullptr);
 		}
 	}
@@ -212,6 +173,51 @@ void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
 /// Item Interaction Input Functions
 /// </summary>
 
+/// <summary>
+/// Action Input Functions
+void APlayerCharacter::PII_Attack_Implementation(bool bShouldAttack)
+{
+	if (GrabbedWeapon)
+	{
+		if (ActionState == EActionState::EAS_Unoccupied)
+		{
+			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+			{
+				GrabbedWeapon->GetCharacterWeaponComponent()->PlayAttackMontage();
+				ActionState = EActionState::EAS_Attacking;
+			}
+		}
+	}
+}
+
+void APlayerCharacter::PII_DrawWeapon_Implementation(bool bShouldDraw)
+{
+	if (GrabbedWeapon)
+	{
+		if (ActionState == EActionState::EAS_Unoccupied)
+		{
+			if (!GrabbedWeapon->GetCharacterWeaponComponent()->bDrawWeapon)
+			{
+				if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+				{
+					GrabbedWeapon->GetCharacterWeaponComponent()->PlayDrawWeaponMontage();
+					ActionState = EActionState::EAS_DrawingWeapon;
+				}
+			}
+			else
+			{
+				if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+				{
+					GrabbedWeapon->GetCharacterWeaponComponent()->PlayHolsterWeaponMontage();
+					ActionState = EActionState::EAS_DrawingWeapon;
+				}
+			}
+		}
+	}
+}
+
+/// Action Input Functions
+/// </summary>
 
 /// <summary>
 /// Add and Remove Input Mapping Context Functions

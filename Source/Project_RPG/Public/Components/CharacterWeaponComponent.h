@@ -40,12 +40,35 @@ public:
 		
 public:
 
-	UFUNCTION(BlueprintCallable)
-	void PlayDrawWeaponMontage(UAnimMontage* WeaponDrawMontage);
+	UFUNCTION()
+	void SetOwnerAsPlayer();
+
+	/**
+	* Play Montage Functions
+	*/
 
 	UFUNCTION(BlueprintCallable)
-	void PlayHolsterWeaponMontage(UAnimMontage* WeaponHolsterMontage);
+	void PlayDrawWeaponMontage();
 
 	UFUNCTION(BlueprintCallable)
-	void PlayAttackMontage(UAnimMontage* AttackMontage);
+	void PlayHolsterWeaponMontage();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayAttackMontage();
+
+private:
+
+	/**
+	* Animation Montages
+	*/
+
+	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	class UAnimMontage* DrawWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	class UAnimMontage* HolsterWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	class UAnimMontage* AttackMontage;
+
 };

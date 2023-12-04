@@ -12,3 +12,11 @@ enum class ECharacterState : uint8
 
 	ECS__MAX UMETA(DisplayName = "DefaultMAX")
 };
+
+UENUM(BlueprintType)
+enum class EActionState : uint8
+{
+	EAS_Unoccupied UMETA(DisplayName = "Unoccupied"),
+	EAS_DrawingWeapon UMETA(DisplayName = "Drawing Weapon"),
+	EAS_Attacking UMETA(DisplayName = "Attacking"),
+};

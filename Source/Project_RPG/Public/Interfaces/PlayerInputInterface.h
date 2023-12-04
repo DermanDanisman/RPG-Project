@@ -47,9 +47,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Weapon Interaction Inputs")
 	void PII_DrawWeapon(bool bShouldDraw);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Weapon Interaction Inputs")
-	void PII_HolsterWeapon(bool bShouldHolster);
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Mapping Context")
 	void PII_AddInputMappingContext(UInputMappingContext* InputMappingContext);
 

@@ -3,6 +3,7 @@
 
 #include "Components/CharacterWeaponComponent.h"
 #include "GameFramework/Character.h"
+#include "Characters/PlayerCharacter.h"
 /* Animation */
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
@@ -25,7 +26,7 @@ void UCharacterWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Character = Cast<ACharacter>(GetOwner());
+	Character = Cast<ACharacter>(GetOwner()->GetOwner());
 }
 
 
@@ -37,18 +38,27 @@ void UCharacterWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	// ...
 }
 
-void UCharacterWeaponComponent::PlayDrawWeaponMontage(UAnimMontage* WeaponDrawMontage)
+void UCharacterWeaponComponent::SetOwnerAsPlayer()
+{
+	if (!Character)
+	{
+		Character = Cast<ACharacter>(GetOwner()->GetOwner());
+	}
+}
+
+void UCharacterWeaponComponent::PlayDrawWeaponMontage()
 {
 	if (!bDrawWeapon)
 	{
 		if (Character)
 		{
-			if (WeaponDrawMontage)
+			UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+			if (AnimInstance && DrawWeaponMontage)
 			{
-				UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-				if (AnimInstance)
+				APlayerCharacter* PlayerCharacter = IReferencesInterface::Execute_RI_GetPlayerCharacter(Character);
+				if (PlayerCharacter->GetActionState() == EActionState::EAS_Unoccupied)
 				{
-					AnimInstance->Montage_Play(WeaponDrawMontage);
+					AnimInstance->Montage_Play(DrawWeaponMontage);
 					bDrawWeapon = true;
 					bHolsterWeapon = false;
 				}
@@ -57,18 +67,19 @@ void UCharacterWeaponComponent::PlayDrawWeaponMontage(UAnimMontage* WeaponDrawMo
 	}
 }
 
-void UCharacterWeaponComponent::PlayHolsterWeaponMontage(UAnimMontage* WeaponHolsterMontage)
+void UCharacterWeaponComponent::PlayHolsterWeaponMontage()
 {
 	if (!bHolsterWeapon)
 	{
 		if (Character)
 		{
-			if (WeaponHolsterMontage)
+			UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+			if (AnimInstance && HolsterWeaponMontage)
 			{
-				UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-				if (AnimInstance)
+				APlayerCharacter* PlayerCharacter = IReferencesInterface::Execute_RI_GetPlayerCharacter(Character);
+				if (PlayerCharacter->GetActionState() == EActionState::EAS_Unoccupied)
 				{
-					AnimInstance->Montage_Play(WeaponHolsterMontage);
+					AnimInstance->Montage_Play(HolsterWeaponMontage);
 					bDrawWeapon = false;
 					bHolsterWeapon = true;
 				}
@@ -77,14 +88,15 @@ void UCharacterWeaponComponent::PlayHolsterWeaponMontage(UAnimMontage* WeaponHol
 	}
 }
 
-void UCharacterWeaponComponent::PlayAttackMontage(UAnimMontage* AttackMontage)
+void UCharacterWeaponComponent::PlayAttackMontage()
 {
 	if (Character)
 	{
-		if (AttackMontage)
+		UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+		if (AnimInstance && AttackMontage)
 		{
-			UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-			if (AnimInstance)
+			APlayerCharacter* PlayerCharacter = IReferencesInterface::Execute_RI_GetPlayerCharacter(Character);
+			if (PlayerCharacter->GetActionState() == EActionState::EAS_Unoccupied)
 			{
 				AnimInstance->Montage_Play(AttackMontage);
 				bDrawWeapon = true;

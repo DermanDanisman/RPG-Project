@@ -43,9 +43,9 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	RunningTime += DeltaTime;
+	//RunningTime += DeltaTime;
 
-	AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
+	//AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
 }
 
 
@@ -108,5 +108,10 @@ float AItem::TransformedSin()
 float AItem::TransformedCos()
 {
 	return Amplitude * FMath::Cos(RunningTime * TimeConstant);
+}
+
+void AItem::SimulatePhysics(bool bShouldSimulatePhysics)
+{
+	ItemMesh->SetSimulatePhysics(bShouldSimulatePhysics);
 }
 

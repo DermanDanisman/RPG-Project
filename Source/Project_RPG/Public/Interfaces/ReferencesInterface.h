@@ -30,5 +30,8 @@ public:
 	APlayerController* RI_GetPlayerController() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player Character References")
+	UPlayerCharacterAnimInstance* RI_GetPlayerAnimInstance() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player Character References")
 	AWeapon* RI_GetPlayerGrabbedWeapon() const;
 };

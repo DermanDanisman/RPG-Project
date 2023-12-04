@@ -12,7 +12,7 @@ void UHolsterWeaponAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 {
 	Super::Notify(MeshComp, Animation);
 
-	UPlayerCharacterAnimInstance* AnimInstance = Cast<UPlayerCharacterAnimInstance>(MeshComp->GetAnimInstance());
+	UPlayerCharacterAnimInstance* AnimInstance = Cast<UPlayerCharacterAnimInstance>(MeshComp->GetAnimInstance()); //IReferencesInterface::Execute_RI_GetPlayerAnimInstance(MeshComp->GetAnimInstance());
 	if (AnimInstance)
 	{
 		AWeapon* Weapon = AnimInstance->PlayerCharacter->GetGrabbedWeapon();

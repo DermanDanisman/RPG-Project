@@ -38,6 +38,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE AWeapon* GetGrabbedWeapon() { return GrabbedWeapon; }
 
+	UFUNCTION()
+	FORCEINLINE EActionState GetActionState() const { return ActionState; }
+
+	UFUNCTION()
+	FORCEINLINE void SetActionState(EActionState NewActionState) { ActionState = NewActionState; }
+
 	UFUNCTION(BlueprintCallable)
 	void SetCharacterState(ECharacterState CharacterStateEnum);
 
@@ -47,26 +53,23 @@ protected:
 
 private:	
 
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
 	class USpringArmComponent* CameraSpringArm;
 
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
 	class UCameraComponent* ViewCamera;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
 	class USkeletalMeshComponent* HairMesh;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
 	class UGroomComponent* HairGroomComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
 	class UGroomComponent* EyebrowsGroomComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
 	class UCharacterMovementDataComponent* CharacterMovementDataComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	class UCharacterWeaponComponent* CharacterWeaponComponent;
 
 private:
 
@@ -82,21 +85,11 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Category = "References")
 	class AWeapon* GrabbedWeapon;
 
-	UPROPERTY(VisibleInstanceOnly, Category = "References")
+	UPROPERTY(VisibleInstanceOnly, Category = "Player State Enums")
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
-	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
-	class UAnimMontage* DrawOneHandedSwordMontage;
-
-	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
-	class UAnimMontage* HolsterOneHandedSwordMontage;
-
-	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
-	class UAnimMontage* AttackMontage;
-
-private:
-
-
+	UPROPERTY(VisibleInstanceOnly, Category = "Player State Enums")
+	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 private:
 
@@ -123,8 +116,17 @@ private:
 	/// </summary>
 	
 	/// <summary>
-	/// Action Input Interface Functions
+	/// Item Input Interface Functions 
 	
+	UFUNCTION()
+	virtual void PII_Pickup_Implementation(bool bShouldPickup) override;
+
+	/// Item Input Interface Functions 
+	/// </summary>	
+	
+	/// <summary>
+	/// Action Input Interface Functions
+
 	UFUNCTION()
 	virtual void PII_Attack_Implementation(bool bShouldAttack) override;
 
@@ -133,15 +135,7 @@ private:
 
 	/// Action Input Interface Functions
 	/// </summary>
-	
-	/// <summary>
-	/// Item Input Interface Functions 
-	
-	UFUNCTION()
-	virtual void PII_Pickup_Implementation(bool bShouldPickup) override;
 
-	/// Item Input Interface Functions 
-	/// </summary>	
 	
 	/// <summary>
 	/// Input Mapping Context Manupilation Functions

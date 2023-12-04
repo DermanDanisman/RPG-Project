@@ -317,3 +317,8 @@ void UPlayerCharacterAnimInstance::ResetTransitions()
 	bPlayWalkStart = false;
 	bPlayJogStart = false;
 }
+
+UPlayerCharacterAnimInstance* UPlayerCharacterAnimInstance::RI_GetPlayerAnimInstance_Implementation() const
+{
+	return const_cast<UPlayerCharacterAnimInstance*>(this);
+}

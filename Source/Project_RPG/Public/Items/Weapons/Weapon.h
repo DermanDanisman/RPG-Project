@@ -23,8 +23,13 @@ class PROJECT_RPG_API AWeapon : public AItem
 
 public:
 
+	AWeapon();
+
 	UFUNCTION()
 	FORCEINLINE EWeaponType GetWeaponType() { return WeaponType; }
+
+	UFUNCTION()
+	FORCEINLINE UCharacterWeaponComponent* GetCharacterWeaponComponent() { return CharacterWeaponComponent; }
 
 public:
 
@@ -47,6 +52,9 @@ protected:
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
 private:
+
+	UPROPERTY(VisibleAnywhere)
+	class UCharacterWeaponComponent* CharacterWeaponComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Type")
 	EWeaponType WeaponType = EWeaponType::EWT_OneHandedSword;

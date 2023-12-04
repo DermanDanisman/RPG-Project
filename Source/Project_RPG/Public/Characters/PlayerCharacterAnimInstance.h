@@ -9,6 +9,9 @@
 #include "Enums/CharacterState.h"
 /* Animation */
 #include "Animation/CachedAnimData.h"
+/* Interfaces*/
+#include "Interfaces/PlayerInputInterface.h"
+#include "Interfaces/ReferencesInterface.h"
 #include "PlayerCharacterAnimInstance.generated.h"
 
 
@@ -16,7 +19,7 @@
  * 
  */
 UCLASS()
-class PROJECT_RPG_API UPlayerCharacterAnimInstance : public UAnimInstance
+class PROJECT_RPG_API UPlayerCharacterAnimInstance : public UAnimInstance, public IReferencesInterface
 {
 	GENERATED_BODY()
 	
@@ -170,6 +173,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State Data")
 	FCachedAnimStateData SprintStateData;
 
+private:
 
+	UFUNCTION()
+	virtual UPlayerCharacterAnimInstance* RI_GetPlayerAnimInstance_Implementation() const override;
 
 };
