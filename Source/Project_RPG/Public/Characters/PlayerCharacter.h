@@ -38,6 +38,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE AWeapon* GetGrabbedWeapon() { return GrabbedWeapon; }
 
+	UFUNCTION(BlueprintCallable)
+	void SetCharacterState(ECharacterState CharacterStateEnum);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -88,10 +91,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
 	class UAnimMontage* HolsterOneHandedSwordMontage;
 
+	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	class UAnimMontage* AttackMontage;
+
 private:
 
-	UFUNCTION(BlueprintCallable)
-	void SetCharacterState(ECharacterState CharacterStateEnum);
+
 
 private:
 
@@ -121,10 +126,11 @@ private:
 	/// Action Input Interface Functions
 	
 	UFUNCTION()
-	virtual void PII_AttackOrDrawWeapon_Implementation(bool bShouldAttack) override;
+	virtual void PII_Attack_Implementation(bool bShouldAttack) override;
 
 	UFUNCTION()
-	virtual void PII_HolsterWeapon_Implementation(bool bShouldHolster) override;
+	virtual void PII_DrawWeapon_Implementation(bool bShouldDraw) override;
+
 	/// Action Input Interface Functions
 	/// </summary>
 	

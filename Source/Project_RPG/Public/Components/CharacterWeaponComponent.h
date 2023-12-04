@@ -33,10 +33,10 @@ public:
 	class ACharacter* Character = nullptr;
 
 	UPROPERTY()
-	bool bDrawWeapon;
+	bool bDrawWeapon = false;
 
 	UPROPERTY()
-	bool bHolsterWeapon;
+	bool bHolsterWeapon = true;
 		
 public:
 
@@ -45,4 +45,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayHolsterWeaponMontage(UAnimMontage* WeaponHolsterMontage);
+
+	UFUNCTION(BlueprintCallable)
+	void PlayAttackMontage(UAnimMontage* AttackMontage);
 };

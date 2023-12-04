@@ -60,10 +60,10 @@ protected: // Enhanced Input Section
 	class UInputAction* IA_Pickup;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_AttackOrDraw;
+	class UInputAction* IA_Attack;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_HolsterWeapon;
+	class UInputAction* IA_HolsterDrawWeapon;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -90,10 +90,10 @@ protected: // Enhanced Input Section
 	void Pickup(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void AttackOrDrawWeapon(const FInputActionValue& Value);
+	void Attack(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void HolsterWeapon(const FInputActionValue& Value);
+	void DrawWeapon(const FInputActionValue& Value);
 
 private: // References
 	

@@ -50,4 +50,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Type")
 	EWeaponType WeaponType = EWeaponType::EWT_OneHandedSword;
+
+
 };

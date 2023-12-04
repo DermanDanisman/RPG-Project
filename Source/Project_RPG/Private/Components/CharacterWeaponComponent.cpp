@@ -76,3 +76,20 @@ void UCharacterWeaponComponent::PlayHolsterWeaponMontage(UAnimMontage* WeaponHol
 		}
 	}
 }
+
+void UCharacterWeaponComponent::PlayAttackMontage(UAnimMontage* AttackMontage)
+{
+	if (Character)
+	{
+		if (AttackMontage)
+		{
+			UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+			if (AnimInstance)
+			{
+				AnimInstance->Montage_Play(AttackMontage);
+				bDrawWeapon = true;
+				bHolsterWeapon = false;
+			}
+		}
+	}
+}

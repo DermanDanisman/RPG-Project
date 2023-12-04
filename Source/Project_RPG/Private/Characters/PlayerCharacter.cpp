@@ -157,24 +157,34 @@ void APlayerCharacter::PII_Crouch_Implementation(bool bShouldCrouch)
 
 /// <summary>
 /// Action Input Functions
-void APlayerCharacter::PII_AttackOrDrawWeapon_Implementation(bool bShouldAttack)
+void APlayerCharacter::PII_Attack_Implementation(bool bShouldAttack)
 {
 	if (GrabbedWeapon)
 	{
 		if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
 		{
-			CharacterWeaponComponent->PlayDrawWeaponMontage(DrawOneHandedSwordMontage);
+			CharacterWeaponComponent->PlayAttackMontage(AttackMontage);
 		}
 	}
 }
 
-void APlayerCharacter::PII_HolsterWeapon_Implementation(bool bShouldHolster)
+void APlayerCharacter::PII_DrawWeapon_Implementation(bool bShouldDraw)
 {
 	if (GrabbedWeapon)
 	{
-		if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+		if (!CharacterWeaponComponent->bDrawWeapon)
 		{
-			CharacterWeaponComponent->PlayHolsterWeaponMontage(HolsterOneHandedSwordMontage);
+			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+			{
+				CharacterWeaponComponent->PlayDrawWeaponMontage(DrawOneHandedSwordMontage);
+			}
+		}
+		else
+		{
+			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+			{
+				CharacterWeaponComponent->PlayHolsterWeaponMontage(HolsterOneHandedSwordMontage);
+			}
 		}
 	}
 }
@@ -192,7 +202,7 @@ void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
 		AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 		if (OverlappingWeapon)
 		{
-			OverlappingWeapon->Equip(GetMesh(), FName("WeaponHolsterSocket"));
+			OverlappingWeapon->Equip(GetMesh(), FName("HipWeaponHolsterSocket"));
 			GrabbedWeapon = OverlappingWeapon;
 			SetOverlappingItem(nullptr);
 		}
@@ -232,7 +242,8 @@ void APlayerCharacter::PII_RemoveInputMappingContext_Implementation(UInputMappin
 /// Add and Remove Input Mapping Context Functions
 /// </summary>
 
-
+/// <summary>
+/// Getting References
 APlayerCharacter* APlayerCharacter::RI_GetPlayerCharacter_Implementation() const
 {
 	return const_cast<APlayerCharacter*>(this);
@@ -249,14 +260,21 @@ AWeapon* APlayerCharacter::RI_GetPlayerGrabbedWeapon_Implementation() const
 	else return nullptr;
 }
 
+/// Getting References
+/// </summary>
+
+// Setting Character State by weapon type
 void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 {
-	if (CharacterStateEnum == ECharacterState::ECS_Unequipped)
+	switch (CharacterStateEnum)
+	{
+	case ECharacterState::ECS_Unequipped:
 	{
 		CharacterState = ECharacterState::ECS_Unequipped;
 		CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, false, 0.f);
+		break;
 	}
-	else
+	case ECharacterState::ECS_OneHandedSword:
 	{
 		if (GrabbedWeapon)
 		{
@@ -266,7 +284,16 @@ void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 				CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
 			}
 		}
+		break;
 	}
-
+	/*case ECharacterState::ECS_TwoHandedSword:
+		break;
+	case ECharacterState::ECS_SwordAndShield:
+		break;
+	case ECharacterState::ECS__MAX:
+		break;
+	default:
+		break;*/
+	}
 }
 

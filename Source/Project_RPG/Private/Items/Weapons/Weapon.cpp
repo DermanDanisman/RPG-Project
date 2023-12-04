@@ -36,3 +36,5 @@ void AWeapon::HolsterWeapon(USceneComponent* InParent, FName InSocketName)
 	ItemMesh->AttachToComponent(InParent, AttachmentRules, InSocketName);
 }
 
+
+
