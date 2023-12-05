@@ -69,7 +69,7 @@ protected:
 	class USphereComponent* SphereComponent;
 
 	// Add this Mapping Context when in contact with items
-	UPROPERTY(EditAnywhere, Category = "Input")
+	UPROPERTY(EditAnywhere, Category = "Input Mapping Context")
 	class UInputMappingContext* ItemMappingContext;
 
 };

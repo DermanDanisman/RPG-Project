@@ -26,15 +26,18 @@ public:
 	AWeapon();
 
 	UFUNCTION()
-	FORCEINLINE EWeaponType GetWeaponType() { return WeaponType; }
+	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 
 	UFUNCTION()
-	FORCEINLINE UCharacterWeaponComponent* GetCharacterWeaponComponent() { return CharacterWeaponComponent; }
+	FORCEINLINE UCharacterWeaponComponent* GetCharacterWeaponComponent() const { return CharacterWeaponComponent; }
 
 public:
 
 	UFUNCTION()
-	void Equip(USceneComponent* InParent, FName InSocketName);
+	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
+
+	UFUNCTION()
+	void EquipWeapon(USceneComponent* InParent, FName InSocketName);
 
 	UFUNCTION(BlueprintCallable)
 	void DrawWeapon(USceneComponent* InParent, FName InSocketName);
@@ -56,7 +59,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UCharacterWeaponComponent* CharacterWeaponComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Type")
+	UPROPERTY(EditAnywhere, Category = WeaponType)
 	EWeaponType WeaponType = EWeaponType::EWT_OneHandedSword;
 
 

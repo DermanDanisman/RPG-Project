@@ -128,10 +128,10 @@ private:
 	/// Action Input Interface Functions
 
 	UFUNCTION()
-	virtual void PII_Attack_Implementation(bool bShouldAttack) override;
+	virtual void PII_DrawWeapon_Implementation(bool bShouldDraw) override;
 
 	UFUNCTION()
-	virtual void PII_DrawWeapon_Implementation(bool bShouldDraw) override;
+	virtual void PII_Attack_Implementation(bool bShouldAttack) override;
 
 	/// Action Input Interface Functions
 	/// </summary>

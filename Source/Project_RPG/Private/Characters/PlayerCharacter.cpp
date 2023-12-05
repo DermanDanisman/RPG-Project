@@ -161,7 +161,14 @@ void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
 		AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 		if (OverlappingWeapon)
 		{
-			OverlappingWeapon->Equip(GetMesh(), FName("HipWeaponHolsterSocket"));
+			if (OverlappingWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+			{
+				OverlappingWeapon->EquipWeapon(GetMesh(), FName("HipWeaponHolsterSocket"));
+			}
+			else if (OverlappingWeapon->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
+			{
+				OverlappingWeapon->EquipWeapon(GetMesh(), FName("BackWeaponHolsterLocation"));
+			}
 			OverlappingWeapon->SetOwner(this);
 			GrabbedWeapon = OverlappingWeapon;
 			GrabbedWeapon->GetCharacterWeaponComponent()->SetOwnerAsPlayer();
@@ -175,43 +182,35 @@ void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
 
 /// <summary>
 /// Action Input Functions
-void APlayerCharacter::PII_Attack_Implementation(bool bShouldAttack)
+
+void APlayerCharacter::PII_DrawWeapon_Implementation(bool bShouldDraw)
 {
-	if (GrabbedWeapon)
+	if (ActionState == EActionState::EAS_Unoccupied)
 	{
-		if (ActionState == EActionState::EAS_Unoccupied)
+		if (GrabbedWeapon)
 		{
-			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
+			if (!GrabbedWeapon->GetCharacterWeaponComponent()->bDrawWeapon)
 			{
-				GrabbedWeapon->GetCharacterWeaponComponent()->PlayAttackMontage();
-				ActionState = EActionState::EAS_Attacking;
+				GrabbedWeapon->GetCharacterWeaponComponent()->PlayDrawWeaponMontage();
+				ActionState = EActionState::EAS_DrawingWeapon;
+			}
+			else
+			{
+				GrabbedWeapon->GetCharacterWeaponComponent()->PlayHolsterWeaponMontage();
+				ActionState = EActionState::EAS_DrawingWeapon;
 			}
 		}
 	}
 }
 
-void APlayerCharacter::PII_DrawWeapon_Implementation(bool bShouldDraw)
+void APlayerCharacter::PII_Attack_Implementation(bool bShouldAttack)
 {
-	if (GrabbedWeapon)
+	if (ActionState == EActionState::EAS_Unoccupied)
 	{
-		if (ActionState == EActionState::EAS_Unoccupied)
+		if (GrabbedWeapon)
 		{
-			if (!GrabbedWeapon->GetCharacterWeaponComponent()->bDrawWeapon)
-			{
-				if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
-				{
-					GrabbedWeapon->GetCharacterWeaponComponent()->PlayDrawWeaponMontage();
-					ActionState = EActionState::EAS_DrawingWeapon;
-				}
-			}
-			else
-			{
-				if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
-				{
-					GrabbedWeapon->GetCharacterWeaponComponent()->PlayHolsterWeaponMontage();
-					ActionState = EActionState::EAS_DrawingWeapon;
-				}
-			}
+			GrabbedWeapon->GetCharacterWeaponComponent()->PlayAttackMontage();
+			ActionState = EActionState::EAS_Attacking;
 		}
 	}
 }

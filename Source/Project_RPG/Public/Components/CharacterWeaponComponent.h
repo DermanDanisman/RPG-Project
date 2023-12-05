@@ -62,13 +62,13 @@ private:
 	* Animation Montages
 	*/
 
-	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* DrawWeaponMontage;
 
-	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* HolsterWeaponMontage;
 
-	UPROPERTY(EditAnywhere, Category = "One-Handed Sword Anim Montages")
+	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* AttackMontage;
 
 };

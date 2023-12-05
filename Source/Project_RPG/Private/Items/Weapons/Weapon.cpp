@@ -24,24 +24,27 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 }
 
-void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
+void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName)
 {
-	SimulatePhysics(false);
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	ItemMesh->AttachToComponent(InParent, AttachmentRules, InSocketName);
+}
+
+void AWeapon::EquipWeapon(USceneComponent* InParent, FName InSocketName)
+{
+	SimulatePhysics(false);
+	AttachMeshToSocket(InParent, InSocketName);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AWeapon::DrawWeapon(USceneComponent* InParent, FName InSocketName)
 {
-	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	ItemMesh->AttachToComponent(InParent, AttachmentRules, InSocketName);
+	AttachMeshToSocket(InParent, InSocketName);
 }
 
 void AWeapon::HolsterWeapon(USceneComponent* InParent, FName InSocketName)
 {
-	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	ItemMesh->AttachToComponent(InParent, AttachmentRules, InSocketName);
+	AttachMeshToSocket(InParent, InSocketName);
 }
 
 
