@@ -5,11 +5,16 @@
 #include "Characters/PlayerCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/CharacterWeaponComponent.h"
+/* Components */
+#include "Components/SkeletalMeshComponent.h"
 
 
 AWeapon::AWeapon()
 {
 	CharacterWeaponComponent = CreateDefaultSubobject<UCharacterWeaponComponent>(TEXT("CharacterWeaponComponent"));
+
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(GetRootComponent());
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -27,14 +32,14 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName)
 {
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	ItemMesh->AttachToComponent(InParent, AttachmentRules, InSocketName);
+	WeaponMesh->AttachToComponent(InParent, AttachmentRules, InSocketName);
 }
 
 void AWeapon::EquipWeapon(USceneComponent* InParent, FName InSocketName)
 {
 	SimulatePhysics(false);
-	AttachMeshToSocket(InParent, InSocketName);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AttachMeshToSocket(InParent, InSocketName);
 }
 
 void AWeapon::DrawWeapon(USceneComponent* InParent, FName InSocketName)

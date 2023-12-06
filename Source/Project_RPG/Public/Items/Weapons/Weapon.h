@@ -13,7 +13,8 @@ UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
 	EWT_OneHandedSword UMETA(DisplayName = "One-Handed Sword"),
-	EWT_TwoHandedSword UMETA(DisplayName = "Two-Handed Sword")
+	EWT_TwoHandedSword UMETA(DisplayName = "Two-Handed Sword"),
+	EWT_SwordAndShield UMETA(DisplayName = "Sword and Shield")
 };
 
 UCLASS()
@@ -55,6 +56,9 @@ protected:
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
 private:
+
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* WeaponMesh;
 
 	UPROPERTY(VisibleAnywhere)
 	class UCharacterWeaponComponent* CharacterWeaponComponent;

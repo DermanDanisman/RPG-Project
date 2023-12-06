@@ -62,13 +62,13 @@ private:
 	* Animation Montages
 	*/
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
-	class UAnimMontage* DrawWeaponMontage;
+	UPROPERTY(EditAnywhere, Category = WeaponAnimMontages)
+	class UAnimMontage* DrawWeaponMontage = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
-	class UAnimMontage* HolsterWeaponMontage;
+	UPROPERTY(EditAnywhere, Category = WeaponAnimMontages)
+	class UAnimMontage* HolsterWeaponMontage = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
-	class UAnimMontage* AttackMontage;
+	UPROPERTY(EditAnywhere, Category = WeaponAnimMontages)
+	class UAnimMontage* AttackMontage = nullptr;
 
 };

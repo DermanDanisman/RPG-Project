@@ -22,11 +22,13 @@ void UDrawWeaponAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 			{
 				Weapon->DrawWeapon(AnimInstance->PlayerCharacter->GetMesh(), FName("RightHandSocket"));
 				AnimInstance->PlayerCharacter->SetCharacterState(ECharacterState::ECS_OneHandedSword);
+				GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("EWT_OneHandedSword")));
 			}
 			else if (Weapon->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
 			{
 				Weapon->DrawWeapon(AnimInstance->PlayerCharacter->GetMesh(), FName("RightHandSocket"));
 				AnimInstance->PlayerCharacter->SetCharacterState(ECharacterState::ECS_TwoHandedSword);
+				GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("EWT_TwoHandedSword")));
 			}
 		}
 	}

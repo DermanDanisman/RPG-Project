@@ -36,34 +36,34 @@ protected:
 protected: // Enhanced Input Section
 	
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputMappingContext* DefaultMappingContext;
+	class UInputMappingContext* DefaultMappingContext = nullptr;
 	
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_Move;
+	class UInputAction* IA_Move = nullptr;;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_Look;
+	class UInputAction* IA_Look = nullptr;;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_Jump;
+	class UInputAction* IA_Jump = nullptr;;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_Jog;
+	class UInputAction* IA_Jog = nullptr;;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_Sprint;
+	class UInputAction* IA_Sprint = nullptr;;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_Crouch;
+	class UInputAction* IA_Crouch = nullptr;;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_Pickup;
+	class UInputAction* IA_Pickup = nullptr;;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_Attack;
+	class UInputAction* IA_Attack = nullptr;;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* IA_HolsterDrawWeapon;
+	class UInputAction* IA_HolsterDrawWeapon = nullptr;;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
@@ -98,9 +98,5 @@ protected: // Enhanced Input Section
 private: // References
 	
 	UPROPERTY()
-	class ACharacter* ControlledCharacter;
-
-private:
-
-	void MoveToFloor();
+	class ACharacter* ControlledCharacter = nullptr;
 };

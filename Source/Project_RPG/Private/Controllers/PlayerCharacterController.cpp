@@ -9,8 +9,6 @@
 /* Game Framework */
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-/* Components */
-#include "Components/CapsuleComponent.h"
 /* Kismet */
 #include "Kismet/KismetMathLibrary.h"
 
@@ -31,8 +29,6 @@ void APlayerCharacterController::BeginPlay()
 	}
 
 	ControlledCharacter = Cast<ACharacter>(GetPawn());
-
-	MoveToFloor();
 }
 
 void APlayerCharacterController::Tick(float DeltaTime)
@@ -188,30 +184,6 @@ void APlayerCharacterController::DrawWeapon(const FInputActionValue& Value)
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
 		IPlayerInputInterface::Execute_PII_DrawWeapon(ControlledCharacter, bShouldDraw);
-	}
-}
-
-// Function for Moving character to the floor at the begining of the game
-void APlayerCharacterController::MoveToFloor()
-{
-	if (ControlledCharacter)
-	{
-		float InitialStepHeight = ControlledCharacter->GetCharacterMovement()->MaxStepHeight;
-		float LargeStepHeight = 2000.f;
-		ControlledCharacter->GetCharacterMovement()->MaxStepHeight = LargeStepHeight;
-
-		FFindFloorResult FindFloorResult;
-		ControlledCharacter->GetCharacterMovement()->FindFloor(ControlledCharacter->GetCapsuleComponent()->GetComponentLocation(), FindFloorResult, false);
-
-		FVector FindFloorResultVector = FVector(0.f, 0.f, FindFloorResult.FloorDist) + ControlledCharacter->GetCapsuleComponent()->GetComponentLocation();
-
-		if (FindFloorResult.bBlockingHit)
-		{
-			ControlledCharacter->TeleportTo(FindFloorResultVector, ControlledCharacter->GetActorRotation());
-			ControlledCharacter->GetCharacterMovement()->MaxStepHeight = InitialStepHeight;
-
-			//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Move To Floor Executed")));
-		}
 	}
 }
 

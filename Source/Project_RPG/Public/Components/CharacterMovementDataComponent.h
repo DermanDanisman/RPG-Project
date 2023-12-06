@@ -23,6 +23,9 @@ public:
 
 public:
 
+	UFUNCTION()
+	void MoveToFloor();
+
 	UFUNCTION(BlueprintCallable)
 	void SetMovementMode(ELocomotionState LocomotionState);
 

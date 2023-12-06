@@ -279,7 +279,7 @@ void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 		CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, false, 0.f);
 		break;
 	}
-	case ECharacterState::ECS_OneHandedSword:
+	case ECharacterState::ECS_OneHandedSword: 
 	{
 		if (GrabbedWeapon)
 		{
@@ -291,14 +291,30 @@ void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 		}
 		break;
 	}
-	/*case ECharacterState::ECS_TwoHandedSword:
+	case ECharacterState::ECS_TwoHandedSword:
+		if (GrabbedWeapon)
+		{
+			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
+			{
+				CharacterState = ECharacterState::ECS_TwoHandedSword;
+				CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+			}
+		}
 		break;
 	case ECharacterState::ECS_SwordAndShield:
+		if (GrabbedWeapon)
+		{
+			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_SwordAndShield)
+			{
+				CharacterState = ECharacterState::ECS_SwordAndShield;
+				CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+			}
+		}
 		break;
 	case ECharacterState::ECS__MAX:
 		break;
 	default:
-		break;*/
+		break;
 	}
 }
 
