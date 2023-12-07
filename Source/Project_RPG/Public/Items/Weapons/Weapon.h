@@ -32,6 +32,12 @@ public:
 	UFUNCTION()
 	FORCEINLINE UCharacterWeaponComponent* GetCharacterWeaponComponent() const { return CharacterWeaponComponent; }
 
+	UFUNCTION()
+	FORCEINLINE FName GetWeaponHolsterSocketName() const { return WeaponHolsterSocketName; }
+
+	UFUNCTION()
+	FORCEINLINE FName GetWeaponHandSocketName() const { return WeaponHandSocketName; }
+
 public:
 
 	UFUNCTION()
@@ -48,6 +54,9 @@ public:
 	
 protected:
 
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 	/* Delegate Binded Functions */
 	/* Now, here's a very important detail. These functions are declared in Item class and they're declared with UFUNCTION macros. Now, we can't have these UFUNCTION macros on the override.
 	We have to remove them, otherwise we'll get compilation errors. The fact that these functions are UFUNCTIONs is an inherited quality. 
@@ -55,16 +64,37 @@ protected:
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
+	UFUNCTION()
+	void OnWeaponMeshOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 private:
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
+
+	/*UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	class UBoxComponent* WeaponBox;*/
+
+	/**
+	* Trace Start and End Locations
+	*/
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* TraceStart;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* TraceEnd;
 
 	UPROPERTY(VisibleAnywhere)
 	class UCharacterWeaponComponent* CharacterWeaponComponent;
 
-	UPROPERTY(EditAnywhere, Category = WeaponType)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	EWeaponType WeaponType = EWeaponType::EWT_OneHandedSword;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	FName WeaponHolsterSocketName = "HipWeaponHolsterSocket";
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	FName WeaponHandSocketName = "One-HandedWeaponSocket";
 
 
 };

@@ -159,6 +159,7 @@ void APlayerCharacterController::Crouch(const FInputActionValue& Value)
 	}
 }
 
+// Input Function responsible for characters pickup function
 void APlayerCharacterController::Pickup(const FInputActionValue& Value)
 {
 	const bool bShouldPickup = Value.Get<bool>();
@@ -169,6 +170,7 @@ void APlayerCharacterController::Pickup(const FInputActionValue& Value)
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Pickup")));
 }
 
+// Input Function responsible for characters attack function
 void APlayerCharacterController::Attack(const FInputActionValue& Value)
 {
 	const bool bShouldAttack = Value.Get<bool>();
@@ -178,6 +180,7 @@ void APlayerCharacterController::Attack(const FInputActionValue& Value)
 	}
 }
 
+// Input Function responsible for characters weapon draw and holster functions
 void APlayerCharacterController::DrawWeapon(const FInputActionValue& Value)
 {
 	const bool bShouldDraw = Value.Get<bool>();

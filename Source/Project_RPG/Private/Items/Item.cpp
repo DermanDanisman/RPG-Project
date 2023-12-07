@@ -7,10 +7,7 @@
 #include "Components/SphereComponent.h"
 /* Player Character */
 #include "Characters/PlayerCharacter.h"
-/* Enhanced Input */
-//#include "EnhancedInputSubsystems.h"
-//#include "InputAction.h"
-//#include "EnhancedInputComponent.h"
+
 
 // Sets default values
 AItem::AItem()
