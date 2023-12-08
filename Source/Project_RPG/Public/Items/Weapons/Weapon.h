@@ -26,6 +26,9 @@ public:
 
 	AWeapon();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 	UFUNCTION()
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 
@@ -74,15 +77,6 @@ private:
 
 	/*UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UBoxComponent* WeaponBox;*/
-
-	/**
-	* Trace Start and End Locations
-	*/
-	UPROPERTY(VisibleAnywhere)
-	USceneComponent* TraceStart;
-
-	UPROPERTY(VisibleAnywhere)
-	USceneComponent* TraceEnd;
 
 	UPROPERTY(VisibleAnywhere)
 	class UCharacterWeaponComponent* CharacterWeaponComponent;

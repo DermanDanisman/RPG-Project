@@ -26,12 +26,11 @@ AWeapon::AWeapon()
 	/*WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
 	WeaponBox->SetupAttachment(WeaponMesh);
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);*/
+}
 
-	TraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("TraceStart"));
-	TraceStart->SetupAttachment(WeaponMesh);
-
-	TraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("TraceEnd"));
-	TraceEnd->SetupAttachment(WeaponMesh);
+void AWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 
@@ -41,6 +40,7 @@ void AWeapon::BeginPlay()
 
 	WeaponMesh->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnWeaponMeshOverlap);
 }
+
 
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -57,31 +57,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 void AWeapon::OnWeaponMeshOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	const FVector Start = TraceStart->GetComponentLocation();
-	const FVector End = TraceEnd->GetComponentLocation();
-
-	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(this);
-	ActorsToIgnore.Add(GetOwner());
-
-	FHitResult HitResult;
-
-	UKismetSystemLibrary::BoxTraceSingle(
-		this,
-		Start,
-		End,
-		FVector(3.f, 3.f, 3.f),
-		TraceStart->GetComponentRotation(),
-		ETraceTypeQuery::TraceTypeQuery1,
-		false,
-		ActorsToIgnore,
-		EDrawDebugTrace::ForDuration,
-		HitResult,
-		true,
-		FLinearColor::Red,
-		FLinearColor::Green,
-		5.0f
-	);
+	CharacterWeaponComponent->BoxTrace();
 }
 
 void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName)

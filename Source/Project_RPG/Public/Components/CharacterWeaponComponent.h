@@ -30,7 +30,7 @@ public:
 
 	/* References */
 	UPROPERTY(VisibleAnywhere, Category = "References")
-	class ACharacter* Character = nullptr;
+	class ACharacter* OwnerCharacter = nullptr;
 
 	UPROPERTY()
 	bool bDrawWeapon = false;
@@ -56,6 +56,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayAttackMontage();
 
+	UFUNCTION()
+	FHitResult BoxTrace();
+
 private:
 
 	/**
@@ -70,5 +73,15 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = WeaponAnimMontages)
 	class UAnimMontage* AttackMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Trace Properties")
+	class USkeletalMeshComponent* SkeletalMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Trace Properties")
+	TSubclassOf<USkeletalMeshComponent> SkeletalMeshClass;
+
+	UPROPERTY(EditAnywhere, Category = "Trace Properties")
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+
 
 };

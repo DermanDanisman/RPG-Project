@@ -9,6 +9,10 @@
 #include "Animation/AnimMontage.h"
 /* Items */
 #include "Items/Weapons/Weapon.h"
+/* Components */
+#include "Components/SkeletalMeshComponent.h"
+/* Kismet */
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
 UCharacterWeaponComponent::UCharacterWeaponComponent()
@@ -26,7 +30,8 @@ void UCharacterWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Character = Cast<ACharacter>(GetOwner());
+	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	SkeletalMesh = Cast<USkeletalMeshComponent>(GetOwner()->GetComponentByClass(SkeletalMeshClass));
 }
 
 
@@ -40,17 +45,17 @@ void UCharacterWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 
 void UCharacterWeaponComponent::SetOwnerAsPlayer()
 {
-	if (!Character)
+	if (!OwnerCharacter)
 	{
-		Character = Cast<ACharacter>(GetOwner()->GetOwner());
+		OwnerCharacter = Cast<ACharacter>(GetOwner()->GetOwner());
 	}
 }
 
 void UCharacterWeaponComponent::PlayDrawWeaponMontage()
 {
-	if (Character)
+	if (OwnerCharacter)
 	{
-		UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 		if (AnimInstance && DrawWeaponMontage)
 		{
 			AnimInstance->Montage_Play(DrawWeaponMontage);
@@ -62,9 +67,9 @@ void UCharacterWeaponComponent::PlayDrawWeaponMontage()
 
 void UCharacterWeaponComponent::PlayHolsterWeaponMontage()
 {
-	if (Character)
+	if (OwnerCharacter)
 	{
-		UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 		if (AnimInstance && HolsterWeaponMontage)
 		{
 			AnimInstance->Montage_Play(HolsterWeaponMontage);
@@ -76,9 +81,9 @@ void UCharacterWeaponComponent::PlayHolsterWeaponMontage()
 
 void UCharacterWeaponComponent::PlayAttackMontage()
 {
-	if (Character)
+	if (OwnerCharacter)
 	{
-		UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 		if (AnimInstance && AttackMontage)
 		{
 			AnimInstance->Montage_Play(AttackMontage);
@@ -86,4 +91,71 @@ void UCharacterWeaponComponent::PlayAttackMontage()
 			bHolsterWeapon = false;
 		}
 	}
+}
+
+FHitResult UCharacterWeaponComponent::BoxTrace()
+{
+	FVector Start;
+	FVector End;
+
+	TArray<AActor*> ActorsToIgnore;
+
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6);
+
+	FHitResult HitResult;
+
+	if (OwnerCharacter)
+	{
+		if (SkeletalMesh->DoesSocketExist(FName("TraceStart")) && SkeletalMesh->DoesSocketExist(FName("TraceEnd")))
+		{
+			Start = SkeletalMesh->GetSocketLocation("TraceStart");
+			End = SkeletalMesh->GetSocketLocation("TraceEnd");
+		}
+
+		ActorsToIgnore.Add(GetOwner());
+		ActorsToIgnore.Add(OwnerCharacter);
+
+		/*UKismetSystemLibrary::BoxTraceSingle(
+			this,
+			Start,
+			End,
+			FVector(3.f, 3.f, 3.f),
+			TraceStart->GetComponentRotation(),
+			ETraceTypeQuery::TraceTypeQuery1,
+			false,
+			ActorsToIgnore,
+			EDrawDebugTrace::ForDuration,
+			HitResult,
+			true,
+			FLinearColor::Red,
+			FLinearColor::Green,
+			5.0f
+		);*/
+
+		UKismetSystemLibrary::BoxTraceSingleForObjects(
+			this,
+			Start,
+			End,
+			FVector(3.0f, 3.0f, 3.0f),
+			SkeletalMesh->GetComponentRotation(),
+			TraceObjectTypes,
+			false,
+			ActorsToIgnore,
+			EDrawDebugTrace::ForDuration,
+			HitResult,
+			true,
+			FLinearColor::Red,
+			FLinearColor::Green,
+			5.0f
+		);
+
+		return HitResult;
+	}
+
+	return HitResult;
 }
