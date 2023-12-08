@@ -32,6 +32,13 @@ void UCharacterWeaponComponent::BeginPlay()
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	SkeletalMesh = Cast<USkeletalMeshComponent>(GetOwner()->GetComponentByClass(SkeletalMeshClass));
+
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6);
 }
 
 
@@ -100,21 +107,17 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 
 	TArray<AActor*> ActorsToIgnore;
 
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6);
-
 	FHitResult HitResult;
 
 	if (OwnerCharacter)
 	{
-		if (SkeletalMesh->DoesSocketExist(FName("TraceStart")) && SkeletalMesh->DoesSocketExist(FName("TraceEnd")))
+		if (SkeletalMesh)
 		{
-			Start = SkeletalMesh->GetSocketLocation("TraceStart");
-			End = SkeletalMesh->GetSocketLocation("TraceEnd");
+			if (SkeletalMesh->DoesSocketExist(TraceStartSocketName) && SkeletalMesh->DoesSocketExist(TraceEndSocketName))
+			{
+				Start = SkeletalMesh->GetSocketLocation(TraceStartSocketName);
+				End = SkeletalMesh->GetSocketLocation(TraceEndSocketName);
+			}
 		}
 
 		ActorsToIgnore.Add(GetOwner());
@@ -125,7 +128,7 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 			Start,
 			End,
 			FVector(3.f, 3.f, 3.f),
-			TraceStart->GetComponentRotation(),
+			SkeletalMesh->GetComponentRotation(),
 			ETraceTypeQuery::TraceTypeQuery1,
 			false,
 			ActorsToIgnore,
@@ -154,8 +157,12 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 			5.0f
 		);
 
+		if (HitResult.GetActor())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
+		}
+
 		return HitResult;
 	}
-
 	return HitResult;
 }

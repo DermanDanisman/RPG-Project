@@ -75,6 +75,8 @@ void APlayerCharacter::BeginPlay()
 	GetCharacterMovement()->JumpZVelocity = CharacterMovementDataComponent->GetJumpVelocity();
 	GetCharacterMovement()->MaxWalkSpeed = CharacterMovementDataComponent->GetWalkSpeed();
 	GetCharacterMovement()->MaxWalkSpeedCrouched = CharacterMovementDataComponent->GetCrouchSpeed();
+
+	CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging);
 }
 
 // Called every frame

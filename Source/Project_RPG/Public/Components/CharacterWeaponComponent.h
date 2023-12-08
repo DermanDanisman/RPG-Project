@@ -11,7 +11,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECT_RPG_API UCharacterWeaponComponent : public UActorComponent, public IReferencesInterface
+class PROJECT_RPG_API UCharacterWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -65,23 +65,33 @@ private:
 	* Animation Montages
 	*/
 
-	UPROPERTY(EditAnywhere, Category = WeaponAnimMontages)
+	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* DrawWeaponMontage = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = WeaponAnimMontages)
+	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* HolsterWeaponMontage = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = WeaponAnimMontages)
+	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* AttackMontage = nullptr;
 
+	/**
+	* Trace Properties
+	*/
+
 	UPROPERTY(EditAnywhere, Category = "Trace Properties")
-	class USkeletalMeshComponent* SkeletalMesh;
+	class USkeletalMeshComponent* SkeletalMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Trace Properties")
 	TSubclassOf<USkeletalMeshComponent> SkeletalMeshClass;
 
 	UPROPERTY(EditAnywhere, Category = "Trace Properties")
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+
+	UPROPERTY(EditAnywhere, Category = "Trace Properties")
+	FName TraceStartSocketName = FName("TraceStart");
+
+	UPROPERTY(EditAnywhere, Category = "Trace Properties")
+	FName TraceEndSocketName = FName("TraceEnd");
 
 
 };

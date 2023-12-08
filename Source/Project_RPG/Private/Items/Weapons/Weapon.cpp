@@ -19,18 +19,24 @@ AWeapon::AWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetupAttachment(GetRootComponent());
 	WeaponMesh->SetCollisionProfileName(FName("Item"));
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh->BodyInstance.bNotifyRigidBodyCollision = true;
 	WeaponMesh->SetGenerateOverlapEvents(true);
 	WeaponMesh->SetReceivesDecals(false);
 
 	/*WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
 	WeaponBox->SetupAttachment(WeaponMesh);
-	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);*/
+	WeaponBox->SetGenerateOverlapEvents(true);
+	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);*/
 }
 
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//CharacterWeaponComponent->BoxTrace();
 }
 
 
@@ -39,6 +45,7 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	WeaponMesh->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnWeaponMeshOverlap);
+	//WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnWeaponBoxOverlap);
 }
 
 
@@ -57,8 +64,29 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 void AWeapon::OnWeaponMeshOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor != this && OtherActor != GetOwner())
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s"), *OtherActor->GetName()));
+	
+	}
 	CharacterWeaponComponent->BoxTrace();
 }
+
+void AWeapon::OnWeaponBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	
+}
+
+void AWeapon::SetWeaponBoxCollisionEnabled()
+{
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void AWeapon::SetWeaponBoxCollisionDisabled()
+{
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 
 void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName)
 {

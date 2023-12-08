@@ -54,6 +54,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HolsterWeapon(USceneComponent* InParent, FName InSocketName);
+
+	UFUNCTION()
+	void SetWeaponBoxCollisionEnabled();
+
+	UFUNCTION()
+	void SetWeaponBoxCollisionDisabled();
 	
 protected:
 
@@ -70,13 +76,16 @@ protected:
 	UFUNCTION()
 	void OnWeaponMeshOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void OnWeaponBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
 
-	/*UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	class UBoxComponent* WeaponBox;*/
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	class UBoxComponent* WeaponBox;
 
 	UPROPERTY(VisibleAnywhere)
 	class UCharacterWeaponComponent* CharacterWeaponComponent;
