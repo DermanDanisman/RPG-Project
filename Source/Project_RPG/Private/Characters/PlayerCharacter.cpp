@@ -95,12 +95,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 /// <summary>
 /// Movement Input Functions
-void APlayerCharacter::PII_Jump_Implementation(bool bShouldJump)
+void APlayerCharacter::PII_Jump()
 {
 	Jump();
 }
 
-void APlayerCharacter::PII_Jog_Implementation(bool bShouldJog)
+void APlayerCharacter::PII_Jog()
 {
 	if (CharacterMovementDataComponent)
 	{
@@ -117,7 +117,7 @@ void APlayerCharacter::PII_Jog_Implementation(bool bShouldJog)
 	}
 }
 
-void APlayerCharacter::PII_StartSprint_Implementation(bool bShouldSprint)
+void APlayerCharacter::PII_StartSprint()
 {
 	if (CharacterMovementDataComponent)
 	{
@@ -125,7 +125,7 @@ void APlayerCharacter::PII_StartSprint_Implementation(bool bShouldSprint)
 	}
 }
 
-void APlayerCharacter::PII_StopSprint_Implementation(bool bShouldSprint)
+void APlayerCharacter::PII_StopSprint()
 {
 	if (CharacterMovementDataComponent)
 	{
@@ -145,7 +145,7 @@ void APlayerCharacter::PII_StopSprint_Implementation(bool bShouldSprint)
 	}
 }
 
-void APlayerCharacter::PII_Crouch_Implementation(bool bShouldCrouch)
+void APlayerCharacter::PII_Crouch()
 {
 	if (!bIsCrouched) Crouch();
 	else if (bIsCrouched) UnCrouch();
@@ -156,7 +156,7 @@ void APlayerCharacter::PII_Crouch_Implementation(bool bShouldCrouch)
 
 /// <summary>
 /// Item Interaction Input Functions
-void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
+void APlayerCharacter::PII_Pickup()
 {
 	if (OverlappingItem)
 	{
@@ -185,7 +185,7 @@ void APlayerCharacter::PII_Pickup_Implementation(bool bShouldPickup)
 /// <summary>
 /// Action Input Functions
 
-void APlayerCharacter::PII_DrawWeapon_Implementation(bool bShouldDraw)
+void APlayerCharacter::PII_DrawWeapon()
 {
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
@@ -205,7 +205,7 @@ void APlayerCharacter::PII_DrawWeapon_Implementation(bool bShouldDraw)
 	}
 }
 
-void APlayerCharacter::PII_Attack_Implementation(bool bShouldAttack)
+void APlayerCharacter::PII_Attack()
 {
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
@@ -222,7 +222,7 @@ void APlayerCharacter::PII_Attack_Implementation(bool bShouldAttack)
 
 /// <summary>
 /// Add and Remove Input Mapping Context Functions
-void APlayerCharacter::PII_AddInputMappingContext_Implementation(UInputMappingContext* InputMappingContext)
+void APlayerCharacter::PII_AddInputMappingContext(const UInputMappingContext* InputMappingContext)
 {
 	if (PlayerController)
 	{
@@ -234,7 +234,7 @@ void APlayerCharacter::PII_AddInputMappingContext_Implementation(UInputMappingCo
 	}
 }
 
-void APlayerCharacter::PII_RemoveInputMappingContext_Implementation(UInputMappingContext* InputMappingContext)
+void APlayerCharacter::PII_RemoveInputMappingContext(const UInputMappingContext* InputMappingContext)
 {
 	if (PlayerController)
 	{

@@ -23,33 +23,33 @@ class PROJECT_RPG_API IPlayerInputInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
-	void PII_Jump(bool bShouldJump);
+	UFUNCTION(Category = "Movement Inputs")
+	virtual void PII_Jump() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
-	void PII_Jog(bool bShouldJog);
+	UFUNCTION(Category = "Movement Inputs")
+	virtual void PII_Jog() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
-	void PII_StartSprint(bool bShouldSprint);
+	UFUNCTION(Category = "Movement Inputs")
+	virtual void PII_StartSprint() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
-	void PII_StopSprint(bool bShouldSprint);
+	UFUNCTION(Category = "Movement Inputs")
+	virtual void PII_StopSprint() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Movement Inputs")
-	void PII_Crouch(bool bShouldCrouch);
+	UFUNCTION(Category = "Movement Inputs")
+	virtual void PII_Crouch() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Item Interaction Inputs")
-	void PII_Pickup(bool bShouldPickup);
+	UFUNCTION(Category = "Item Interaction Inputs")
+	virtual void PII_Pickup() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Weapon Interaction Inputs")
-	void PII_Attack(bool bShouldAttack);
+	UFUNCTION(Category = "Weapon Interaction Inputs")
+	virtual void PII_Attack() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Weapon Interaction Inputs")
-	void PII_DrawWeapon(bool bShouldDraw);
+	UFUNCTION(Category = "Weapon Interaction Inputs")
+	virtual void PII_DrawWeapon() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Mapping Context")
-	void PII_AddInputMappingContext(UInputMappingContext* InputMappingContext);
+	UFUNCTION(Category = "Mapping Context")
+	virtual void PII_AddInputMappingContext(const UInputMappingContext* InputMappingContext) = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Mapping Context")
-	void PII_RemoveInputMappingContext(UInputMappingContext* InputMappingContext);
+	UFUNCTION(Category = "Mapping Context")
+	virtual void PII_RemoveInputMappingContext(const UInputMappingContext* InputMappingContext) = 0;
 };

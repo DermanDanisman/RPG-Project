@@ -11,6 +11,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 /* Kismet */
 #include "Kismet/KismetMathLibrary.h"
+/* Interfaces*/
+#include "Interfaces/PlayerInputInterface.h"
 
 
 APlayerCharacterController::APlayerCharacterController()
@@ -29,6 +31,8 @@ void APlayerCharacterController::BeginPlay()
 	}
 
 	ControlledCharacter = Cast<ACharacter>(GetPawn());
+
+	PlayerInputInterface = Cast<IPlayerInputInterface>(ControlledCharacter);
 }
 
 void APlayerCharacterController::Tick(float DeltaTime)
@@ -114,7 +118,11 @@ void APlayerCharacterController::Jump(const FInputActionValue& Value)
 	const bool bShouldJump = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_Jump(ControlledCharacter, bShouldJump);
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_Jump();
+		}
+		//IPlayerInputInterface::Execute_PII_Jump(ControlledCharacter, bShouldJump);
 	}
 }
 
@@ -124,7 +132,11 @@ void APlayerCharacterController::Jog(const FInputActionValue& Value)
 	const bool bShouldJog = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_Jog(ControlledCharacter, bShouldJog);
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_Jog();
+		}
+		//IPlayerInputInterface::Execute_PII_Jog(ControlledCharacter, bShouldJog);
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Jog On")));
 }
@@ -135,7 +147,11 @@ void APlayerCharacterController::StartSprint(const FInputActionValue& Value)
 	const bool bShouldSprint = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_StartSprint(ControlledCharacter, bShouldSprint);
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_StartSprint();
+		}
+		//IPlayerInputInterface::Execute_PII_StartSprint(ControlledCharacter, bShouldSprint);
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Sprinting")));
 }
@@ -145,7 +161,11 @@ void APlayerCharacterController::StopSprint(const FInputActionValue& Value)
 	const bool bShouldSprint = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_StopSprint(ControlledCharacter, bShouldSprint);
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_StopSprint();
+		}
+		//IPlayerInputInterface::Execute_PII_StopSprint(ControlledCharacter, bShouldSprint);
 	}
 }
 
@@ -155,7 +175,11 @@ void APlayerCharacterController::Crouch(const FInputActionValue& Value)
 	const bool bShouldCrouch = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_Crouch(ControlledCharacter, bShouldCrouch);
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_Crouch();
+		}
+		//IPlayerInputInterface::Execute_PII_Crouch(ControlledCharacter, bShouldCrouch);
 	}
 }
 
@@ -165,9 +189,13 @@ void APlayerCharacterController::Pickup(const FInputActionValue& Value)
 	const bool bShouldPickup = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_Pickup(ControlledCharacter, bShouldPickup);
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_Pickup();
+		}
+		//IPlayerInputInterface::Execute_PII_Pickup(ControlledCharacter, bShouldPickup);
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Pickup")));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Pickup")));
 }
 
 // Input Function responsible for characters attack function
@@ -176,7 +204,11 @@ void APlayerCharacterController::Attack(const FInputActionValue& Value)
 	const bool bShouldAttack = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_Attack(ControlledCharacter, bShouldAttack);
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_Attack();
+		}
+		//IPlayerInputInterface::Execute_PII_Attack(ControlledCharacter, bShouldAttack);
 	}
 }
 
@@ -186,7 +218,11 @@ void APlayerCharacterController::DrawWeapon(const FInputActionValue& Value)
 	const bool bShouldDraw = Value.Get<bool>();
 	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 	{
-		IPlayerInputInterface::Execute_PII_DrawWeapon(ControlledCharacter, bShouldDraw);
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_DrawWeapon();
+		}
+		//IPlayerInputInterface::Execute_PII_DrawWeapon(ControlledCharacter, bShouldDraw);
 	}
 }
 

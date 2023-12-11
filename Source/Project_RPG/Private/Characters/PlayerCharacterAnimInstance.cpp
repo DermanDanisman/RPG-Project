@@ -8,8 +8,10 @@
 /* Kismet */
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "KismetAnimationLibrary.h"
 /* Animation */
 #include "Animation/CachedAnimData.h"
+
 
 void UPlayerCharacterAnimInstance::NativeInitializeAnimation()
 {
@@ -120,7 +122,7 @@ void UPlayerCharacterAnimInstance::SetEssentialMovementData()
 		// Getting Magnitude of Velocity vector in XY axis
 		//GroundSpeed = Velocity.Size();
 		GroundSpeed = UKismetMathLibrary::VSizeXY(Velocity);
-		Direction = CalculateDirection(Velocity, PlayerCharacter->GetActorRotation());
+		Direction = UKismetAnimationLibrary::CalculateDirection(Velocity, PlayerCharacter->GetActorRotation());
 		//Direction = CalculateDirection(Velocity, PlayerCharacter->GetControlRotation());
 		MaxSpeed = CharacterMovementComponent->GetMaxSpeed();
 		InputVector = UKismetMathLibrary::ClampVectorSize(CharacterMovementComponent->GetLastInputVector(), 0.f, 1.f);

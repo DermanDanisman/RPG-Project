@@ -177,5 +177,4 @@ private:
 
 	UFUNCTION()
 	virtual UPlayerCharacterAnimInstance* RI_GetPlayerAnimInstance_Implementation() const override;
-
 };

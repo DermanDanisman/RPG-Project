@@ -99,18 +99,18 @@ private:
 	/// Movement Input Interface Functions
 
 	UFUNCTION()
-	virtual void PII_Jump_Implementation(bool bShouldJump) override;
+	virtual void PII_Jump() override;
 
 	UFUNCTION()
-	virtual void PII_Jog_Implementation(bool bShouldJog) override;
+	virtual void PII_Jog() override;
 
 	UFUNCTION()
-	virtual void PII_StartSprint_Implementation(bool bShouldSprint) override;
+	virtual void PII_StartSprint() override;
 	UFUNCTION()
-	virtual void PII_StopSprint_Implementation(bool bShouldSprint) override;
+	virtual void PII_StopSprint() override;
 
 	UFUNCTION()
-	virtual void PII_Crouch_Implementation(bool bShouldCrouch) override;
+	virtual void PII_Crouch() override;
 
 	/// Movement Input Interface Functions
 	/// </summary>
@@ -119,7 +119,7 @@ private:
 	/// Item Input Interface Functions 
 	
 	UFUNCTION()
-	virtual void PII_Pickup_Implementation(bool bShouldPickup) override;
+	virtual void PII_Pickup() override;
 
 	/// Item Input Interface Functions 
 	/// </summary>	
@@ -128,10 +128,10 @@ private:
 	/// Action Input Interface Functions
 
 	UFUNCTION()
-	virtual void PII_DrawWeapon_Implementation(bool bShouldDraw) override;
+	virtual void PII_DrawWeapon() override;
 
 	UFUNCTION()
-	virtual void PII_Attack_Implementation(bool bShouldAttack) override;
+	virtual void PII_Attack() override;
 
 	/// Action Input Interface Functions
 	/// </summary>
@@ -141,10 +141,10 @@ private:
 	/// Input Mapping Context Manupilation Functions
 
 	UFUNCTION()
-	virtual void PII_AddInputMappingContext_Implementation(UInputMappingContext* InputMappingContext);
+	virtual void PII_AddInputMappingContext(const UInputMappingContext* InputMappingContext);
 
 	UFUNCTION()
-	virtual void PII_RemoveInputMappingContext_Implementation(UInputMappingContext* InputMappingContext);
+	virtual void PII_RemoveInputMappingContext(const UInputMappingContext* InputMappingContext);
 	
 	/// Input Mapping Context Manupilation Functions
 	/// </summary>

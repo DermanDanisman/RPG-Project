@@ -4,14 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-/* Interfaces */
-#include "Interfaces/PlayerInputInterface.h"
-#include "Interfaces/ReferencesInterface.h"
-
 #include "Item.generated.h"
 
 UCLASS()
-class PROJECT_RPG_API AItem : public AActor, public IPlayerInputInterface, public IReferencesInterface
+class PROJECT_RPG_API AItem : public AActor
 {
 	GENERATED_BODY()
 	

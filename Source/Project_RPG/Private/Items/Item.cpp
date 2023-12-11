@@ -7,7 +7,9 @@
 #include "Components/SphereComponent.h"
 /* Player Character */
 #include "Characters/PlayerCharacter.h"
-
+/* Interfaces */
+#include "Interfaces/PlayerInputInterface.h"
+#include "Interfaces/ReferencesInterface.h"
 
 // Sets default values
 AItem::AItem()
@@ -56,7 +58,12 @@ void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 			if (ItemMappingContext)
 			{
 				// Adding Input Mapping Context for item to be picked up when overlapped
-				IPlayerInputInterface::Execute_PII_AddInputMappingContext(OtherActor, ItemMappingContext);
+				IPlayerInputInterface* PlayerInputInterface = Cast<IPlayerInputInterface>(OtherActor);
+				if (PlayerInputInterface)
+				{
+					PlayerInputInterface->PII_AddInputMappingContext(ItemMappingContext);
+				}
+				//IPlayerInputInterface::Execute_PII_AddInputMappingContext(OtherActor, ItemMappingContext);
 			}
 		}
 
@@ -81,7 +88,12 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 		{
 			if (ItemMappingContext)
 			{
-				IPlayerInputInterface::Execute_PII_RemoveInputMappingContext(OtherActor, ItemMappingContext);
+				IPlayerInputInterface* PlayerInputInterface = Cast<IPlayerInputInterface>(OtherActor);
+				if (PlayerInputInterface)
+				{
+					PlayerInputInterface->PII_RemoveInputMappingContext(ItemMappingContext);
+				}
+				//IPlayerInputInterface::Execute_PII_RemoveInputMappingContext(OtherActor, ItemMappingContext);
 			}
 		}
 

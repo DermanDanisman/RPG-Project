@@ -6,15 +6,13 @@
 #include "GameFramework/PlayerController.h"
 /* Enhanced Input */
 #include "InputActionValue.h"
-/* Interfaces*/
-#include "Interfaces/PlayerInputInterface.h"
 #include "PlayerCharacterController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECT_RPG_API APlayerCharacterController : public APlayerController, public IPlayerInputInterface
+class PROJECT_RPG_API APlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()
 
@@ -99,4 +97,6 @@ private: // References
 	
 	UPROPERTY()
 	class ACharacter* ControlledCharacter = nullptr;
+
+	class IPlayerInputInterface* PlayerInputInterface;
 };

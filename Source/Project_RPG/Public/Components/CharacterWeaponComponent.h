@@ -47,6 +47,9 @@ public:
 	* Play Montage Functions
 	*/
 
+	UFUNCTION()
+	void PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName = FName(TEXT("Default")));
+
 	UFUNCTION(BlueprintCallable)
 	void PlayDrawWeaponMontage();
 
@@ -55,6 +58,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayAttackMontage();
+
+	UFUNCTION()
+	void PlayHitReactionMontage(const FName& SectionName);
 
 	UFUNCTION()
 	FHitResult BoxTrace();
@@ -74,11 +80,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* AttackMontage = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "Hit Reaction Montages")
+	class UAnimMontage* HitReactionMontage = nullptr;
+
 	/**
 	* Trace Properties
 	*/
 
-	UPROPERTY(EditAnywhere, Category = "Trace Properties")
+	UPROPERTY(VisibleAnywhere, Category = "Trace Properties")
 	class USkeletalMeshComponent* SkeletalMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Trace Properties")

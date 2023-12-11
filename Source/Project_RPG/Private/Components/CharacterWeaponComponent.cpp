@@ -13,6 +13,8 @@
 #include "Components/SkeletalMeshComponent.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
+/* Interfaces */
+#include "Interfaces/WeaponInterface.h"
 
 // Sets default values for this component's properties
 UCharacterWeaponComponent::UCharacterWeaponComponent()
@@ -58,6 +60,16 @@ void UCharacterWeaponComponent::SetOwnerAsPlayer()
 	}
 }
 
+void UCharacterWeaponComponent::PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName)
+{
+	UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	if (AnimInstance && Montage)
+	{
+		AnimInstance->Montage_Play(Montage);
+		AnimInstance->Montage_JumpToSection(SectionName, Montage);
+	}
+}
+
 void UCharacterWeaponComponent::PlayDrawWeaponMontage()
 {
 	if (OwnerCharacter)
@@ -65,7 +77,7 @@ void UCharacterWeaponComponent::PlayDrawWeaponMontage()
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 		if (AnimInstance && DrawWeaponMontage)
 		{
-			AnimInstance->Montage_Play(DrawWeaponMontage);
+			PlayMontageFromSection(DrawWeaponMontage);
 			bDrawWeapon = true;
 			bHolsterWeapon = false;
 		}
@@ -79,7 +91,7 @@ void UCharacterWeaponComponent::PlayHolsterWeaponMontage()
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 		if (AnimInstance && HolsterWeaponMontage)
 		{
-			AnimInstance->Montage_Play(HolsterWeaponMontage);
+			PlayMontageFromSection(HolsterWeaponMontage);
 			bDrawWeapon = false;
 			bHolsterWeapon = true;
 		}
@@ -93,9 +105,22 @@ void UCharacterWeaponComponent::PlayAttackMontage()
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 		if (AnimInstance && AttackMontage)
 		{
-			AnimInstance->Montage_Play(AttackMontage);
+			PlayMontageFromSection(AttackMontage);
 			bDrawWeapon = true;
 			bHolsterWeapon = false;
+		}
+	}
+}
+
+void UCharacterWeaponComponent::PlayHitReactionMontage(const FName& SectionName)
+{
+	if (OwnerCharacter)
+	{
+		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+		if (AnimInstance && HitReactionMontage)
+		{
+			if (SectionName != "") PlayMontageFromSection(HitReactionMontage, SectionName);
+			else PlayMontageFromSection(HitReactionMontage);
 		}
 	}
 }
@@ -157,12 +182,22 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 			5.0f
 		);
 
-		if (HitResult.GetActor())
+		if (HitResult.GetActor() && HitResult.GetActor()->Implements<UWeaponInterface>())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
+			//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
+			// Pure C++ Interface Usage
+			if (HitResult.GetActor()->Implements<UWeaponInterface>())
+			{
+				IWeaponInterface* WeaponInterface = Cast<IWeaponInterface>(HitResult.GetActor());
+				if (WeaponInterface)
+				{
+					WeaponInterface->GetWeaponHit(HitResult.ImpactPoint);
+				}
+			}
 		}
-
 		return HitResult;
 	}
 	return HitResult;
 }
+
+

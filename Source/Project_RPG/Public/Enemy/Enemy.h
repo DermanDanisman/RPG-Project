@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/WeaponInterface.h"
 #include "Enemy.generated.h"
 
 UCLASS()
-class PROJECT_RPG_API AEnemy : public ACharacter
+class PROJECT_RPG_API AEnemy : public ACharacter, public IWeaponInterface
 {
 	GENERATED_BODY()
 
@@ -25,7 +26,24 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+public:
+
+private:
+
+	UPROPERTY(VisibleAnywhere)
+	class USkeletalMeshComponent* SwordMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	class UCharacterWeaponComponent* CharacterWeaponComponent;
+
 private:	
 
+	/// <summary>
+	/// Weapon Interface Functions
+	
+	UFUNCTION()
+	virtual void GetWeaponHit(const FVector& ImpactPoint) override;
 
+	/// Weapon Interface Functions
+	/// </summary>
 };
