@@ -30,11 +30,6 @@ public:
 
 private:
 
-	UPROPERTY(VisibleAnywhere)
-	class USkeletalMeshComponent* SwordMesh;
-
-	UPROPERTY(VisibleAnywhere)
-	class UCharacterWeaponComponent* CharacterWeaponComponent;
 
 private:	
 
@@ -42,7 +37,7 @@ private:
 	/// Weapon Interface Functions
 	
 	UFUNCTION()
-	virtual void GetWeaponHit(const FVector& ImpactPoint) override;
+	virtual void WI_GetWeaponHit(const FVector& ImpactPoint) override;
 
 	/// Weapon Interface Functions
 	/// </summary>

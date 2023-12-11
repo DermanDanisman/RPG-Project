@@ -25,5 +25,5 @@ public:
 
 	// Pure C++ Interface Usage
 	UFUNCTION(Category = "Hit")
-	virtual void GetWeaponHit(const FVector& ImpactPoint) = 0;
+	virtual void WI_GetWeaponHit(const FVector& ImpactPoint) = 0;
 };

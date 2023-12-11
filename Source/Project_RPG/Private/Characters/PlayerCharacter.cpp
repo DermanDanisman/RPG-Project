@@ -26,6 +26,8 @@
 #include "Items/Weapons/Weapon.h"
 /* Animation */
 #include "Animation/AnimMontage.h"
+/* Kismet */
+#include "Kismet/KismetSystemLibrary.h"
 
 
 
@@ -269,6 +271,35 @@ AWeapon* APlayerCharacter::RI_GetPlayerGrabbedWeapon_Implementation() const
 
 /// Getting References
 /// </summary>
+
+/// <summary>
+/// Pure C++ Interface Usage
+/// Called When a Weapon Hits this character, this used for playing correct HitMontages when this character gets hit.
+/// </summary>
+void APlayerCharacter::WI_GetWeaponHit(const FVector& ImpactPoint)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
+	DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
+	GrabbedWeapon->GetCharacterWeaponComponent()->PlayHitReactionMontage("HitFromFront");
+
+	const FVector Forward = GetActorForwardVector();
+	const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
+	/* GetSafeNormal is going to take the vector, which is the result of this subtraction and normalize it and then return that result which we're storing in ToHit.
+	So now to hit is normalized. GetSafeNormal means that it's going to check to make sure that it's safe to normalize the vector. */
+	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
+
+	// Foward * ToHit = |Forward||ToHit| * cos(theta)
+	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta)
+	const double CosTheta = FVector::DotProduct(Forward, ToHit);
+	// Take the inverse cosine (arc-cosine) of cos(theta) to get theta
+	double Theta = FMath::Acos(CosTheta);
+	// Convert from radians to degrees
+	Theta = FMath::RadiansToDegrees(Theta);
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Theta: %f "), Theta));
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + Forward * 60.0f, 5.f, FColor::Red, 5.f);
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.0f, 5.f, FColor::Green, 5.f);
+}
 
 // Setting Character State by weapon type
 void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)

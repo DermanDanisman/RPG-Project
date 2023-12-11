@@ -191,7 +191,7 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 				IWeaponInterface* WeaponInterface = Cast<IWeaponInterface>(HitResult.GetActor());
 				if (WeaponInterface)
 				{
-					WeaponInterface->GetWeaponHit(HitResult.ImpactPoint);
+					WeaponInterface->WI_GetWeaponHit(HitResult.ImpactPoint);
 				}
 			}
 		}

@@ -7,13 +7,14 @@
 /* Interfaces*/
 #include "Interfaces/PlayerInputInterface.h"
 #include "Interfaces/ReferencesInterface.h"
+#include "Interfaces/WeaponInterface.h"
 /* Enums */
 #include "Enums/CharacterState.h"
 #include "PlayerCharacter.generated.h"
 
 
 UCLASS()
-class PROJECT_RPG_API APlayerCharacter : public ACharacter, public IPlayerInputInterface, public IReferencesInterface
+class PROJECT_RPG_API APlayerCharacter : public ACharacter, public IPlayerInputInterface, public IReferencesInterface, public IWeaponInterface
 {
 	GENERATED_BODY()
 
@@ -162,5 +163,14 @@ private:
 	virtual AWeapon* RI_GetPlayerGrabbedWeapon_Implementation() const override;
 
 	/// References Interface Functions
+	/// </summary>
+	
+	/// <summary>
+	/// Weapon Interface Functions
+
+	UFUNCTION()
+	virtual void WI_GetWeaponHit(const FVector& ImpactPoint) override;
+
+	/// Weapon Interface Functions
 	/// </summary>
 };
