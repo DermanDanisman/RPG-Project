@@ -30,6 +30,8 @@ public:
 
 private:
 
+	UPROPERTY(VisibleAnywhere, Category = "Character Montages")
+	class UCharacterMontageComponent* CharacterMontageComponent;
 
 private:	
 

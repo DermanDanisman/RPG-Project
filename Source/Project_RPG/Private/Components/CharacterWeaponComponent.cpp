@@ -21,7 +21,7 @@ UCharacterWeaponComponent::UCharacterWeaponComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
@@ -32,7 +32,7 @@ void UCharacterWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	OwnerCharacter = Cast<ACharacter>(GetOwner()->GetOwner());
 	SkeletalMesh = Cast<USkeletalMeshComponent>(GetOwner()->GetComponentByClass(SkeletalMeshClass));
 
 	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1);
@@ -108,19 +108,6 @@ void UCharacterWeaponComponent::PlayAttackMontage()
 			PlayMontageFromSection(AttackMontage);
 			bDrawWeapon = true;
 			bHolsterWeapon = false;
-		}
-	}
-}
-
-void UCharacterWeaponComponent::PlayHitReactionMontage(const FName& SectionName)
-{
-	if (OwnerCharacter)
-	{
-		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-		if (AnimInstance && HitReactionMontage)
-		{
-			if (SectionName != "") PlayMontageFromSection(HitReactionMontage, SectionName);
-			else PlayMontageFromSection(HitReactionMontage);
 		}
 	}
 }

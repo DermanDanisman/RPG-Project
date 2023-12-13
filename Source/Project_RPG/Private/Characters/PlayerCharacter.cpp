@@ -17,6 +17,7 @@
 /* Actor Components */
 #include "Components/CharacterMovementDataComponent.h"
 #include "Components/CharacterWeaponComponent.h"
+#include "Components/CharacterMontageComponent.h"
 /* Enhanced Input */
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
@@ -40,6 +41,9 @@ APlayerCharacter::APlayerCharacter()
 	/* Creating Actor Components */
 	CharacterMovementDataComponent = CreateDefaultSubobject<UCharacterMovementDataComponent>(TEXT("CharacterMovementDataComponent"));
 	CharacterMovementDataComponent->SetComponentTickEnabled(false);
+
+	CharacterMontageComponent = CreateDefaultSubobject<UCharacterMontageComponent>(TEXT("CharacterMontageComponent"));
+	CharacterMontageComponent->SetComponentTickEnabled(false);
 
 	/* Control Settings */
 	bUseControllerRotationPitch = false;
@@ -280,7 +284,7 @@ void APlayerCharacter::WI_GetWeaponHit(const FVector& ImpactPoint)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
 	DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
-	GrabbedWeapon->GetCharacterWeaponComponent()->PlayHitReactionMontage("HitFromFront");
+	CharacterMontageComponent->PlayHitReactionMontage("HitFromFront");
 
 	const FVector Forward = GetActorForwardVector();
 	const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);

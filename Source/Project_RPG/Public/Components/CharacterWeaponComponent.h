@@ -60,9 +60,6 @@ public:
 	void PlayAttackMontage();
 
 	UFUNCTION()
-	void PlayHitReactionMontage(const FName& SectionName);
-
-	UFUNCTION()
 	FHitResult BoxTrace();
 
 private:
@@ -79,9 +76,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* AttackMontage = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = "Hit Reaction Montages")
-	class UAnimMontage* HitReactionMontage = nullptr;
 
 	/**
 	* Trace Properties

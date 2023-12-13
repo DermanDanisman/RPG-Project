@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/CharacterWeaponComponent.h"
 #include "Components/ChildActorComponent.h"
+#include "Components/CharacterMontageComponent.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
 /* Weapon */
@@ -18,6 +19,9 @@ AEnemy::AEnemy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	CharacterMontageComponent = CreateDefaultSubobject<UCharacterMontageComponent>(TEXT("CharacterMontageComponent"));
+	CharacterMontageComponent->SetComponentTickEnabled(false);
 
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -53,7 +57,7 @@ void AEnemy::WI_GetWeaponHit(const FVector& ImpactPoint)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
 	DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
-	//Weapon->GetCharacterWeaponComponent()->PlayHitReactionMontage("HitFromFront");
+	CharacterMontageComponent->PlayHitReactionMontage("HitFromFront");
 
 	const FVector Forward = GetActorForwardVector();
 	const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);

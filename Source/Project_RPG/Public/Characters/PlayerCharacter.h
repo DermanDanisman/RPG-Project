@@ -72,6 +72,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
 	class UCharacterMovementDataComponent* CharacterMovementDataComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Character Montages")
+	class UCharacterMontageComponent* CharacterMontageComponent;
+
 private:
 
 	/* References */
