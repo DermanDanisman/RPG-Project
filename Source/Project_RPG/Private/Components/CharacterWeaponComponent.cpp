@@ -33,7 +33,8 @@ void UCharacterWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner()->GetOwner());
-	SkeletalMesh = Cast<USkeletalMeshComponent>(GetOwner()->GetComponentByClass(SkeletalMeshClass));
+	//SkeletalMesh = Cast<USkeletalMeshComponent>(GetOwner()->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+	OwnerStaticMesh = Cast<UStaticMeshComponent>(GetOwner()->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 
 	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1);
 	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2);
@@ -62,11 +63,14 @@ void UCharacterWeaponComponent::SetOwnerAsPlayer()
 
 void UCharacterWeaponComponent::PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName)
 {
-	UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-	if (AnimInstance && Montage)
+	if (OwnerCharacter)
 	{
-		AnimInstance->Montage_Play(Montage);
-		AnimInstance->Montage_JumpToSection(SectionName, Montage);
+		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+		if (AnimInstance && Montage)
+		{
+			AnimInstance->Montage_Play(Montage);
+			AnimInstance->Montage_JumpToSection(SectionName, Montage);
+		}
 	}
 }
 
@@ -123,17 +127,25 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 
 	if (OwnerCharacter)
 	{
-		if (SkeletalMesh)
+		ActorsToIgnore.Add(GetOwner());
+		ActorsToIgnore.Add(OwnerCharacter);
+
+		if (OwnerStaticMesh)
 		{
-			if (SkeletalMesh->DoesSocketExist(TraceStartSocketName) && SkeletalMesh->DoesSocketExist(TraceEndSocketName))
+			if (OwnerStaticMesh->DoesSocketExist(TraceStartSocketName) && OwnerStaticMesh->DoesSocketExist(TraceEndSocketName))
 			{
-				Start = SkeletalMesh->GetSocketLocation(TraceStartSocketName);
-				End = SkeletalMesh->GetSocketLocation(TraceEndSocketName);
+				Start = OwnerStaticMesh->GetSocketLocation(TraceStartSocketName);
+				End = OwnerStaticMesh->GetSocketLocation(TraceEndSocketName);
 			}
 		}
 
-		ActorsToIgnore.Add(GetOwner());
-		ActorsToIgnore.Add(OwnerCharacter);
+		if (!IgnoreActors.IsEmpty())
+		{
+			for (AActor* Actor : IgnoreActors)
+			{
+				ActorsToIgnore.AddUnique(Actor);
+			}
+		}
 
 		/*UKismetSystemLibrary::BoxTraceSingle(
 			this,
@@ -157,7 +169,7 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 			Start,
 			End,
 			FVector(3.0f, 3.0f, 3.0f),
-			SkeletalMesh->GetComponentRotation(),
+			OwnerStaticMesh->GetComponentRotation(),
 			TraceObjectTypes,
 			false,
 			ActorsToIgnore,
@@ -180,6 +192,8 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 				{
 					WeaponInterface->WI_GetWeaponHit(HitResult.ImpactPoint);
 				}
+				// This is for player to stop hitting multiple times to the same actor.
+				IgnoreActors.AddUnique(HitResult.GetActor());
 			}
 		}
 		return HitResult;

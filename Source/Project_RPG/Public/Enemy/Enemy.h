@@ -33,6 +33,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Character Montages")
 	class UCharacterMontageComponent* CharacterMontageComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	class USoundComponent* SoundComponent;
+
 private:	
 
 	/// <summary>

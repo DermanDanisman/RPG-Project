@@ -46,7 +46,6 @@ public:
 	/**
 	* Play Montage Functions
 	*/
-
 	UFUNCTION()
 	void PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName = FName(TEXT("Default")));
 
@@ -59,8 +58,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayAttackMontage();
 
+	/**
+	* Weapon Hit Trace Function
+	*/
 	UFUNCTION()
 	FHitResult BoxTrace();
+
+	UFUNCTION()
+	void ClearIgnoreActors() { IgnoreActors.Empty(); }
 
 private:
 
@@ -82,13 +87,13 @@ private:
 	*/
 
 	UPROPERTY(VisibleAnywhere, Category = "Trace Properties")
-	class USkeletalMeshComponent* SkeletalMesh = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = "Trace Properties")
-	TSubclassOf<USkeletalMeshComponent> SkeletalMeshClass;
+	class UStaticMeshComponent* OwnerStaticMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Trace Properties")
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+
+	UPROPERTY(VisibleAnywhere, Category = "Trace Properties")
+	TArray<AActor*> IgnoreActors;
 
 	UPROPERTY(EditAnywhere, Category = "Trace Properties")
 	FName TraceStartSocketName = FName("TraceStart");

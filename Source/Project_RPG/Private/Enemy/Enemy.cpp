@@ -8,6 +8,7 @@
 #include "Components/CharacterWeaponComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "Components/CharacterMontageComponent.h"
+#include "Components/SoundComponent.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
 /* Weapon */
@@ -22,6 +23,8 @@ AEnemy::AEnemy()
 
 	CharacterMontageComponent = CreateDefaultSubobject<UCharacterMontageComponent>(TEXT("CharacterMontageComponent"));
 	CharacterMontageComponent->SetComponentTickEnabled(false);
+
+	SoundComponent = CreateDefaultSubobject<USoundComponent>(TEXT("SoundComponent"));
 
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -57,24 +60,8 @@ void AEnemy::WI_GetWeaponHit(const FVector& ImpactPoint)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
 	DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
-	CharacterMontageComponent->PlayHitReactionMontage("HitFromFront");
 
-	const FVector Forward = GetActorForwardVector();
-	const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
-	/* GetSafeNormal is going to take the vector, which is the result of this subtraction and normalize it and then return that result which we're storing in ToHit. 
-	So now to hit is normalized. GetSafeNormal means that it's going to check to make sure that it's safe to normalize the vector. */
-	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
-
-	// Foward * ToHit = |Forward||ToHit| * cos(theta)
-	// |Forward| = 1, |ToHit| = 1, so Forward * ToHit = cos(theta)
-	const double CosTheta = FVector::DotProduct(Forward, ToHit);
-	// Take the inverse cosine (arc-cosine) of cos(theta) to get theta
-	double Theta = FMath::Acos(CosTheta);
-	// Convert from radians to degrees
-	Theta = FMath::RadiansToDegrees(Theta);
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Theta: %f "), Theta));
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + Forward * 60.0f, 5.f, FColor::Red, 5.f);
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.0f, 5.f, FColor::Green, 5.f);
+	CharacterMontageComponent->PlayHitReactionMontage(ImpactPoint);
+	SoundComponent->PlayHitSound(ImpactPoint);
 }
 

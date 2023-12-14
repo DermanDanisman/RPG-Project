@@ -35,7 +35,7 @@ public:
 	void PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName = FName(TEXT("Default")));
 
 	UFUNCTION()
-	void PlayHitReactionMontage(const FName& SectionName);
+	void PlayHitReactionMontage(const FVector& ImpactPoint);
 	
 private:
 
