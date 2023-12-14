@@ -171,11 +171,11 @@ void APlayerCharacter::PII_Pickup()
 		{
 			if (OverlappingWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
 			{
-				OverlappingWeapon->EquipWeapon(GetMesh(), OverlappingWeapon->GetWeaponHolsterSocketName());
+				OverlappingWeapon->PickupWeapon(GetMesh(), OverlappingWeapon->GetWeaponHolsterSocketName());
 			}
 			else if (OverlappingWeapon->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
 			{
-				OverlappingWeapon->EquipWeapon(GetMesh(), OverlappingWeapon->GetWeaponHolsterSocketName());
+				OverlappingWeapon->PickupWeapon(GetMesh(), OverlappingWeapon->GetWeaponHolsterSocketName());
 			}
 			OverlappingWeapon->SetOwner(this);
 			GrabbedWeapon = OverlappingWeapon;

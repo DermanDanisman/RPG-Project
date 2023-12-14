@@ -12,7 +12,6 @@
 #include "Enums/CharacterState.h"
 #include "PlayerCharacter.generated.h"
 
-
 UCLASS()
 class PROJECT_RPG_API APlayerCharacter : public ACharacter, public IPlayerInputInterface, public IReferencesInterface, public IWeaponInterface
 {

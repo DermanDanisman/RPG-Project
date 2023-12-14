@@ -47,7 +47,7 @@ public:
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 
 	UFUNCTION()
-	void EquipWeapon(USceneComponent* InParent, FName InSocketName);
+	void PickupWeapon(USceneComponent* InParent, FName InSocketName);
 
 	UFUNCTION(BlueprintCallable)
 	void DrawWeapon(USceneComponent* InParent, FName InSocketName);

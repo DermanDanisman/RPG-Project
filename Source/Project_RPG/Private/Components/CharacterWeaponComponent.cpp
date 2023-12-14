@@ -33,18 +33,17 @@ void UCharacterWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner()->GetOwner());
-	//SkeletalMesh = Cast<USkeletalMeshComponent>(GetOwner()->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
 	OwnerStaticMesh = Cast<UStaticMeshComponent>(GetOwner()->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5);
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6);
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1); // World Static
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2); // World Dynamic
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3); // Pawn
+	//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4); // Physics Body
+	//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5); // Vehicle
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6); // Destructible
 }
 
-
+	
 // Called every frame
 void UCharacterWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -127,9 +126,6 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 
 	if (OwnerCharacter)
 	{
-		ActorsToIgnore.Add(GetOwner());
-		ActorsToIgnore.Add(OwnerCharacter);
-
 		if (OwnerStaticMesh)
 		{
 			if (OwnerStaticMesh->DoesSocketExist(TraceStartSocketName) && OwnerStaticMesh->DoesSocketExist(TraceEndSocketName))
@@ -138,6 +134,9 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 				End = OwnerStaticMesh->GetSocketLocation(TraceEndSocketName);
 			}
 		}
+
+		IgnoreActors.Add(GetOwner());
+		IgnoreActors.Add(OwnerCharacter);
 
 		if (!IgnoreActors.IsEmpty())
 		{
@@ -152,7 +151,7 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 			Start,
 			End,
 			FVector(3.f, 3.f, 3.f),
-			SkeletalMesh->GetComponentRotation(),
+			OwnerStaticMesh->GetComponentRotation(),
 			ETraceTypeQuery::TraceTypeQuery1,
 			false,
 			ActorsToIgnore,
@@ -183,7 +182,7 @@ FHitResult UCharacterWeaponComponent::BoxTrace()
 
 		if (HitResult.GetActor() && HitResult.GetActor()->Implements<UWeaponInterface>())
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
 			// Pure C++ Interface Usage
 			if (HitResult.GetActor()->Implements<UWeaponInterface>())
 			{

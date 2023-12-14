@@ -65,7 +65,13 @@ public:
 	void UpdateCharacterRotation();
 
 	UFUNCTION(BlueprintCallable)
+	void UpdateRotationForState(const FCachedAnimStateData& StateData, const FName& CurveName);
+
+	UFUNCTION(BlueprintCallable)
 	void ResetTransitions();
+
+	UFUNCTION()
+	void AimOffsetCalculation();
 
 public:
 
@@ -172,6 +178,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State Data")
 	FCachedAnimStateData SprintStateData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AimOffset Data")
+	float AimOffsetYaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AimOffset Data")
+	float AimOffsetPitch;
 
 private:
 

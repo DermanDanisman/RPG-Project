@@ -8,7 +8,6 @@
 #include "Enums/LocomotionState.h"
 #include "CharacterMovementDataComponent.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_RPG_API UCharacterMovementDataComponent : public UActorComponent
 {

@@ -24,17 +24,17 @@ AItem::AItem()
 	ItemMesh->SetupAttachment(GetRootComponent());
 	ItemMesh->SetCollisionProfileName(FName("Item"));
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	SphereComponent->SetupAttachment(GetRootComponent());
+	PickupSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("PickupSphereComponent"));
+	PickupSphereComponent->SetupAttachment(ItemMesh);
 }
 
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
-	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
+
+	PickupSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
+	PickupSphereComponent->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 }
 
 // Called every frame
@@ -50,9 +50,10 @@ void AItem::Tick(float DeltaTime)
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Other Actor Name: %s"), *OtherActor->GetName()));
 	if (OtherActor)
 	{
-		// Check if OtherActor implements IPlayerInputInterface
+		// Check if OtherActor implements I`PlayerInputInterface
 		if (OtherActor->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
 		{
 			if (ItemMappingContext)

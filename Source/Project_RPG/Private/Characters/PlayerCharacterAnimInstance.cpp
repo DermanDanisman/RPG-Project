@@ -31,6 +31,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		SetEssentialMovementData();
 		DetermineLocomotionState();
 		UpdateLocomotionValues(FName("MoveData_Speed"));
+		AimOffsetCalculation();
 
 
 		if (LocomotionState == ELocomotionState::ELS_Idle)
@@ -42,7 +43,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		{
 			if (!bWalkOnEntryFlag)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("bWalkOnEntryFlag")));
+				//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("bWalkOnEntryFlag")));
 				UpdateOnWalkEntry();
 				bWalkOnEntryFlag = true;
 				bJogOnEntryFlag = false;
@@ -53,7 +54,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		{
 			if (!bJogOnEntryFlag)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("bJogOnEntryFlag")));
+				//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("bJogOnEntryFlag")));
 				UpdateOnJogEntry();
 				bJogOnEntryFlag = true;
 				bWalkOnEntryFlag = false;
@@ -64,7 +65,7 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		{
 			if (!bSprintOnEntryFlag)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("bSprintOnEntryFlag")));
+				//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("bSprintOnEntryFlag")));
 				UpdateOnSprintEntry();
 				bJogOnEntryFlag = false;
 				bWalkOnEntryFlag = false;
@@ -182,7 +183,7 @@ void UPlayerCharacterAnimInstance::UpdateOnWalkEntry()
 {
 	if (GroundSpeed < 50.f)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("UpdateOnWalkEntry")));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("UpdateOnWalkEntry")));
 		StartRotation = PlayerCharacter->GetActorRotation();
 		PrimaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
 		SecondaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
@@ -200,7 +201,7 @@ void UPlayerCharacterAnimInstance::UpdateOnJogEntry()
 {
 	if (GroundSpeed < 200.f)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Update On Jog Entry")));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Update On Jog Entry")));
 		StartRotation = PlayerCharacter->GetActorRotation();
 		PrimaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
 		SecondaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
@@ -219,7 +220,7 @@ void UPlayerCharacterAnimInstance::UpdateOnSprintEntry()
 {
 	if (GroundSpeed < 400.f)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Update On Sprint Entry")));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Update On Sprint Entry")));
 		StartRotation = PlayerCharacter->GetActorRotation();
 		PrimaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
 		SecondaryTargetRotation = UKismetMathLibrary::MakeRotFromX(InputVector);
@@ -259,65 +260,93 @@ FRotator UPlayerCharacterAnimInstance::GetTargetRotation()
 /* Updates character rotation according to the playing animation // OrientRotationToMovement should be turned off and Rotation should be set to 0 in CharacterMovementComponent */
 void UPlayerCharacterAnimInstance::UpdateCharacterRotation()
 {
+	// Check if the player character does not have root motion and if the current state machine is relevant.
 	if (!PlayerCharacter->HasAnyRootMotion() && LocomotionStateData.IsMachineRelevant(*AnimInstance))
 	{
+		// Handle rotation updates based on the current locomotion state.
 		switch (LocomotionState)
 		{
 		case ELocomotionState::ELS_Idle:
+			// No action required in the Idle state.
 			return;
-			break;
+
 		case ELocomotionState::ELS_Walking:
-		{
+			// In the Walking state, interpolate towards the target rotation.
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
-
-			float NormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_WalkRotationDelta")), WalkStateData.GetGlobalWeight(*AnimInstance)); //MoveData_WalkRotationDelta
-			float CharacterRotationYaw = SecondaryTargetRotation.Yaw + NormalizedWalkRotationDelta;
-			FRotator CharacterRotation = FRotator(SecondaryTargetRotation.Pitch, CharacterRotationYaw, SecondaryTargetRotation.Roll); //UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, CharacterRotationYaw);
-
-			PlayerCharacter->SetActorRotation(CharacterRotation);
+			// Calculate and apply the additional yaw rotation based on a curve value.
+			UpdateRotationForState(WalkStateData, "MoveData_WalkRotationDelta");
 			break;
-		}
+
 		case ELocomotionState::ELS_Jogging:
-		{
+			// In the Jogging state, interpolate towards the target rotation.
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
-
-			float JogNormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_JogRotationDelta")), JogStateData.GetGlobalWeight(*AnimInstance));
-			float JogCharacterRotationYaw = SecondaryTargetRotation.Yaw + JogNormalizedWalkRotationDelta;
-			FRotator JogCharacterRotation = FRotator(SecondaryTargetRotation.Pitch, JogCharacterRotationYaw, SecondaryTargetRotation.Roll); //UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, CharacterRotationYaw);
-
-			PlayerCharacter->SetActorRotation(JogCharacterRotation);
+			// Calculate and apply the additional yaw rotation based on a curve value.
+			UpdateRotationForState(JogStateData, "MoveData_JogRotationDelta");
 			break;
-		}
+
 		case ELocomotionState::ELS_Sprinting:
-		{
+			// In the Sprinting state, interpolate towards the target rotation.
 			PrimaryTargetRotation = UKismetMathLibrary::RInterpTo_Constant(PrimaryTargetRotation, GetTargetRotation(), DeltaTimeX, 1000.f);
 			SecondaryTargetRotation = UKismetMathLibrary::RInterpTo(SecondaryTargetRotation, PrimaryTargetRotation, DeltaTimeX, 10.f);
-
-			// MoveData_JogRotationDelta needs to be change when proper Sprinting animations come
-			float SprintNormalizedWalkRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(FName("MoveData_JogRotationDelta")), SprintStateData.GetGlobalWeight(*AnimInstance));
-			float SprintCharacterRotationYaw = SecondaryTargetRotation.Yaw + SprintNormalizedWalkRotationDelta;
-			FRotator SprintCharacterRotation = FRotator(SecondaryTargetRotation.Pitch, SprintCharacterRotationYaw, SecondaryTargetRotation.Roll); //UKismetMathLibrary::MakeRotator(SecondaryTargetRotation.Roll, SecondaryTargetRotation.Pitch, CharacterRotationYaw);
-
-			PlayerCharacter->SetActorRotation(SprintCharacterRotation);
+			// Calculate and apply the additional yaw rotation based on a curve value.
+			// TODO: Change the curve value when proper sprinting animations are available.
+			UpdateRotationForState(SprintStateData, "MoveData_JogRotationDelta");
 			break;
-		}
+
 		case ELocomotionState::ELS_MAX:
+			// This case should not be reached. ELS_MAX is a marker for the number of states.
 			return;
-			break;
 		}
 	}
 	else
 	{
+		// Reset the target rotations if root motion is present or the state machine is not relevant.
 		ResetTargetRotations();
 	}
+}
+
+// Helper function to update rotation for a given state.
+void UPlayerCharacterAnimInstance::UpdateRotationForState(const FCachedAnimStateData& StateData, const FName& CurveName)
+{
+	float NormalizedRotationDelta = UKismetMathLibrary::SafeDivide(GetCurveValue(CurveName), StateData.GetGlobalWeight(*AnimInstance));
+	float CharacterRotationYaw = SecondaryTargetRotation.Yaw + NormalizedRotationDelta;
+	FRotator CharacterRotation = FRotator(SecondaryTargetRotation.Pitch, CharacterRotationYaw, SecondaryTargetRotation.Roll);
+	PlayerCharacter->SetActorRotation(CharacterRotation);
+	AimOffsetCalculation();
 }
 
 void UPlayerCharacterAnimInstance::ResetTransitions()
 {
 	bPlayWalkStart = false;
 	bPlayJogStart = false;
+}
+
+// Calculate and update the aim offset for a player character
+void UPlayerCharacterAnimInstance::AimOffsetCalculation()
+{
+	// Get the rotation of the camera or where the player is looking.
+	FRotator PlayerControlRotation = PlayerCharacter->GetControlRotation();
+
+	// Get the rotation of the player character.
+	FRotator PlayerRotation = PlayerCharacter->GetActorRotation();
+
+	// Calculate the difference between where the player is looking and the character's rotation.
+	// This gives the relative direction the player is aiming compared to the character's forward direction.
+	FRotator CharacterDeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(PlayerControlRotation, PlayerRotation);
+
+	// Create a rotator using the current aim offsets for pitch and yaw. This represents the current aim direction.
+	FRotator MakeRotatorYawPitch = UKismetMathLibrary::MakeRotator(0.f, AimOffsetPitch, AimOffsetYaw);
+
+	// Interpolate between the current aim direction and the new target direction.
+	// This smooths the transition, making the aiming movement more natural.
+	FRotator Interpolation = UKismetMathLibrary::RInterpTo(MakeRotatorYawPitch, CharacterDeltaRotation, DeltaTimeX, 15.f);
+
+	// Clamp the pitch and yaw angles to ensure they stay within a realistic range (-90 to 90 degrees).
+	// This prevents the character from aiming too far up or down, or rotating unnaturally.
+	AimOffsetPitch = UKismetMathLibrary::ClampAngle(Interpolation.Pitch, -90.f, 90.f);
+	AimOffsetYaw = UKismetMathLibrary::ClampAngle(Interpolation.Yaw, -90.f, 90.f);
 }
 
 UPlayerCharacterAnimInstance* UPlayerCharacterAnimInstance::RI_GetPlayerAnimInstance_Implementation() const

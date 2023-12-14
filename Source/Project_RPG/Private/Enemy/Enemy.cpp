@@ -58,7 +58,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 //Called When a Weapon Hits this character, this used for playing correct HitMontages when this character gets hit.
 void AEnemy::WI_GetWeaponHit(const FVector& ImpactPoint)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
 	DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
 
 	CharacterMontageComponent->PlayHitReactionMontage(ImpactPoint);

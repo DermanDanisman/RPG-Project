@@ -62,7 +62,7 @@ protected:
 	class UStaticMeshComponent* ItemMesh;
 
 	UPROPERTY(VisibleAnywhere)
-	class USphereComponent* SphereComponent;
+	class USphereComponent* PickupSphereComponent;
 
 	// Add this Mapping Context when in contact with items
 	UPROPERTY(EditAnywhere, Category = "Input Mapping Context")

@@ -41,13 +41,11 @@ void AWeapon::BeginPlay()
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnSphereOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-
 }
 
 void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	Super::OnSphereEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
-
 }
 
 // Weapon Box Collision Overlap Function Triggers Box Trace For Hits
@@ -77,10 +75,10 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocke
 }
 
 // Called When Player Presses 'E' Key to Pickup Weapon
-void AWeapon::EquipWeapon(USceneComponent* InParent, FName InSocketName)
+void AWeapon::PickupWeapon(USceneComponent* InParent, FName InSocketName)
 {
 	SimulatePhysics(false);
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PickupSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AttachMeshToSocket(InParent, InSocketName);
 }
 
