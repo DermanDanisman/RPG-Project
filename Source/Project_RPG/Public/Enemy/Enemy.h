@@ -33,7 +33,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Character Montages")
 	class UCharacterMontageComponent* CharacterMontageComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USoundComponent* SoundComponent;
 
 private:	

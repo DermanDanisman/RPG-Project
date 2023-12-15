@@ -5,7 +5,7 @@
 /* Components */
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/CharacterWeaponComponent.h"
+#include "Components/WeaponComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "Components/CharacterMontageComponent.h"
 #include "Components/SoundComponent.h"

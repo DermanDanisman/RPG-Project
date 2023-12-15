@@ -47,7 +47,7 @@ void USoundComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void USoundComponent::PlayHitSound(const FVector& ImpactPoint)
 {
-	if (OwnerCharacter || OwnerActor)
+	if (HitSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetOwner(), HitSound, ImpactPoint);
 	}

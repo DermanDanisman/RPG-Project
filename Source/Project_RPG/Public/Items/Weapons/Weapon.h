@@ -33,7 +33,7 @@ public:
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 
 	UFUNCTION()
-	FORCEINLINE UCharacterWeaponComponent* GetCharacterWeaponComponent() const { return CharacterWeaponComponent; }
+	FORCEINLINE UWeaponComponent* GetCharacterWeaponComponent() const { return WeaponComponent; }
 
 	UFUNCTION()
 	FORCEINLINE FName GetWeaponHolsterSocketName() const { return WeaponHolsterSocketName; }
@@ -82,7 +82,7 @@ private:
 	class UBoxComponent* WeaponBox;
 
 	UPROPERTY(VisibleAnywhere)
-	class UCharacterWeaponComponent* CharacterWeaponComponent;
+	class UWeaponComponent* WeaponComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	class USoundComponent* SoundComponent;

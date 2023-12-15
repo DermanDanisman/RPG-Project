@@ -16,7 +16,7 @@
 #include "Enums/LocomotionState.h"
 /* Actor Components */
 #include "Components/CharacterMovementDataComponent.h"
-#include "Components/CharacterWeaponComponent.h"
+#include "Components/WeaponComponent.h"
 #include "Components/CharacterMontageComponent.h"
 /* Enhanced Input */
 #include "EnhancedInputSubsystems.h"
@@ -89,7 +89,6 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -103,7 +102,17 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 /// Movement Input Functions
 void APlayerCharacter::PII_Jump()
 {
-	Jump();
+	if (CharacterMontageComponent)
+	{
+		
+		if (CharacterState != ECharacterState::ECS_Unequipped && ActionState == EActionState::EAS_Unoccupied)
+		{
+			CharacterMontageComponent->PlayDodgeMontage();
+			ActionState = EActionState::EAS_Dodging;
+			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging);
+		}
+	}
+	//Jump();
 }
 
 void APlayerCharacter::PII_Jog()
@@ -282,9 +291,12 @@ AWeapon* APlayerCharacter::RI_GetPlayerGrabbedWeapon_Implementation() const
 /// </summary>
 void APlayerCharacter::WI_GetWeaponHit(const FVector& ImpactPoint)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
-	DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
-	CharacterMontageComponent->PlayHitReactionMontage(ImpactPoint);
+	if (CharacterMontageComponent)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
+		DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
+		CharacterMontageComponent->PlayHitReactionMontage(ImpactPoint);
+	}
 }
 
 // Setting Character State by weapon type

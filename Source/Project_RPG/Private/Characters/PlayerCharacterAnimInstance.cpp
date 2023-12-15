@@ -346,7 +346,7 @@ void UPlayerCharacterAnimInstance::AimOffsetCalculation()
 	// Clamp the pitch and yaw angles to ensure they stay within a realistic range (-90 to 90 degrees).
 	// This prevents the character from aiming too far up or down, or rotating unnaturally.
 	AimOffsetPitch = UKismetMathLibrary::ClampAngle(Interpolation.Pitch, -90.f, 90.f);
-	AimOffsetYaw = UKismetMathLibrary::ClampAngle(Interpolation.Yaw, -90.f, 90.f);
+	AimOffsetYaw = UKismetMathLibrary::ClampAngle(Interpolation.Yaw, -179.f, 179.f);
 }
 
 UPlayerCharacterAnimInstance* UPlayerCharacterAnimInstance::RI_GetPlayerAnimInstance_Implementation() const

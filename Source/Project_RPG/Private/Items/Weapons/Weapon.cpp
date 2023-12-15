@@ -7,7 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/CharacterWeaponComponent.h"
+#include "Components/WeaponComponent.h"
 #include "Components/SoundComponent.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
@@ -15,7 +15,7 @@
 
 AWeapon::AWeapon()
 {
-	CharacterWeaponComponent = CreateDefaultSubobject<UCharacterWeaponComponent>(TEXT("CharacterWeaponComponent"));
+	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
 	SoundComponent = CreateDefaultSubobject<USoundComponent>(TEXT("SoundComponent"));
 
 	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
@@ -51,7 +51,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 // Weapon Box Collision Overlap Function Triggers Box Trace For Hits
 void AWeapon::OnWeaponBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	CharacterWeaponComponent->BoxTrace();
+	WeaponComponent->BoxTrace();
 }
 
 // Enabling Weapon Box Collision
@@ -64,7 +64,7 @@ void AWeapon::SetWeaponBoxCollisionEnabled()
 void AWeapon::SetWeaponBoxCollisionDisabled()
 {
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CharacterWeaponComponent->ClearIgnoreActors();
+	WeaponComponent->ClearIgnoreActors();
 }
 
 // Attaching Mesh To Proper Socket

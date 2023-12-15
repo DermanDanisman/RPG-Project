@@ -59,6 +59,9 @@ private:
 
 	/* Movement Essential Data */
 
+	UPROPERTY(EditAnywhere, Category = "Movement Essential Data")
+	UDataTable* CharacterSpeedDataTable = nullptr;
+
 	UPROPERTY(VisibleAnywhere, Category = "Movement Essential Data")
 	bool bJogging = false;
 
@@ -76,6 +79,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Movement Essential Data")
 	float CrouchingSpeed = 247.f;
-
-		
 };

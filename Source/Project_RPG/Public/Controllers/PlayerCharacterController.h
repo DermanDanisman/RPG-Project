@@ -26,6 +26,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;
 
+	UFUNCTION()
+	FORCEINLINE UInputAction* GetIA_Move() { return IA_Move; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

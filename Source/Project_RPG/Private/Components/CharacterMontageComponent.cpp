@@ -107,3 +107,39 @@ void UCharacterMontageComponent::PlayHitReactionMontage(const FVector& ImpactPoi
 	}
 }
 
+void UCharacterMontageComponent::PlayDodgeMontage()
+{
+	// Check if DodgeMontage is set and OwnerCharacter is valid
+	if (DodgeMontage && OwnerCharacter)
+	{
+		// Get the last movement input vector and normalize it
+		FVector LastInputVector = OwnerCharacter->GetLastMovementInputVector().GetSafeNormal();
+
+		// Get the character's forward and right vectors for reference
+		FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
+		FVector RightVector = OwnerCharacter->GetActorRightVector();
+
+		// Determine the dodge direction based on the dot product
+		// Dot product will give a value between -1 and 1 indicating alignment
+		float ForwardDot = FVector::DotProduct(LastInputVector, ForwardVector);
+		float RightDot = FVector::DotProduct(LastInputVector, RightVector);
+
+		FName SectionName; // Variable to hold the section name of the montage
+
+		// Determine the dodge direction and set the montage section name accordingly
+		if (ForwardDot > 0.707f) // Forward dodge if the input is mostly forward
+			SectionName = FName(DodgeMontage->GetSectionName(1));
+		else if (ForwardDot < -0.707f) // Backward dodge if the input is mostly backward
+			SectionName = FName(DodgeMontage->GetSectionName(0));
+		else if (RightDot > 0.707f) // Right dodge if the input is mostly to the right
+			SectionName = FName(DodgeMontage->GetSectionName(3));
+		else if (RightDot < -0.707f) // Left dodge if the input is mostly to the left
+			SectionName = FName(DodgeMontage->GetSectionName(2));
+		else
+			SectionName = FName(DodgeMontage->GetSectionName(0)); // Default to backward if the direction is unclear
+
+		// Play the montage section based on the determined direction
+		PlayMontageFromSection(DodgeMontage, SectionName);
+	}
+}
+

@@ -7,17 +7,17 @@
 /* Interfaces */
 #include "Interfaces/ReferencesInterface.h"
 
-#include "CharacterWeaponComponent.generated.h"
+#include "WeaponComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECT_RPG_API UCharacterWeaponComponent : public UActorComponent
+class PROJECT_RPG_API UWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UCharacterWeaponComponent();
+	UWeaponComponent();
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

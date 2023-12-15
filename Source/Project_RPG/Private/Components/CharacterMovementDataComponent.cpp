@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 /* Components */
 #include "Components/CapsuleComponent.h"
+#include "Structures/CharacterSpeedData.h"
 
 // Sets default values for this component's properties
 UCharacterMovementDataComponent::UCharacterMovementDataComponent()
@@ -23,6 +24,7 @@ void UCharacterMovementDataComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Character = Cast<ACharacter>(GetOwner());
+
 	MoveToFloor();
 	
 }
@@ -61,24 +63,32 @@ void UCharacterMovementDataComponent::SetMovementMode(ELocomotionState Locomotio
 {
 	if (Character)
 	{
-		switch (LocomotionState)
+		if (CharacterSpeedDataTable)
 		{
-		case ELocomotionState::ELS_Idle:
-			Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
-			break;
-		case ELocomotionState::ELS_Walking:
-			Character->GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
-			break;
-		case ELocomotionState::ELS_Jogging:
-			Character->GetCharacterMovement()->MaxWalkSpeed = JoggingSpeed;
-			break;
-		case ELocomotionState::ELS_Sprinting:
-			Character->GetCharacterMovement()->MaxWalkSpeed = SprintingSpeed;
-			break;
-		case ELocomotionState::ELS_MAX:
-			break;
-		default:
-			break;
+			/* When you call FindRow on a DataTable to retrieve a row by its name, the function needs to know what to do if it doesn't find the row you're asking for.
+			This is where ContextString comes into play. If the row is not found, Unreal Engine will log an error message, and the ContextString will be included in this message.*/
+			static const FString ContextString(TEXT("Character Speed Context"));
+			FCharacterSpeedData* SpeedData = CharacterSpeedDataTable->FindRow<FCharacterSpeedData>(FName(TEXT("SpeedData")), ContextString);
+
+			switch (LocomotionState)
+			{
+			case ELocomotionState::ELS_Idle:
+				Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+				break;
+			case ELocomotionState::ELS_Walking:
+				Character->GetCharacterMovement()->MaxWalkSpeed = SpeedData->WalkingSpeed;
+				break;
+			case ELocomotionState::ELS_Jogging:
+				Character->GetCharacterMovement()->MaxWalkSpeed = SpeedData->JoggingSpeed;
+				break;
+			case ELocomotionState::ELS_Sprinting:
+				Character->GetCharacterMovement()->MaxWalkSpeed = SpeedData->SprintingSpeed;
+				break;
+			case ELocomotionState::ELS_MAX:
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }

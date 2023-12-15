@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Components/CharacterWeaponComponent.h"
+#include "Components/WeaponComponent.h"
 #include "GameFramework/Character.h"
 #include "Characters/PlayerCharacter.h"
 /* Animation */
@@ -17,7 +17,7 @@
 #include "Interfaces/WeaponInterface.h"
 
 // Sets default values for this component's properties
-UCharacterWeaponComponent::UCharacterWeaponComponent()
+UWeaponComponent::UWeaponComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -28,7 +28,7 @@ UCharacterWeaponComponent::UCharacterWeaponComponent()
 
 
 // Called when the game starts
-void UCharacterWeaponComponent::BeginPlay()
+void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -45,14 +45,14 @@ void UCharacterWeaponComponent::BeginPlay()
 
 	
 // Called every frame
-void UCharacterWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
 
-void UCharacterWeaponComponent::SetOwnerAsPlayer()
+void UWeaponComponent::SetOwnerAsPlayer()
 {
 	if (!OwnerCharacter)
 	{
@@ -60,7 +60,7 @@ void UCharacterWeaponComponent::SetOwnerAsPlayer()
 	}
 }
 
-void UCharacterWeaponComponent::PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName)
+void UWeaponComponent::PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName)
 {
 	if (OwnerCharacter)
 	{
@@ -73,7 +73,7 @@ void UCharacterWeaponComponent::PlayMontageFromSection(UAnimMontage* Montage, co
 	}
 }
 
-void UCharacterWeaponComponent::PlayDrawWeaponMontage()
+void UWeaponComponent::PlayDrawWeaponMontage()
 {
 	if (OwnerCharacter)
 	{
@@ -87,7 +87,7 @@ void UCharacterWeaponComponent::PlayDrawWeaponMontage()
 	}
 }
 
-void UCharacterWeaponComponent::PlayHolsterWeaponMontage()
+void UWeaponComponent::PlayHolsterWeaponMontage()
 {
 	if (OwnerCharacter)
 	{
@@ -101,7 +101,7 @@ void UCharacterWeaponComponent::PlayHolsterWeaponMontage()
 	}
 }
 
-void UCharacterWeaponComponent::PlayAttackMontage()
+void UWeaponComponent::PlayAttackMontage()
 {
 	if (OwnerCharacter)
 	{
@@ -115,7 +115,7 @@ void UCharacterWeaponComponent::PlayAttackMontage()
 	}
 }
 
-FHitResult UCharacterWeaponComponent::BoxTrace()
+FHitResult UWeaponComponent::BoxTrace()
 {
 	FVector Start;
 	FVector End;

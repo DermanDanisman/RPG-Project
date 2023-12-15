@@ -25,6 +25,7 @@ protected:
 
 public:
 
+	UFUNCTION(BlueprintCallable)
 	void PlayHitSound(const FVector& ImpactPoint);
 
 private:
