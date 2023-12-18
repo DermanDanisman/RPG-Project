@@ -21,7 +21,7 @@ void UHolsterWeaponAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 			if (Weapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
 			{
 				Weapon->HolsterWeapon(AnimInstance->PlayerCharacter->GetMesh(), Weapon->GetWeaponHolsterSocketName());
-				AnimInstance->PlayerCharacter->SetCharacterState(ECharacterState::ECS_Unequipped);
+				//AnimInstance->PlayerCharacter->SetCharacterState(ECharacterState::ECS_Unequipped);
 			}
 			else if (Weapon->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
 			{

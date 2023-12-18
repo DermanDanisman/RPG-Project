@@ -4,9 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-/* Interfaces */
-#include "Interfaces/ReferencesInterface.h"
-
 #include "WeaponComponent.generated.h"
 
 

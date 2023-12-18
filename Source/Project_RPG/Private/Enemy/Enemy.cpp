@@ -9,6 +9,7 @@
 #include "Components/ChildActorComponent.h"
 #include "Components/CharacterMontageComponent.h"
 #include "Components/SoundComponent.h"
+#include "Components/ParticleEffectComponent.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
 /* Weapon */
@@ -25,6 +26,10 @@ AEnemy::AEnemy()
 	CharacterMontageComponent->SetComponentTickEnabled(false);
 
 	SoundComponent = CreateDefaultSubobject<USoundComponent>(TEXT("SoundComponent"));
+	SoundComponent->SetComponentTickEnabled(false);
+
+	ParticleEffectComponent = CreateDefaultSubobject<UParticleEffectComponent>(TEXT("ParticleEffectComponent"));
+	ParticleEffectComponent->SetComponentTickEnabled(false);
 
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -59,9 +64,10 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemy::WI_GetWeaponHit(const FVector& ImpactPoint)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("GetWeaponHit")));
-	DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
+	//DrawDebugSphere(GetWorld(), ImpactPoint, 10.f, 12, FColor::Red, false, 5.0f);
 
 	CharacterMontageComponent->PlayHitReactionMontage(ImpactPoint);
 	SoundComponent->PlayHitSound(ImpactPoint);
+	ParticleEffectComponent->SpawnHitParticleEffect(ImpactPoint);
 }
 

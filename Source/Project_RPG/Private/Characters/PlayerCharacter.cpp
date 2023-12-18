@@ -82,7 +82,7 @@ void APlayerCharacter::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = CharacterMovementDataComponent->GetWalkSpeed();
 	GetCharacterMovement()->MaxWalkSpeedCrouched = CharacterMovementDataComponent->GetCrouchSpeed();
 
-	CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging);
+	CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging, CharacterState);
 }
 
 // Called every frame
@@ -109,7 +109,7 @@ void APlayerCharacter::PII_Jump()
 		{
 			CharacterMontageComponent->PlayDodgeMontage();
 			ActionState = EActionState::EAS_Dodging;
-			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging);
+			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging, CharacterState);
 		}
 	}
 	//Jump();
@@ -121,12 +121,12 @@ void APlayerCharacter::PII_Jog()
 	{
 		if (!CharacterMovementDataComponent->GetJoggingBool())
 		{
-			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging);
+			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging, CharacterState);
 			CharacterMovementDataComponent->SetJoggingBool(true);
 		}
 		else
 		{
-			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Walking);
+			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Walking, CharacterState);
 			CharacterMovementDataComponent->SetJoggingBool(false);
 		}
 	}
@@ -136,7 +136,7 @@ void APlayerCharacter::PII_StartSprint()
 {
 	if (CharacterMovementDataComponent)
 	{
-		if (!bIsCrouched) CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Sprinting);
+		if (!bIsCrouched) CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Sprinting, CharacterState);
 	}
 }
 
@@ -150,11 +150,11 @@ void APlayerCharacter::PII_StopSprint()
 		{
 			if (CharacterMovementDataComponent->GetJoggingBool())
 			{
-				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging);
+				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging, CharacterState);
 			}
 			else
 			{
-				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Walking);
+				CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Walking, CharacterState);
 			}
 		}
 	}

@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Structures/CharacterSpeedData.h"
 
+
 // Sets default values for this component's properties
 UCharacterMovementDataComponent::UCharacterMovementDataComponent()
 {
@@ -59,7 +60,7 @@ void UCharacterMovementDataComponent::MoveToFloor()
 	}
 }
 
-void UCharacterMovementDataComponent::SetMovementMode(ELocomotionState LocomotionState)
+void UCharacterMovementDataComponent::SetMovementMode(ELocomotionState LocomotionState, ECharacterState CharacterState)
 {
 	if (Character)
 	{
@@ -68,29 +69,43 @@ void UCharacterMovementDataComponent::SetMovementMode(ELocomotionState Locomotio
 			/* When you call FindRow on a DataTable to retrieve a row by its name, the function needs to know what to do if it doesn't find the row you're asking for.
 			This is where ContextString comes into play. If the row is not found, Unreal Engine will log an error message, and the ContextString will be included in this message.*/
 			static const FString ContextString(TEXT("Character Speed Context"));
-			FCharacterSpeedData* SpeedData = CharacterSpeedDataTable->FindRow<FCharacterSpeedData>(FName(TEXT("SpeedData")), ContextString);
-
-			switch (LocomotionState)
+			FCharacterSpeedData* UnequippedSpeedData = CharacterSpeedDataTable->FindRow<FCharacterSpeedData>(FName(TEXT("UnequippedSpeedData")), ContextString);
+			FCharacterSpeedData* EquippedSpeedData = CharacterSpeedDataTable->FindRow<FCharacterSpeedData>(FName(TEXT("EquippedSpeedData")), ContextString);
+			
+			if (CharacterState == ECharacterState::ECS_Unequipped)
 			{
-			case ELocomotionState::ELS_Idle:
-				Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
-				break;
-			case ELocomotionState::ELS_Walking:
-				Character->GetCharacterMovement()->MaxWalkSpeed = SpeedData->WalkingSpeed;
-				break;
-			case ELocomotionState::ELS_Jogging:
-				Character->GetCharacterMovement()->MaxWalkSpeed = SpeedData->JoggingSpeed;
-				break;
-			case ELocomotionState::ELS_Sprinting:
-				Character->GetCharacterMovement()->MaxWalkSpeed = SpeedData->SprintingSpeed;
-				break;
-			case ELocomotionState::ELS_MAX:
-				break;
-			default:
-				break;
+				SetMovementSpeed(LocomotionState, UnequippedSpeedData);
+			}
+			else
+			{
+				SetMovementSpeed(LocomotionState, EquippedSpeedData);
 			}
 		}
 	}
+}
+
+void UCharacterMovementDataComponent::SetMovementSpeed(ELocomotionState LocomotionState, FCharacterSpeedData* UnequippedSpeedData)
+{
+	switch (LocomotionState)
+	{
+	case ELocomotionState::ELS_Idle:
+		Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		break;
+	case ELocomotionState::ELS_Walking:
+		Character->GetCharacterMovement()->MaxWalkSpeed = UnequippedSpeedData->WalkingSpeed;
+		break;
+	case ELocomotionState::ELS_Jogging:
+		Character->GetCharacterMovement()->MaxWalkSpeed = UnequippedSpeedData->JoggingSpeed;
+		break;
+	case ELocomotionState::ELS_Sprinting:
+		Character->GetCharacterMovement()->MaxWalkSpeed = UnequippedSpeedData->SprintingSpeed;
+		break;
+	case ELocomotionState::ELS_MAX:
+		break;
+	default:
+		break;
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Movement Speed: %f"), Character->GetCharacterMovement()->MaxWalkSpeed));
 }
 
 

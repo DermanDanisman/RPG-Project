@@ -30,11 +30,14 @@ public:
 
 private:
 
-	UPROPERTY(VisibleAnywhere, Category = "Character Montages")
+	UPROPERTY(VisibleAnywhere, Category = "Character Components")
 	class UCharacterMontageComponent* CharacterMontageComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Character Components")
 	class USoundComponent* SoundComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character Components")
+	class UParticleEffectComponent* ParticleEffectComponent;
 
 private:	
 

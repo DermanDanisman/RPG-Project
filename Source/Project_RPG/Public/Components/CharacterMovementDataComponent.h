@@ -6,6 +6,9 @@
 #include "Components/ActorComponent.h"
 /* Enums */
 #include "Enums/LocomotionState.h"
+#include "Enums/CharacterState.h"
+/* Structures */
+#include "Structures/CharacterSpeedData.h"
 #include "CharacterMovementDataComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -26,7 +29,9 @@ public:
 	void MoveToFloor();
 
 	UFUNCTION(BlueprintCallable)
-	void SetMovementMode(ELocomotionState LocomotionState);
+	void SetMovementMode(ELocomotionState LocomotionState, ECharacterState CharacterState);
+
+	void SetMovementSpeed(ELocomotionState LocomotionState, FCharacterSpeedData* UnequippedSpeedData);
 
 	/* Getters and Setters */
 	UFUNCTION()

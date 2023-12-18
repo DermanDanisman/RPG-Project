@@ -2,7 +2,6 @@
 
 
 #include "Items/Weapons/Weapon.h"
-#include "Characters/PlayerCharacter.h"
 /* Components */
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/BoxComponent.h"

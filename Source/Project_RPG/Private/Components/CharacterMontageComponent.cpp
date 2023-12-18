@@ -2,7 +2,7 @@
 
 
 #include "Components/CharacterMontageComponent.h"
-#include "Characters/PlayerCharacter.h"
+#include "GameFramework/Character.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -77,30 +77,20 @@ void UCharacterMontageComponent::PlayHitReactionMontage(const FVector& ImpactPoi
 			{
 				Theta *= -1.f;
 			}
+
 			// Section Index 1 is HitFromBack
 			FName Section(HitReactionMontage->GetSectionName(1));
-
-			if (Theta >= -45 && Theta < 45.f)
-			{
-				// Section Index 0 is HitFromFront
+			if (Theta >= -45 && Theta < 45.f)// Section Index 0 is HitFromFront
 				Section = FName(HitReactionMontage->GetSectionName(0));
-			}
-			else if (Theta >= -135.f && Theta < -45.f)
-			{
-				// Section Index 0 is HitFromLeft
+			else if (Theta >= -135.f && Theta < -45.f)// Section Index 0 is HitFromLeft
 				Section = FName(HitReactionMontage->GetSectionName(2));
-			}
-			else if (Theta >= 45.f && Theta < 135.f)
-			{
-				// Section Index 0 is HitFromRight
+			else if (Theta >= 45.f && Theta < 135.f)// Section Index 0 is HitFromRight
 				Section = FName(HitReactionMontage->GetSectionName(3));
-			}
 
 			UKismetSystemLibrary::DrawDebugArrow(this, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorLocation() + CrossProduct * 100.0f, 5.f, FColor::Blue, 5.f);
-
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Theta: %f "), Theta));
 			UKismetSystemLibrary::DrawDebugArrow(this, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorLocation() + Forward * 60.0f, 5.f, FColor::Red, 5.f);
 			UKismetSystemLibrary::DrawDebugArrow(this, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorLocation() + ToHit * 60.0f, 5.f, FColor::Green, 5.f);
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Theta: %f "), Theta));
 
 			PlayMontageFromSection(HitReactionMontage, Section);
 		}
@@ -125,7 +115,6 @@ void UCharacterMontageComponent::PlayDodgeMontage()
 		float RightDot = FVector::DotProduct(LastInputVector, RightVector);
 
 		FName SectionName; // Variable to hold the section name of the montage
-
 		// Determine the dodge direction and set the montage section name accordingly
 		if (ForwardDot > 0.707f) // Forward dodge if the input is mostly forward
 			SectionName = FName(DodgeMontage->GetSectionName(1));

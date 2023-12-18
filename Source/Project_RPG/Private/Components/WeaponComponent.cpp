@@ -3,12 +3,9 @@
 
 #include "Components/WeaponComponent.h"
 #include "GameFramework/Character.h"
-#include "Characters/PlayerCharacter.h"
 /* Animation */
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
-/* Items */
-#include "Items/Weapons/Weapon.h"
 /* Components */
 #include "Components/SkeletalMeshComponent.h"
 /* Kismet */
@@ -172,7 +169,7 @@ FHitResult UWeaponComponent::BoxTrace()
 			TraceObjectTypes,
 			false,
 			ActorsToIgnore,
-			EDrawDebugTrace::ForDuration,
+			EDrawDebugTrace::None,
 			HitResult,
 			true,
 			FLinearColor::Red,
