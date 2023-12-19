@@ -68,11 +68,14 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
 	class UGroomComponent* EyebrowsGroomComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "Character Properties")
+	UPROPERTY(VisibleAnywhere, Category = "Character Components")
 	class UCharacterMovementDataComponent* CharacterMovementDataComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "Character Montages")
+	UPROPERTY(VisibleAnywhere, Category = "Character Components")
 	class UCharacterMontageComponent* CharacterMontageComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character Components")
+	class UCharacterInventoryComponent* CharacterInventoryComponent;
 
 private:
 

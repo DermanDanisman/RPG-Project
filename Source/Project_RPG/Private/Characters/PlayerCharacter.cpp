@@ -18,6 +18,7 @@
 #include "Components/CharacterMovementDataComponent.h"
 #include "Components/WeaponComponent.h"
 #include "Components/CharacterMontageComponent.h"
+#include "Components/CharacterInventoryComponent.h"
 /* Enhanced Input */
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
@@ -44,6 +45,9 @@ APlayerCharacter::APlayerCharacter()
 
 	CharacterMontageComponent = CreateDefaultSubobject<UCharacterMontageComponent>(TEXT("CharacterMontageComponent"));
 	CharacterMontageComponent->SetComponentTickEnabled(false);
+
+	CharacterInventoryComponent = CreateDefaultSubobject<UCharacterInventoryComponent>(TEXT("CharacterInventoryComponent"));
+	CharacterInventoryComponent->SetComponentTickEnabled(false);
 
 	/* Control Settings */
 	bUseControllerRotationPitch = false;
@@ -187,7 +191,8 @@ void APlayerCharacter::PII_Pickup()
 				OverlappingWeapon->PickupWeapon(GetMesh(), OverlappingWeapon->GetWeaponHolsterSocketName());
 			}
 			OverlappingWeapon->SetOwner(this);
-			GrabbedWeapon = OverlappingWeapon;
+			CharacterInventoryComponent->AddItemToInventory(OverlappingWeapon);
+			GrabbedWeapon = Cast<AWeapon>(CharacterInventoryComponent->GetLastPickedUpWeapon());
 			GrabbedWeapon->GetCharacterWeaponComponent()->SetOwnerAsPlayer();
 			SetOverlappingItem(nullptr);
 		}
