@@ -7,7 +7,6 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WeaponComponent.h"
-#include "Components/SoundComponent.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -15,7 +14,7 @@
 AWeapon::AWeapon()
 {
 	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
-	SoundComponent = CreateDefaultSubobject<USoundComponent>(TEXT("SoundComponent"));
+	WeaponComponent->SetComponentTickEnabled(false);
 
 	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
 	WeaponBox->SetupAttachment(ItemMesh, "WeaponBoxCollision");

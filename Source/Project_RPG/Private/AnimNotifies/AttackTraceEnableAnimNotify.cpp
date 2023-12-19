@@ -7,6 +7,8 @@
 #include "Characters/PlayerCharacter.h"
 /* Items */
 #include "Items/Weapons/Weapon.h"
+/* Components */
+#include "Components/WeaponComponent.h"
 
 void UAttackTraceEnableAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
@@ -18,8 +20,9 @@ void UAttackTraceEnableAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAni
 		AWeapon* Weapon = AnimInstance->PlayerCharacter->GetGrabbedWeapon();
 		if (Weapon)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Attack Trace Enable Anim Notify")));
+			//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Attack Trace Enable Anim Notify")));
 			Weapon->SetWeaponBoxCollisionEnabled();
+			Weapon->GetWeaponComponent()->SpawnWeaponTrailEffect();
 		}
 	}
 }

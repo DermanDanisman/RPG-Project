@@ -5,6 +5,8 @@
 /* Components */
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/SoundComponent.h"
+#include "Components/ParticleEffectComponent.h"
 /* Player Character */
 #include "Characters/PlayerCharacter.h"
 /* Interfaces */
@@ -26,6 +28,9 @@ AItem::AItem()
 
 	PickupSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("PickupSphereComponent"));
 	PickupSphereComponent->SetupAttachment(ItemMesh);
+
+	SoundComponent = CreateDefaultSubobject<USoundComponent>(TEXT("SoundComponent"));
+	SoundComponent->SetComponentTickEnabled(false);
 }
 
 // Called when the game starts or when spawned

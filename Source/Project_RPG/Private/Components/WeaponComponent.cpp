@@ -8,10 +8,15 @@
 #include "Animation/AnimMontage.h"
 /* Components */
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 /* Interfaces */
 #include "Interfaces/WeaponInterface.h"
+/* Particles */
+#include "Particles/ParticleSystemComponent.h"
+
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -30,6 +35,7 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner()->GetOwner());
+	OwnerActor = Cast<AActor>(GetOwner());
 	OwnerStaticMesh = Cast<UStaticMeshComponent>(GetOwner()->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 
 	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1); // World Static
@@ -79,7 +85,6 @@ void UWeaponComponent::PlayDrawWeaponMontage()
 		{
 			PlayMontageFromSection(DrawWeaponMontage);
 			bDrawWeapon = true;
-			bHolsterWeapon = false;
 		}
 	}
 }
@@ -93,7 +98,6 @@ void UWeaponComponent::PlayHolsterWeaponMontage()
 		{
 			PlayMontageFromSection(HolsterWeaponMontage);
 			bDrawWeapon = false;
-			bHolsterWeapon = true;
 		}
 	}
 }
@@ -107,7 +111,6 @@ void UWeaponComponent::PlayAttackMontage()
 		{
 			PlayMontageFromSection(AttackMontage);
 			bDrawWeapon = true;
-			bHolsterWeapon = false;
 		}
 	}
 }
@@ -197,4 +200,29 @@ FHitResult UWeaponComponent::BoxTrace()
 	return HitResult;
 }
 
+void UWeaponComponent::SpawnWeaponTrailEffect()
+{
+	// Check if the particle system is already created
+	if (!WeaponTrailEffectSystem && OwnerStaticMesh && WeaponTrailEffect)
+	{
+		// Spawn and attach the particle system if not already created
+		WeaponTrailEffectSystem = UGameplayStatics::SpawnEmitterAttached(WeaponTrailEffect, OwnerStaticMesh);
+	}
+
+	if (WeaponTrailEffectSystem)
+	{
+		// Begin the weapon trail effect
+		WeaponTrailEffectSystem->SetHiddenInGame(false);
+		WeaponTrailEffectSystem->ActivateSystem();
+		WeaponTrailEffectSystem->BeginTrails("TraceStart", "TraceEnd", ETrailWidthMode_FromCentre, 1.0f);
+	}
+}
+
+void UWeaponComponent::DespawnWeaponTrailEffect()
+{
+	if (WeaponTrailEffectSystem)
+	{
+		WeaponTrailEffectSystem->SetHiddenInGame(true);
+	}
+}
 

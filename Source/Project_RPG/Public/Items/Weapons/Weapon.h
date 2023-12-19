@@ -33,7 +33,7 @@ public:
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 
 	UFUNCTION()
-	FORCEINLINE UWeaponComponent* GetCharacterWeaponComponent() const { return WeaponComponent; }
+	FORCEINLINE UWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }
 
 	UFUNCTION()
 	FORCEINLINE FName GetWeaponHolsterSocketName() const { return WeaponHolsterSocketName; }
@@ -83,9 +83,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class UWeaponComponent* WeaponComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	class USoundComponent* SoundComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	EWeaponType WeaponType = EWeaponType::EWT_OneHandedSword;

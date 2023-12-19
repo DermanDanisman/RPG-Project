@@ -64,6 +64,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* PickupSphereComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	class USoundComponent* SoundComponent;
+
 	// Add this Mapping Context when in contact with items
 	UPROPERTY(EditAnywhere, Category = "Input Mapping Context")
 	class UInputMappingContext* ItemMappingContext;

@@ -6,6 +6,10 @@
 #include "Components/ActorComponent.h"
 #include "SoundComponent.generated.h"
 
+/* This Component is in these classes:
+- AItem
+- AEnemy
+*/
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_RPG_API USoundComponent : public UActorComponent

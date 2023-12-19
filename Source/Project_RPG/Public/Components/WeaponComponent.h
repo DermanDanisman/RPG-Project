@@ -29,11 +29,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "References")
 	class ACharacter* OwnerCharacter = nullptr;
 
-	UPROPERTY()
-	bool bDrawWeapon = false;
+	UPROPERTY(VisibleAnywhere, Category = "References")
+	class AActor* OwnerActor = nullptr;
+
 
 	UPROPERTY()
-	bool bHolsterWeapon = true;
+	bool bDrawWeapon = false;
 		
 public:
 
@@ -56,13 +57,23 @@ public:
 	void PlayAttackMontage();
 
 	/**
-	* Weapon Hit Trace Function
+	* Weapon Hit Trace Functions
 	*/
 	UFUNCTION()
 	FHitResult BoxTrace();
 
 	UFUNCTION()
 	void ClearIgnoreActors() { IgnoreActors.Empty(); }
+
+	/**
+	* Weapon Particle Effect Functions
+	*/
+
+	UFUNCTION()
+	void SpawnWeaponTrailEffect();
+
+	UFUNCTION()
+	void DespawnWeaponTrailEffect();
 
 private:
 
@@ -98,5 +109,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Trace Properties")
 	FName TraceEndSocketName = FName("TraceEnd");
 
+	/**
+	* Particle Effects
+	*/
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon: Trail Effects")
+	class UParticleSystemComponent* WeaponTrailEffectSystem = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon: Trail Effects")
+	class UParticleSystem* WeaponTrailEffect = nullptr;
 
 };

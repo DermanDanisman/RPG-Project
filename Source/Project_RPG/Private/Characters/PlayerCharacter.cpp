@@ -193,7 +193,7 @@ void APlayerCharacter::PII_Pickup()
 			OverlappingWeapon->SetOwner(this);
 			CharacterInventoryComponent->AddItemToInventory(OverlappingWeapon);
 			GrabbedWeapon = Cast<AWeapon>(CharacterInventoryComponent->GetLastPickedUpWeapon());
-			GrabbedWeapon->GetCharacterWeaponComponent()->SetOwnerAsPlayer();
+			GrabbedWeapon->GetWeaponComponent()->SetOwnerAsPlayer();
 			SetOverlappingItem(nullptr);
 		}
 	}
@@ -211,14 +211,14 @@ void APlayerCharacter::PII_DrawWeapon()
 	{
 		if (GrabbedWeapon)
 		{
-			if (!GrabbedWeapon->GetCharacterWeaponComponent()->bDrawWeapon)
+			if (!GrabbedWeapon->GetWeaponComponent()->bDrawWeapon)
 			{
-				GrabbedWeapon->GetCharacterWeaponComponent()->PlayDrawWeaponMontage();
+				GrabbedWeapon->GetWeaponComponent()->PlayDrawWeaponMontage();
 				ActionState = EActionState::EAS_DrawingWeapon;
 			}
 			else
 			{
-				GrabbedWeapon->GetCharacterWeaponComponent()->PlayHolsterWeaponMontage();
+				GrabbedWeapon->GetWeaponComponent()->PlayHolsterWeaponMontage();
 				ActionState = EActionState::EAS_DrawingWeapon;
 			}
 		}
@@ -231,7 +231,7 @@ void APlayerCharacter::PII_Attack()
 	{
 		if (GrabbedWeapon)
 		{
-			GrabbedWeapon->GetCharacterWeaponComponent()->PlayAttackMontage();
+			GrabbedWeapon->GetWeaponComponent()->PlayAttackMontage();
 			ActionState = EActionState::EAS_Attacking;
 		}
 	}

@@ -6,6 +6,10 @@
 #include "Components/ActorComponent.h"
 #include "ParticleEffectComponent.generated.h"
 
+/* This Component is in these classes:
+- AItem
+- AEnemy
+*/
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_RPG_API UParticleEffectComponent : public UActorComponent
@@ -28,10 +32,18 @@ public:
 	UFUNCTION()
 	void SpawnHitParticleEffect(const FVector& ImpactPoint);
 
+	bool bActivateeeeee = false;
+
 private:
 
+	/***
+	* References
+	*/
 	UPROPERTY(VisibleAnywhere, Category = "References")
 	class AActor* OwnerActor = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "References")
+	class UStaticMeshComponent* OwnerActorStaticMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "References")
 	TSubclassOf<AActor> ActorCheckClass = nullptr;
@@ -41,9 +53,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "References")
 	TSubclassOf<ACharacter> CharacterCheckClass = nullptr;
+
+	/***
+	* Effects
+	*/
 	
-	UPROPERTY(EditAnywhere, Category = "Hit Effects")
+	UPROPERTY(EditAnywhere, Category = "Character: Hit Effects")
 	class UParticleSystem* HitParticles = nullptr;
+
+
 
 		
 };
