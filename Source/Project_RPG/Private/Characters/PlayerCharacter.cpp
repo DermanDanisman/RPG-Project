@@ -106,12 +106,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 /// Movement Input Functions
 void APlayerCharacter::PII_Jump()
 {
-	if (CharacterMontageComponent)
+	if (GrabbedWeapon)
 	{
-		
 		if (CharacterState != ECharacterState::ECS_Unequipped && ActionState == EActionState::EAS_Unoccupied)
 		{
-			CharacterMontageComponent->PlayDodgeMontage();
+			GrabbedWeapon->Dodge();
 			ActionState = EActionState::EAS_Dodging;
 			CharacterMovementDataComponent->SetMovementMode(ELocomotionState::ELS_Jogging, CharacterState);
 		}
@@ -227,6 +226,7 @@ void APlayerCharacter::PII_DrawWeapon()
 
 void APlayerCharacter::PII_Attack()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Attack")));
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
 		if (GrabbedWeapon)

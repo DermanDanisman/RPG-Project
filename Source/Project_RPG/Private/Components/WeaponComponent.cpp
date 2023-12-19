@@ -55,6 +55,8 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
+/* Sets the OwnerCharacter reference to the owner of this component if it's a character. 
+This is used to ensure that the component has a reference to the character that is using the weapon. */
 void UWeaponComponent::SetOwnerAsPlayer()
 {
 	if (!OwnerCharacter)
@@ -63,6 +65,8 @@ void UWeaponComponent::SetOwnerAsPlayer()
 	}
 }
 
+/* Plays an animation montage from a specified section. It checks if the owning character and the montage are valid before playing. 
+This is used to play specific parts of an animation, like an attack or reload sequence. */
 void UWeaponComponent::PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName)
 {
 	if (OwnerCharacter)
@@ -76,32 +80,38 @@ void UWeaponComponent::PlayMontageFromSection(UAnimMontage* Montage, const FName
 	}
 }
 
+/* Plays the drawing weapon animation montage. It sets bDrawWeapon to true, indicating the weapon is drawn. 
+This function is called when the character equips the weapon. */
 void UWeaponComponent::PlayDrawWeaponMontage()
 {
 	if (OwnerCharacter)
 	{
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-		if (AnimInstance && DrawWeaponMontage)
+		if (AnimInstance && WeaponStandardMontages.DrawWeaponMontage)
 		{
-			PlayMontageFromSection(DrawWeaponMontage);
+			PlayMontageFromSection(WeaponStandardMontages.DrawWeaponMontage);
 			bDrawWeapon = true;
 		}
 	}
 }
 
+/* Similar to PlayDrawWeaponMontage, but for holstering the weapon. 
+It sets bDrawWeapon to false, indicating the weapon is holstered. */
 void UWeaponComponent::PlayHolsterWeaponMontage()
 {
 	if (OwnerCharacter)
 	{
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-		if (AnimInstance && HolsterWeaponMontage)
+		if (AnimInstance && WeaponStandardMontages.HolsterWeaponMontage)
 		{
-			PlayMontageFromSection(HolsterWeaponMontage);
+			PlayMontageFromSection(WeaponStandardMontages.HolsterWeaponMontage);
 			bDrawWeapon = false;
 		}
 	}
 }
 
+/* Plays the attack animation montage. 
+This function is called when the player initiates an attack with the weapon. */
 void UWeaponComponent::PlayAttackMontage()
 {
 	if (OwnerCharacter)
@@ -115,6 +125,49 @@ void UWeaponComponent::PlayAttackMontage()
 	}
 }
 
+void UWeaponComponent::PlayDodgeMontage()
+{
+	if (OwnerCharacter)
+	{
+		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+		if (AnimInstance && WeaponStandardMontages.DodgeMontage)
+		{
+			// Get the last movement input vector and normalize it
+			FVector LastInputVector = OwnerCharacter->GetLastMovementInputVector().GetSafeNormal();
+
+			// Get the character's forward and right vectors for reference
+			FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
+			FVector RightVector = OwnerCharacter->GetActorRightVector();
+
+			// Determine the dodge direction based on the dot product
+			// Dot product will give a value between -1 and 1 indicating alignment
+			float ForwardDot = FVector::DotProduct(LastInputVector, ForwardVector);
+			float RightDot = FVector::DotProduct(LastInputVector, RightVector);
+
+			FName SectionName; // Variable to hold the section name of the montage
+			// Determine the dodge direction and set the montage section name accordingly
+			if (ForwardDot > 0.707f) // Forward dodge if the input is mostly forward
+				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(1));
+			else if (ForwardDot < -0.707f) // Backward dodge if the input is mostly backward
+				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(0));
+			else if (RightDot > 0.707f) // Right dodge if the input is mostly to the right
+				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(3));
+			else if (RightDot < -0.707f) // Left dodge if the input is mostly to the left
+				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(2));
+			else
+				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(0)); // Default to backward if the direction is unclear
+
+			// Play the montage section based on the determined direction
+			PlayMontageFromSection(WeaponStandardMontages.DodgeMontage, SectionName);
+		}
+	}
+}
+
+/* Performs a box trace (collision check) from the weapon to detect hits. 
+It uses the start and end points defined by sockets on the weapon's mesh. 
+The function filters out the owner and the owning character from the hit detection to prevent the weapon from hitting itself or the character wielding it. 
+If the hit actor implements the UWeaponInterface, it calls the WI_GetWeaponHit() function on that actor. 
+This is used for detecting when the weapon hits an enemy or object. */
 FHitResult UWeaponComponent::BoxTrace()
 {
 	FVector Start;
@@ -200,6 +253,9 @@ FHitResult UWeaponComponent::BoxTrace()
 	return HitResult;
 }
 
+/* Creates and activates a weapon trail particle effect. 
+This effect is used to visually indicate the weapon's movement, especially during attacks. 
+The trails are started between two specified socket locations on the weapon. */
 void UWeaponComponent::SpawnWeaponTrailEffect()
 {
 	// Check if the particle system is already created
@@ -218,6 +274,8 @@ void UWeaponComponent::SpawnWeaponTrailEffect()
 	}
 }
 
+/* Hides the weapon trail effect, effectively turning it off. 
+This is called when the weapon is not in use or after an attack is completed. */
 void UWeaponComponent::DespawnWeaponTrailEffect()
 {
 	if (WeaponTrailEffectSystem)

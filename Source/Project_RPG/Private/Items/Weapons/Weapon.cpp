@@ -29,12 +29,44 @@ void AWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
 	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnWeaponBoxOverlap);
 }
+
+/// <summary>
+/// Getter Functions
+
+EWeaponType AWeapon::GetWeaponType() const
+{
+	return WeaponComponent->GetWeaponType();
+}
+
+FName AWeapon::GetWeaponHolsterSocketName() const
+{
+	if (WeaponComponent->GetWeaponType() == EWeaponType::EWT_OneHandedSword || WeaponComponent->GetWeaponType() == EWeaponType::EWT_SwordAndShield)
+		return WeaponComponent->GetHipWeaponHolsterSocketName();
+	else if (WeaponComponent->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
+		return WeaponComponent->GetBackWeaponHolsterSocketName();
+
+	return FName();
+}
+
+FName AWeapon::GetWeaponHandSocketName() const
+{
+	if (WeaponComponent->GetWeaponType() == EWeaponType::EWT_OneHandedSword || WeaponComponent->GetWeaponType() == EWeaponType::EWT_SwordAndShield)
+		return WeaponComponent->GetOneHandedHandSocketName();
+	else if (WeaponComponent->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
+		return WeaponComponent->GetTwoHandedHandSocketName();
+
+	return FName();
+}
+
+/// Getter Functions
+/// </summary>
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -90,6 +122,11 @@ void AWeapon::DrawWeapon(USceneComponent* InParent, FName InSocketName)
 void AWeapon::HolsterWeapon(USceneComponent* InParent, FName InSocketName)
 {
 	AttachMeshToSocket(InParent, InSocketName);
+}
+
+void AWeapon::Dodge()
+{
+	WeaponComponent->PlayDodgeMontage();
 }
 
 

@@ -38,7 +38,6 @@ void UParticleEffectComponent::BeginPlay()
 		OwnerActor = GetOwner();
 		OwnerActorStaticMesh = Cast<UStaticMeshComponent>(OwnerActor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	}
-
 }
 
 // Called every frame

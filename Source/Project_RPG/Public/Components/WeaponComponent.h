@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+/* Structures */
+#include "Structures/WeaponProperties.h"
+#include "Structures/WeaponMontages.h"
 #include "WeaponComponent.generated.h"
 
 
@@ -25,13 +28,35 @@ protected:
 
 public:
 
+	/// <summary>
+	/// Getter Functions 
+	
+	UFUNCTION()
+	FORCEINLINE EWeaponType GetWeaponType() { return WeaponProperties.WeaponType; }
+
+	UFUNCTION()
+	FORCEINLINE FName GetOneHandedHandSocketName() { return WeaponProperties.OneHandedHandSocket; }
+
+	UFUNCTION()
+	FORCEINLINE FName GetTwoHandedHandSocketName() { return WeaponProperties.TwoHandedHandSocket; }
+
+	UFUNCTION()
+	FORCEINLINE FName GetHipWeaponHolsterSocketName() { return WeaponProperties.HipWeaponHolsterSocket; }
+
+	UFUNCTION()
+	FORCEINLINE FName GetBackWeaponHolsterSocketName() { return WeaponProperties.BackWeaponHolsterSocket; }
+
+	/// Getter Functions 
+	/// </summary>
+
+public:
+
 	/* References */
 	UPROPERTY(VisibleAnywhere, Category = "References")
 	class ACharacter* OwnerCharacter = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "References")
 	class AActor* OwnerActor = nullptr;
-
 
 	UPROPERTY()
 	bool bDrawWeapon = false;
@@ -44,6 +69,7 @@ public:
 	/**
 	* Play Montage Functions
 	*/
+
 	UFUNCTION()
 	void PlayMontageFromSection(UAnimMontage* Montage, const FName& SectionName = FName(TEXT("Default")));
 
@@ -56,9 +82,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayAttackMontage();
 
+	UFUNCTION()
+	void PlayDodgeMontage();
+
 	/**
 	* Weapon Hit Trace Functions
 	*/
+
 	UFUNCTION()
 	FHitResult BoxTrace();
 
@@ -75,17 +105,28 @@ public:
 	UFUNCTION()
 	void DespawnWeaponTrailEffect();
 
+
+	/**
+	* Combo Functions
+	*/
+
+
+
 private:
+
+	/**
+	* Weapon
+	*/
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	FWeaponProperties WeaponProperties;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Standard Montages")
+	FWeaponMontages WeaponStandardMontages;
 
 	/**
 	* Animation Montages
 	*/
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
-	class UAnimMontage* DrawWeaponMontage = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
-	class UAnimMontage* HolsterWeaponMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Anim Montages")
 	class UAnimMontage* AttackMontage = nullptr;

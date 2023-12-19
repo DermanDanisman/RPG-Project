@@ -88,7 +88,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Category = "References")
 	class AItem* OverlappingItem;
 
-	UPROPERTY(VisibleInstanceOnly, Category = "References")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "References")
 	class AWeapon* GrabbedWeapon;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Player State Enums")

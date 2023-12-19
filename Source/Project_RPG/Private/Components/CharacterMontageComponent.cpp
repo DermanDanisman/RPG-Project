@@ -97,7 +97,7 @@ void UCharacterMontageComponent::PlayHitReactionMontage(const FVector& ImpactPoi
 	}
 }
 
-void UCharacterMontageComponent::PlayDodgeMontage()
+/*void UCharacterMontageComponent::PlayDodgeMontage()
 {
 	// Check if DodgeMontage is set and OwnerCharacter is valid
 	if (DodgeMontage && OwnerCharacter)
@@ -130,5 +130,5 @@ void UCharacterMontageComponent::PlayDodgeMontage()
 		// Play the montage section based on the determined direction
 		PlayMontageFromSection(DodgeMontage, SectionName);
 	}
-}
+}*/
 

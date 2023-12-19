@@ -37,14 +37,14 @@ public:
 	UFUNCTION()
 	void PlayHitReactionMontage(const FVector& ImpactPoint);
 
-	UFUNCTION()
-	void PlayDodgeMontage();
+	/*UFUNCTION()
+	void PlayDodgeMontage();*/
 	
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Montages")
 	class UAnimMontage* HitReactionMontage = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Montages")
-	class UAnimMontage* DodgeMontage = nullptr;
+	/*UPROPERTY(EditAnywhere, Category = "Montages")
+	class UAnimMontage* DodgeMontage = nullptr;*/
 };
