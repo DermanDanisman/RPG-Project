@@ -58,9 +58,9 @@ FName AWeapon::GetWeaponHolsterSocketName() const
 FName AWeapon::GetWeaponHandSocketName() const
 {
 	if (WeaponComponent->GetWeaponType() == EWeaponType::EWT_OneHandedSword || WeaponComponent->GetWeaponType() == EWeaponType::EWT_SwordAndShield)
-		return WeaponComponent->GetOneHandedHandSocketName();
+		return WeaponComponent->GetWeaponSocketName();
 	else if (WeaponComponent->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
-		return WeaponComponent->GetTwoHandedHandSocketName();
+		return WeaponComponent->GetWeaponSocketName();
 
 	return FName();
 }

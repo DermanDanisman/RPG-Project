@@ -7,6 +7,7 @@
 /* Structures */
 #include "Structures/WeaponProperties.h"
 #include "Structures/WeaponMontages.h"
+#include "Structures/WeaponData.h"
 #include "WeaponComponent.generated.h"
 
 
@@ -30,21 +31,20 @@ public:
 
 	/// <summary>
 	/// Getter Functions 
-	
 	UFUNCTION()
-	FORCEINLINE EWeaponType GetWeaponType() { return WeaponProperties.WeaponType; }
+	FORCEINLINE UStaticMesh* GetWeaponMesh() { return WeaponData->WeaponProperties.WeaponMesh; }
 
 	UFUNCTION()
-	FORCEINLINE FName GetOneHandedHandSocketName() { return WeaponProperties.OneHandedHandSocket; }
+	FORCEINLINE EWeaponType GetWeaponType() { return WeaponData->WeaponProperties.WeaponType; }
 
 	UFUNCTION()
-	FORCEINLINE FName GetTwoHandedHandSocketName() { return WeaponProperties.TwoHandedHandSocket; }
+	FORCEINLINE FName GetWeaponSocketName() { return WeaponData->WeaponProperties.WeaponSocket; }
 
 	UFUNCTION()
-	FORCEINLINE FName GetHipWeaponHolsterSocketName() { return WeaponProperties.HipWeaponHolsterSocket; }
+	FORCEINLINE FName GetHipWeaponHolsterSocketName() { return WeaponData->WeaponProperties.HipWeaponHolsterSocket; }
 
 	UFUNCTION()
-	FORCEINLINE FName GetBackWeaponHolsterSocketName() { return WeaponProperties.BackWeaponHolsterSocket; }
+	FORCEINLINE FName GetBackWeaponHolsterSocketName() { return WeaponData->WeaponProperties.BackWeaponHolsterSocket; }
 
 	/// Getter Functions 
 	/// </summary>
@@ -65,6 +65,12 @@ public:
 
 	UFUNCTION()
 	void SetOwnerAsPlayer();
+
+	UFUNCTION()
+	void SetWeaponDataName();
+
+	UFUNCTION()
+	void SetWeaponData();
 
 	/**
 	* Play Montage Functions
@@ -115,14 +121,17 @@ public:
 private:
 
 	/**
-	* Weapon
+	* Weapon Data
 	*/
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	FWeaponProperties WeaponProperties;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Data")
+	FName WeaponDataName;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Standard Montages")
-	FWeaponMontages WeaponStandardMontages;
+	UPROPERTY(EditAnywhere, Category = "Weapon Data")
+	UDataTable* WeaponDataTable = nullptr;
+
+	//UPROPERTY(EditAnywhere, Category = "Weapon Data")
+	FWeaponData* WeaponData = nullptr;
 
 	/**
 	* Animation Montages

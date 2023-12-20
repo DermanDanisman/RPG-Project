@@ -77,6 +77,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Character Components")
 	class UCharacterInventoryComponent* CharacterInventoryComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Character Components")
+	class UEnemyTargetingSystemComponent* EnemyTargetingSystemComponent;
+
 private:
 
 	/* References */

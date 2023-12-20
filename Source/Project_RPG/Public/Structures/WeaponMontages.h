@@ -6,8 +6,9 @@
 #include "WeaponMontages.generated.h"
 
 USTRUCT(BlueprintType)
-struct FWeaponMontages
+struct FWeaponMontages : public FTableRowBase
 {
+
 	GENERATED_BODY()
 
 public:
@@ -24,6 +25,8 @@ public:
 
 	FWeaponMontages()
 	{
-
+		DrawWeaponMontage = nullptr;
+		HolsterWeaponMontage = nullptr;
+		DodgeMontage = nullptr;
 	}
 };

@@ -3,6 +3,7 @@
 
 #include "Components/WeaponComponent.h"
 #include "GameFramework/Character.h"
+#include "Engine/DataTable.h"
 /* Animation */
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
@@ -18,13 +19,13 @@
 #include "Particles/ParticleSystemComponent.h"
 
 
+
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
 	// ...
 }
 
@@ -38,12 +39,8 @@ void UWeaponComponent::BeginPlay()
 	OwnerActor = Cast<AActor>(GetOwner());
 	OwnerStaticMesh = Cast<UStaticMeshComponent>(GetOwner()->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1); // World Static
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2); // World Dynamic
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3); // Pawn
-	//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4); // Physics Body
-	//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5); // Vehicle
-	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6); // Destructible
+	SetWeaponDataName();
+	SetWeaponData();
 }
 
 	
@@ -62,6 +59,52 @@ void UWeaponComponent::SetOwnerAsPlayer()
 	if (!OwnerCharacter)
 	{
 		OwnerCharacter = Cast<ACharacter>(GetOwner()->GetOwner());
+	}
+}
+
+/* Determines the weapon's data name based on the name of the owner actor. 
+It parses the actor's name to extract the relevant part and sets it as the WeaponDataName. 
+This is used to identify and retrieve specific weapon data from a data table. */
+void UWeaponComponent::SetWeaponDataName()
+{
+	if (OwnerActor)
+	{
+		FString ActorName = OwnerActor->GetName();
+
+		// Splitting the string into parts based on the underscore
+		TArray<FString> Parts;
+		ActorName.ParseIntoArray(Parts, TEXT("_"));
+
+		// Constructing the final name by combining the first two parts
+		FString FinalName = Parts[0] + "_" + Parts[1] + "_" + Parts[2];
+		//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("Actor Name: %s"), *FinalName));
+		WeaponDataName = FName(FinalName);
+	}
+}
+
+/* Retrieves weapon data from a data table using the previously set WeaponDataName. 
+If the data is found and the weapon mesh is valid, it sets the static mesh of the weapon. 
+This function configures the weapon based on data defined in a data table. */
+void UWeaponComponent::SetWeaponData()
+{
+	if (WeaponDataTable && WeaponDataName != FName(""))
+	{
+		static const FString ContextString(TEXT("Weapon Data"));
+		WeaponData = WeaponDataTable->FindRow<FWeaponData>(WeaponDataName, ContextString);
+
+		if (WeaponData && IsValid(WeaponData->WeaponProperties.WeaponMesh))
+		{
+			UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(OwnerStaticMesh);
+			MeshComponent->SetStaticMesh(WeaponData->WeaponProperties.WeaponMesh);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("WeaponData && IsValid(WeaponData->WeaponProperties.WeaponMesh) IS NOT VALID")));
+		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("WeaponDataTable && WeaponDataName != FName("") IS NOT VALID")));
 	}
 }
 
@@ -87,9 +130,9 @@ void UWeaponComponent::PlayDrawWeaponMontage()
 	if (OwnerCharacter)
 	{
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-		if (AnimInstance && WeaponStandardMontages.DrawWeaponMontage)
+		if (AnimInstance && WeaponData->WeaponStandardMontages.DrawWeaponMontage)
 		{
-			PlayMontageFromSection(WeaponStandardMontages.DrawWeaponMontage);
+			PlayMontageFromSection(WeaponData->WeaponStandardMontages.DrawWeaponMontage);
 			bDrawWeapon = true;
 		}
 	}
@@ -102,9 +145,9 @@ void UWeaponComponent::PlayHolsterWeaponMontage()
 	if (OwnerCharacter)
 	{
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-		if (AnimInstance && WeaponStandardMontages.HolsterWeaponMontage)
+		if (AnimInstance && WeaponData->WeaponStandardMontages.HolsterWeaponMontage)
 		{
-			PlayMontageFromSection(WeaponStandardMontages.HolsterWeaponMontage);
+			PlayMontageFromSection(WeaponData->WeaponStandardMontages.HolsterWeaponMontage);
 			bDrawWeapon = false;
 		}
 	}
@@ -125,12 +168,14 @@ void UWeaponComponent::PlayAttackMontage()
 	}
 }
 
+/* Determines the direction of the dodge based on the player's input and plays the corresponding dodge animation montage. 
+This function enhances the character's responsiveness and visual feedback during combat. */
 void UWeaponComponent::PlayDodgeMontage()
 {
 	if (OwnerCharacter)
 	{
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-		if (AnimInstance && WeaponStandardMontages.DodgeMontage)
+		if (AnimInstance && WeaponData->WeaponStandardMontages.DodgeMontage)
 		{
 			// Get the last movement input vector and normalize it
 			FVector LastInputVector = OwnerCharacter->GetLastMovementInputVector().GetSafeNormal();
@@ -147,18 +192,18 @@ void UWeaponComponent::PlayDodgeMontage()
 			FName SectionName; // Variable to hold the section name of the montage
 			// Determine the dodge direction and set the montage section name accordingly
 			if (ForwardDot > 0.707f) // Forward dodge if the input is mostly forward
-				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(1));
+				SectionName = FName(WeaponData->WeaponStandardMontages.DodgeMontage->GetSectionName(1));
 			else if (ForwardDot < -0.707f) // Backward dodge if the input is mostly backward
-				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(0));
+				SectionName = FName(WeaponData->WeaponStandardMontages.DodgeMontage->GetSectionName(0));
 			else if (RightDot > 0.707f) // Right dodge if the input is mostly to the right
-				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(3));
+				SectionName = FName(WeaponData->WeaponStandardMontages.DodgeMontage->GetSectionName(3));
 			else if (RightDot < -0.707f) // Left dodge if the input is mostly to the left
-				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(2));
+				SectionName = FName(WeaponData->WeaponStandardMontages.DodgeMontage->GetSectionName(2));
 			else
-				SectionName = FName(WeaponStandardMontages.DodgeMontage->GetSectionName(0)); // Default to backward if the direction is unclear
+				SectionName = FName(WeaponData->WeaponStandardMontages.DodgeMontage->GetSectionName(0)); // Default to backward if the direction is unclear
 
 			// Play the montage section based on the determined direction
-			PlayMontageFromSection(WeaponStandardMontages.DodgeMontage, SectionName);
+			PlayMontageFromSection(WeaponData->WeaponStandardMontages.DodgeMontage, SectionName);
 		}
 	}
 }
@@ -187,6 +232,13 @@ FHitResult UWeaponComponent::BoxTrace()
 				End = OwnerStaticMesh->GetSocketLocation(TraceEndSocketName);
 			}
 		}
+
+		TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1); // World Static
+		TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2); // World Dynamic
+		TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3); // Pawn
+		//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4); // Physics Body
+		//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5); // Vehicle
+		TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6); // Destructible
 
 		IgnoreActors.Add(GetOwner());
 		IgnoreActors.Add(OwnerCharacter);
@@ -274,8 +326,8 @@ void UWeaponComponent::SpawnWeaponTrailEffect()
 	}
 }
 
-/* Hides the weapon trail effect, effectively turning it off. 
-This is called when the weapon is not in use or after an attack is completed. */
+/* Hides the weapon trail effect. 
+This is typically called when the weapon is not being used or after an attack sequence is completed to clean up the visual effects. */
 void UWeaponComponent::DespawnWeaponTrailEffect()
 {
 	if (WeaponTrailEffectSystem)

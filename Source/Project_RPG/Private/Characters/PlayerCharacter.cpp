@@ -19,6 +19,7 @@
 #include "Components/WeaponComponent.h"
 #include "Components/CharacterMontageComponent.h"
 #include "Components/CharacterInventoryComponent.h"
+#include "Components/EnemyTargetingSystemComponent.h"
 /* Enhanced Input */
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
@@ -48,6 +49,9 @@ APlayerCharacter::APlayerCharacter()
 
 	CharacterInventoryComponent = CreateDefaultSubobject<UCharacterInventoryComponent>(TEXT("CharacterInventoryComponent"));
 	CharacterInventoryComponent->SetComponentTickEnabled(false);
+
+	EnemyTargetingSystemComponent = CreateDefaultSubobject<UEnemyTargetingSystemComponent>(TEXT("EnemyTargetingSystemComponent"));
+
 
 	/* Control Settings */
 	bUseControllerRotationPitch = false;
