@@ -18,6 +18,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	/* Delegate Binded Functions */
+	UFUNCTION()
+	virtual void OnDetectionSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnDetectionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 public:
 
 	UFUNCTION()
@@ -25,7 +36,7 @@ public:
 
 	UFUNCTION()
 	FORCEINLINE TArray<AActor*> GetTargetList() { return TargetList; }
- 
+
 	UPROPERTY()
 	class ACharacter* OwnerCharacter = nullptr;
 
@@ -44,20 +55,7 @@ public:
 	UFUNCTION()
 	void ClearCurrentTarget();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	/* Delegate Binded Functions */
-	UFUNCTION()
-	virtual void OnDetectionSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void OnDetectionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 private:
-
-
 
 	UFUNCTION()
 	AActor* GetNearestTarget(const TArray<AActor*>& PotentialTargets);
@@ -67,11 +65,6 @@ private:
 
 	UFUNCTION()
 	void SpawnTargetIndicator(AActor* Target);
-
-	//UFUNCTION()
-	//void SetNewTarget(AActor* NewTarget);
-
-
 
 private:	
 
@@ -84,9 +77,13 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Targets")
 	TArray<AActor*> TargetList;
 
-	UPROPERTY(VisibleAnywhere)
-	class UArrowComponent* CurrentTargetIndicator;
+	UPROPERTY(VisibleAnywhere, Category = "Targets")
+	AActor* CurrentTarget = nullptr;
 
-	UPROPERTY(VisibleAnywhere)
-	AActor* CurrentTarget;
+	UPROPERTY(VisibleAnywhere, Category = "Visual Indicator")
+	class UArrowComponent* CurrentTargetIndicator = nullptr;
+
+	// Add this Mapping Context when in contact with items
+	UPROPERTY(EditAnywhere, Category = "Input Mapping Context")
+	class UInputMappingContext* CombatMappingContext = nullptr;
 };

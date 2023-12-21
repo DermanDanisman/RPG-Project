@@ -21,6 +21,7 @@ AEnemyTargetingSystem::AEnemyTargetingSystem()
     DetectionSphere->SetupAttachment(GetRootComponent());
     DetectionSphere->InitSphereRadius(500.f); // Set the radius
     DetectionSphere->SetCollisionProfileName(TEXT("TargetDetection")); // Set collision profile
+    DetectionSphere->SetGenerateOverlapEvents(true);
     DetectionSphere->SetHiddenInGame(false); // Sphere is visible in game
 }
 
@@ -63,49 +64,33 @@ void AEnemyTargetingSystem::Tick(float DeltaTime)
     }
 }
 
-// Handle new targets entering the detection sphere
+// Handle new targets entering the detection sphere. If the overlapped actor is a valid target, it's added to TargetList.
 void AEnemyTargetingSystem::OnDetectionSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
     // Add valid targets to the target list
-    if (IsValidTarget(OtherActor))
+    if (OtherActor->GetClass()->IsChildOf(EnemyFilterClass))
     {
-        TargetList.AddUnique(OtherActor);
-    }
-
-    if (CurrentTarget)
-    {
-       // GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Current Target Name: %s"), *CurrentTarget->GetName()));
+        TargetList.AddUnique(OtherActor);   
     }
 }
 
-// Handle targets leaving the detection sphere
+// Handle targets leaving the detection sphere. If the actor leaving the sphere is the current target, the current target is cleared.
 void AEnemyTargetingSystem::OnDetectionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
     // Remove the actor from the target list when it exits the sphere
     if (IsValid(OtherActor))
     {
-        if (!TargetList.IsEmpty())
+        TargetList.RemoveSingle(OtherActor);
+
+        // Only clear the current target if the actor leaving the sphere is the current target
+        if (CurrentTarget == OtherActor)
         {
-            int Index = TargetList.Find(OtherActor);
-            TargetList.RemoveAt(Index);
-
-            /*if (CurrentTarget)
-            {
-                GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("Current Target Name: %s"), *CurrentTarget->GetName()));
-                GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("Other Actor Target: %s"), *OtherActor->GetName()));
-            }*/
-
-            // Only clear the current target if the actor leaving the sphere is the current target
-            if (CurrentTarget == OtherActor)
-            {
-                ClearCurrentTarget();
-                //GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("Cleared Current Target")));
-            }
+            ClearCurrentTarget();
         }
     }
 }
 
-// Update the target list and find the target in the line of sight
+// Empties and then updates TargetList based on actors currently overlapping the detection sphere.
 void AEnemyTargetingSystem::GetTargetsInRange()
 {
     // Update target list based on actors within the detection sphere
@@ -114,33 +99,47 @@ void AEnemyTargetingSystem::GetTargetsInRange()
 }
 
 // Find a target in the line of sight from a list of potential targets
+// Sorts potential targets based on their distance to the OwnerCharacter.
+// Uses a capsule trace to find the first target in line of sight.
+// Returns the first valid target hit by the trace.
 AActor* AEnemyTargetingSystem::GetTargetInLineOfSight(const TArray<AActor*>& PotentialTargets)
 {
-    if (!PotentialTargets.IsEmpty())
+    if (!OwnerCharacter || PotentialTargets.IsEmpty()) return nullptr;
+
+    TArray<AActor*> IgnoreActors = { this, OwnerCharacter };
+    float Radius = 15.f;
+    float HalfHeight = 50.f;
+
+    FVector PlayerViewLocation;
+    FRotator PlayerViewRotation;
+    OwnerCharacter->GetController()->GetPlayerViewPoint(PlayerViewLocation, PlayerViewRotation);
+
+    FVector ViewDirection = PlayerViewRotation.Vector();
+    FVector CharacterLocation = OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, 50.f);
+
+    /*
+    Sort is a template function provided by Unreal Engine's TArray class.
+    It sorts the elements of the array based on a provided comparison function or lambda expression.
+    In this code, Sort is used to order PotentialTargets based on their distance from the OwnerCharacter.
+    The lambda expression [](const AActor& A, const AActor& B) is the comparison function. It returns true if Actor A is closer to the character than Actor B.
+    Sort rearranges SortedTargets so that the closest target is first.
+    */
+    TArray<AActor*> SortedTargets = PotentialTargets;
+    SortedTargets.Sort([CharacterLocation](const AActor& A, const AActor& B) {
+        return (A.GetActorLocation() - CharacterLocation).SizeSquared() <
+            (B.GetActorLocation() - CharacterLocation).SizeSquared();
+        });
+
+    // Iterate through the sorted targets
+    for (AActor* TargetActor : SortedTargets)
     {
-        if (!OwnerCharacter) return nullptr;
+        if (!IsValidTarget(TargetActor)) continue;
 
-        FVector PlayerViewLocation;
-        FRotator PlayerViewRotation;
-        OwnerCharacter->GetController()->GetPlayerViewPoint(PlayerViewLocation, PlayerViewRotation);
-
-        // Use the character's location as the starting point of the trace
-        FVector CharacterLocation = OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, 50.f);
-
-        FVector ViewDirection = PlayerViewRotation.Vector();
-        FVector TraceEnd = CharacterLocation + (ViewDirection * 500.f); // Adjust the range as needed
-
-        TArray<AActor*> IgnoreActors;
-        IgnoreActors.Add(this);
-        IgnoreActors.Add(OwnerCharacter);
-
-        float Radius = 15.f;
-        float HalfHeight = 50.f;
-
+        FVector TraceEnd = CharacterLocation + (ViewDirection * (TargetActor->GetActorLocation() - CharacterLocation).Size());
         FHitResult HitResult;
         bool bHit = UKismetSystemLibrary::CapsuleTraceSingle(
             this,
-            CharacterLocation, // Start location should be PlayerViewLocation
+            CharacterLocation,
             TraceEnd,
             Radius,
             HalfHeight,
@@ -155,22 +154,17 @@ AActor* AEnemyTargetingSystem::GetTargetInLineOfSight(const TArray<AActor*>& Pot
             5.0f
         );
 
-        if (bHit && IsValidTarget(HitResult.GetActor()))
+        if (bHit && HitResult.GetActor() == TargetActor)
         {
-            return HitResult.GetActor(); // Return the actor if it's a valid target
+            return TargetActor; // Return the first valid target hit by the trace
         }
-        /*else if (!bHit)
-        {
-            if (!bHit || !IsValidTarget(HitResult.GetActor()))
-            {
-                return GetNearestTarget(PotentialTargets);
-            }
-        }*/
     }
 
-    return nullptr;
+    return nullptr; // No valid targets in line of sight
 }
 
+// Determines the closest target to the OwnerCharacter from the list of potential targets.
+// Iterates through PotentialTargets, calculating the distance to each, and keeps track of the nearest one.
 AActor* AEnemyTargetingSystem::GetNearestTarget(const TArray<AActor*>& PotentialTargets)
 {
     if (!OwnerCharacter) return nullptr;
@@ -187,7 +181,6 @@ AActor* AEnemyTargetingSystem::GetNearestTarget(const TArray<AActor*>& Potential
             {
                 NearestDistance = Distance;
                 NearestTarget = TargetActor;
-                //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("NearestTarget: %s"), *NearestTarget->GetName()));
             }
         }
     }
@@ -195,7 +188,7 @@ AActor* AEnemyTargetingSystem::GetNearestTarget(const TArray<AActor*>& Potential
     return NearestTarget;
 }
 
-// Determine if an actor is a valid target
+// Checks if a given actor is a valid target based on certain criteria (e.g., class type and presence in the target list).
 bool AEnemyTargetingSystem::IsValidTarget(AActor* TargetActor)
 {
     if (IsValid(TargetActor) && TargetActor->GetClass()->IsChildOf(EnemyFilterClass) && TargetList.Contains(TargetActor))
@@ -205,6 +198,8 @@ bool AEnemyTargetingSystem::IsValidTarget(AActor* TargetActor)
     return false; // Actor is not a valid target
 }
 
+// Cycles through TargetList to find the next target in line.
+// Uses the index of the current target to determine the next target.
 AActor* AEnemyTargetingSystem::GetNextTarget()
 {
     if (TargetList.IsEmpty()) return nullptr;
@@ -215,9 +210,10 @@ AActor* AEnemyTargetingSystem::GetNextTarget()
     return TargetList[NextTargetIndex];
 }
 
+// Sets CurrentTarget to the specified target.
+// Manages the spawning and attachment of an Target Indicator as an indicator over the current target.
 void AEnemyTargetingSystem::SelectTarget(AActor* NewTarget)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Select Target Function")));
     if (!TargetList.IsEmpty())
     {
         if (NewTarget)
@@ -241,6 +237,8 @@ void AEnemyTargetingSystem::SelectTarget(AActor* NewTarget)
     }
 }
 
+// Spawns and configures an arrow component above the specified target.
+// Sets the location and orientation of the arrow to indicate the current target.
 void AEnemyTargetingSystem::SpawnTargetIndicator(AActor* Target)
 {
     FVector TargetLocation = Target->GetActorLocation();
@@ -255,6 +253,7 @@ void AEnemyTargetingSystem::SpawnTargetIndicator(AActor* Target)
     // Additional setup for the indicator as needed
 }
 
+// Clears the current target and removes the target indicator if it exists.
 void AEnemyTargetingSystem::ClearCurrentTarget()
 {
     CurrentTarget = nullptr;
