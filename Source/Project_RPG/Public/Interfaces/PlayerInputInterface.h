@@ -47,6 +47,9 @@ public:
 	UFUNCTION(Category = "Weapon Interaction Inputs")
 	virtual void PII_DrawWeapon() = 0;
 
+	UFUNCTION(Category = "Weapon Interaction Inputs")
+	virtual void PII_FocusOnTarget() = 0;
+
 	UFUNCTION(Category = "Mapping Context")
 	virtual void PII_AddInputMappingContext(const UInputMappingContext* InputMappingContext) = 0;
 

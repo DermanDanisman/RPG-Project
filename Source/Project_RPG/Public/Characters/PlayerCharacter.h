@@ -77,8 +77,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Character Components")
 	class UCharacterInventoryComponent* CharacterInventoryComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "Character Components")
-	class UEnemyTargetingSystemComponent* EnemyTargetingSystemComponent;
+	
 
 private:
 
@@ -99,6 +98,16 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Player State Enums")
 	EActionState ActionState = EActionState::EAS_Unoccupied;
+
+private:
+
+	// Child Actor Component to hold the Targeting System
+	UPROPERTY(VisibleAnywhere, Category = "Targeting System")
+	UChildActorComponent* TargetingSystemComponent;
+
+	UPROPERTY()
+	bool bLockedOnTarget = false;
+
 
 private:
 
@@ -141,6 +150,9 @@ private:
 
 	UFUNCTION()
 	virtual void PII_Attack() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void PII_FocusOnTarget() override;
 
 	/// Action Input Interface Functions
 	/// </summary>

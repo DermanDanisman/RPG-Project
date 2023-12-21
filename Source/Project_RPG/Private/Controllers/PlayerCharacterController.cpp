@@ -69,6 +69,8 @@ void APlayerCharacterController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Attack, ETriggerEvent::Started, this, &APlayerCharacterController::Attack);
 		// Draw or Holster Weapon
 		EnhancedInputComponent->BindAction(IA_HolsterDrawWeapon, ETriggerEvent::Started, this, &APlayerCharacterController::DrawWeapon);
+		// Focus On Target
+		EnhancedInputComponent->BindAction(IA_FocusOnTarget, ETriggerEvent::Started, this, &APlayerCharacterController::FocusOnTarget);
 
 	}
 }
@@ -221,6 +223,18 @@ void APlayerCharacterController::DrawWeapon(const FInputActionValue& Value)
 		if (PlayerInputInterface)
 		{
 			PlayerInputInterface->PII_DrawWeapon();
+		}
+		//IPlayerInputInterface::Execute_PII_DrawWeapon(ControlledCharacter, bShouldDraw);
+	}
+}
+
+void APlayerCharacterController::FocusOnTarget(const FInputActionValue& Value)
+{
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_FocusOnTarget();
 		}
 		//IPlayerInputInterface::Execute_PII_DrawWeapon(ControlledCharacter, bShouldDraw);
 	}

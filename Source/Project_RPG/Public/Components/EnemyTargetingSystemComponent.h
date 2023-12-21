@@ -23,8 +23,6 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:
-
 	/* Delegate Binded Functions */
 	UFUNCTION()
 	virtual void OnDetectionSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -32,7 +30,16 @@ public:
 	UFUNCTION()
 	virtual void OnDetectionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+public:
+
+	UFUNCTION()
+	void SetDetectionSphere(USphereComponent* Sphere);
+
 private:
+
+	/* References */
+	UPROPERTY(VisibleAnywhere, Category = "References")
+	class ACharacter* OwnerCharacter = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Targeting")
 	class USphereComponent* DetectionSphere;

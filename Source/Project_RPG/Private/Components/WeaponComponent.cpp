@@ -41,6 +41,13 @@ void UWeaponComponent::BeginPlay()
 
 	SetWeaponDataName();
 	SetWeaponData();
+
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1); // World Static
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2); // World Dynamic
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3); // Pawn
+	//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4); // Physics Body
+	//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5); // Vehicle
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6); // Destructible
 }
 
 	
@@ -232,13 +239,6 @@ FHitResult UWeaponComponent::BoxTrace()
 				End = OwnerStaticMesh->GetSocketLocation(TraceEndSocketName);
 			}
 		}
-
-		TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1); // World Static
-		TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2); // World Dynamic
-		TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3); // Pawn
-		//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4); // Physics Body
-		//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5); // Vehicle
-		TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6); // Destructible
 
 		IgnoreActors.Add(GetOwner());
 		IgnoreActors.Add(OwnerCharacter);

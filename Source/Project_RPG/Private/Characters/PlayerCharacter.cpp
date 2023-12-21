@@ -10,6 +10,7 @@
 #include "Camera/CameraComponent.h"
 /* Components */
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/ChildActorComponent.h"
 /* Hair Strands Core */
 #include "GroomComponent.h"
 /* Enums */
@@ -19,7 +20,6 @@
 #include "Components/WeaponComponent.h"
 #include "Components/CharacterMontageComponent.h"
 #include "Components/CharacterInventoryComponent.h"
-#include "Components/EnemyTargetingSystemComponent.h"
 /* Enhanced Input */
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
@@ -31,6 +31,8 @@
 #include "Animation/AnimMontage.h"
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
+/* Targeting System */
+#include "Actors/EnemyTargetingSystem/EnemyTargetingSystem.h"
 
 
 
@@ -49,9 +51,6 @@ APlayerCharacter::APlayerCharacter()
 
 	CharacterInventoryComponent = CreateDefaultSubobject<UCharacterInventoryComponent>(TEXT("CharacterInventoryComponent"));
 	CharacterInventoryComponent->SetComponentTickEnabled(false);
-
-	EnemyTargetingSystemComponent = CreateDefaultSubobject<UEnemyTargetingSystemComponent>(TEXT("EnemyTargetingSystemComponent"));
-
 
 	/* Control Settings */
 	bUseControllerRotationPitch = false;
@@ -77,6 +76,13 @@ APlayerCharacter::APlayerCharacter()
 	EyebrowsGroomComponent = CreateDefaultSubobject<UGroomComponent>(TEXT("EyebrowsGroomComponent"));
 	EyebrowsGroomComponent->SetupAttachment(GetMesh());
 	EyebrowsGroomComponent->AttachmentName = FString("head");
+
+	/* Targeting System */
+	// Create and attach the child actor component
+	TargetingSystemComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("TargetingSystemComponent"));
+	TargetingSystemComponent->SetupAttachment(RootComponent); // Attach to the root component or another appropriate component
+	// Set the child actor class to your TargetingSystem class
+	TargetingSystemComponent->SetChildActorClass(AEnemyTargetingSystem::StaticClass()); // Replace ATargetingSystem with your TargetingSystem class
 }
 
 // Called when the game starts or when spawned
@@ -238,6 +244,35 @@ void APlayerCharacter::PII_Attack()
 			GrabbedWeapon->GetWeaponComponent()->PlayAttackMontage();
 			ActionState = EActionState::EAS_Attacking;
 		}
+	}
+}
+
+void APlayerCharacter::PII_FocusOnTarget()
+{
+	AEnemyTargetingSystem* TargetSystem = Cast<AEnemyTargetingSystem>(TargetingSystemComponent->GetChildActor());
+	if (TargetSystem)
+	{
+		TargetSystem->GetTargetsInRange();
+		AActor* TargetInSight = TargetSystem->GetTargetInLineOfSight(TargetSystem->GetTargetList());
+
+		if (bLockedOnTarget && TargetInSight == TargetSystem->GetCurrentTarget())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("")));
+			// If currently locked onto a target and it's the same as the one in line of sight, unlock
+			TargetSystem->ClearCurrentTarget();
+			bLockedOnTarget = false;
+		}
+		else if (TargetInSight)
+		{
+			// If there is a different target in line of sight, lock onto it
+			TargetSystem->SelectTarget(TargetInSight);
+			bLockedOnTarget = true;
+		}
+		else
+		{
+			TargetSystem->ClearCurrentTarget();
+		}
+		// If no target in line of sight and not currently locked on, do nothing
 	}
 }
 
