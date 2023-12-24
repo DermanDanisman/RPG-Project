@@ -32,7 +32,7 @@
 /* Kismet */
 #include "Kismet/KismetSystemLibrary.h"
 /* Targeting System */
-#include "Actors/EnemyTargetingSystem/EnemyTargetingSystem.h"
+#include "Actors/TargetingSystem/TargetingSystem.h"
 
 
 
@@ -82,7 +82,7 @@ APlayerCharacter::APlayerCharacter()
 	TargetingSystemComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("TargetingSystemComponent"));
 	TargetingSystemComponent->SetupAttachment(RootComponent); // Attach to the root component or another appropriate component
 	// Set the child actor class to your TargetingSystem class
-	TargetingSystemComponent->SetChildActorClass(AEnemyTargetingSystem::StaticClass()); // Replace ATargetingSystem with your TargetingSystem class
+	TargetingSystemComponent->SetChildActorClass(ATargetingSystem::StaticClass()); // Replace ATargetingSystem with your TargetingSystem class
 }
 
 // Called when the game starts or when spawned
@@ -236,7 +236,7 @@ void APlayerCharacter::PII_DrawWeapon()
 
 void APlayerCharacter::PII_Attack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Attack")));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Attack")));
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
 		if (GrabbedWeapon)
@@ -249,7 +249,7 @@ void APlayerCharacter::PII_Attack()
 
 void APlayerCharacter::PII_FocusOnTarget()
 {
-	AEnemyTargetingSystem* TargetSystem = Cast<AEnemyTargetingSystem>(TargetingSystemComponent->GetChildActor());
+	ATargetingSystem* TargetSystem = Cast<ATargetingSystem>(TargetingSystemComponent->GetChildActor());
 	if (TargetSystem)
 	{
 		TargetSystem->GetTargetsInRange();
@@ -257,7 +257,7 @@ void APlayerCharacter::PII_FocusOnTarget()
 
 		if (bLockedOnTarget && TargetInSight == TargetSystem->GetCurrentTarget())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("")));
+			//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("")));
 			// If currently locked onto a target and it's the same as the one in line of sight, unlock
 			TargetSystem->ClearCurrentTarget();
 			bLockedOnTarget = false;
@@ -273,6 +273,19 @@ void APlayerCharacter::PII_FocusOnTarget()
 			TargetSystem->ClearCurrentTarget();
 		}
 		// If no target in line of sight and not currently locked on, do nothing
+	}
+}
+
+void APlayerCharacter::PII_FocusedTargetCycle(float InputValue)
+{
+	if (bLockedOnTarget)
+	{	
+		ATargetingSystem* TargetSystem = Cast<ATargetingSystem>(TargetingSystemComponent->GetChildActor());
+		if (TargetSystem)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Focused Target Cycle Function")));
+			TargetSystem->GetNextTarget(InputValue);
+		}
 	}
 }
 

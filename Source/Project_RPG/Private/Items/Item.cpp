@@ -55,7 +55,7 @@ void AItem::Tick(float DeltaTime)
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Other Actor Name: %s"), *OtherActor->GetName()));
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Item Sphere Overlap = Other Actor Name: %s"), *OtherActor->GetName()));
 	if (OtherActor)
 	{
 		// Check if OtherActor implements I`PlayerInputInterface

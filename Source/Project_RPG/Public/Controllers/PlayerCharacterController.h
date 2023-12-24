@@ -69,6 +69,9 @@ protected: // Enhanced Input Section
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* IA_FocusOnTarget = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* IA_FocusedTargetCycle = nullptr;
+
 	UFUNCTION()
 	void Move(const FInputActionValue& Value);
 
@@ -101,6 +104,9 @@ protected: // Enhanced Input Section
 
 	UFUNCTION()
 	void FocusOnTarget(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void FocusedTargetCycle(const FInputActionValue& Value);
 
 private: // References
 	

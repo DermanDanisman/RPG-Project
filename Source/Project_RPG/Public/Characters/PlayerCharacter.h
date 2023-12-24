@@ -151,9 +151,11 @@ private:
 	UFUNCTION()
 	virtual void PII_Attack() override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	virtual void PII_FocusOnTarget() override;
 
+	UFUNCTION()
+	virtual void PII_FocusedTargetCycle(float InputValue) override;
 	/// Action Input Interface Functions
 	/// </summary>
 

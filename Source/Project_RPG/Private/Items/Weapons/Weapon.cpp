@@ -81,6 +81,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 // Weapon Box Collision Overlap Function Triggers Box Trace For Hits
 void AWeapon::OnWeaponBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Weapon Box Other Actor Name: %s"), *OtherActor->GetName()));
 	WeaponComponent->BoxTrace();
 }
 
@@ -88,6 +89,7 @@ void AWeapon::OnWeaponBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 void AWeapon::SetWeaponBoxCollisionEnabled()
 {
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WeaponBox->bHiddenInGame = false;
 }
 
 // Disabling Weapon Box Collision
@@ -95,6 +97,7 @@ void AWeapon::SetWeaponBoxCollisionDisabled()
 {
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponComponent->ClearIgnoreActors();
+	WeaponBox->bHiddenInGame = true;
 }
 
 // Attaching Mesh To Proper Socket

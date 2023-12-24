@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actors/EnemyTargetingSystem/EnemyTargetingSystem.h"
+#include "Actors/TargetingSystem/TargetingSystem.h"
 #include "GameFramework/Character.h"
 #include "Components/SphereComponent.h"
 #include "Components/ArrowComponent.h"
@@ -12,7 +12,7 @@
 
 
 // Constructor
-AEnemyTargetingSystem::AEnemyTargetingSystem()
+ATargetingSystem::ATargetingSystem()
 {
     PrimaryActorTick.bCanEverTick = true;
 
@@ -26,7 +26,7 @@ AEnemyTargetingSystem::AEnemyTargetingSystem()
 }
 
 // Called at the start of the game or when spawned
-void AEnemyTargetingSystem::BeginPlay()
+void ATargetingSystem::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -35,12 +35,12 @@ void AEnemyTargetingSystem::BeginPlay()
     EnemyFilterClass = AEnemy::StaticClass();
 
     // Set up overlap events for the detection sphere
-    DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTargetingSystem::OnDetectionSphereOverlap);
-    DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyTargetingSystem::OnDetectionSphereEndOverlap);
+    DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ATargetingSystem::OnDetectionSphereOverlap);
+    DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &ATargetingSystem::OnDetectionSphereEndOverlap);
 }
 
 // Called every frame
-void AEnemyTargetingSystem::Tick(float DeltaTime)
+void ATargetingSystem::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
@@ -65,7 +65,7 @@ void AEnemyTargetingSystem::Tick(float DeltaTime)
 }
 
 // Handle new targets entering the detection sphere. If the overlapped actor is a valid target, it's added to TargetList.
-void AEnemyTargetingSystem::OnDetectionSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ATargetingSystem::OnDetectionSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
     // Add valid targets to the target list
     if (OtherActor->GetClass()->IsChildOf(EnemyFilterClass))
@@ -75,7 +75,7 @@ void AEnemyTargetingSystem::OnDetectionSphereOverlap(UPrimitiveComponent* Overla
 }
 
 // Handle targets leaving the detection sphere. If the actor leaving the sphere is the current target, the current target is cleared.
-void AEnemyTargetingSystem::OnDetectionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ATargetingSystem::OnDetectionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
     // Remove the actor from the target list when it exits the sphere
     if (IsValid(OtherActor))
@@ -91,7 +91,7 @@ void AEnemyTargetingSystem::OnDetectionSphereEndOverlap(UPrimitiveComponent* Ove
 }
 
 // Empties and then updates TargetList based on actors currently overlapping the detection sphere.
-void AEnemyTargetingSystem::GetTargetsInRange()
+void ATargetingSystem::GetTargetsInRange()
 {
     // Update target list based on actors within the detection sphere
     TargetList.Empty();
@@ -102,7 +102,7 @@ void AEnemyTargetingSystem::GetTargetsInRange()
 // Sorts potential targets based on their distance to the OwnerCharacter.
 // Uses a capsule trace to find the first target in line of sight.
 // Returns the first valid target hit by the trace.
-AActor* AEnemyTargetingSystem::GetTargetInLineOfSight(const TArray<AActor*>& PotentialTargets)
+AActor* ATargetingSystem::GetTargetInLineOfSight(const TArray<AActor*>& PotentialTargets)
 {
     if (!OwnerCharacter || PotentialTargets.IsEmpty()) return nullptr;
 
@@ -165,7 +165,7 @@ AActor* AEnemyTargetingSystem::GetTargetInLineOfSight(const TArray<AActor*>& Pot
 
 // Determines the closest target to the OwnerCharacter from the list of potential targets.
 // Iterates through PotentialTargets, calculating the distance to each, and keeps track of the nearest one.
-AActor* AEnemyTargetingSystem::GetNearestTarget(const TArray<AActor*>& PotentialTargets)
+AActor* ATargetingSystem::GetNearestTarget(const TArray<AActor*>& PotentialTargets)
 {
     if (!OwnerCharacter) return nullptr;
 
@@ -189,7 +189,7 @@ AActor* AEnemyTargetingSystem::GetNearestTarget(const TArray<AActor*>& Potential
 }
 
 // Checks if a given actor is a valid target based on certain criteria (e.g., class type and presence in the target list).
-bool AEnemyTargetingSystem::IsValidTarget(AActor* TargetActor)
+bool ATargetingSystem::IsValidTarget(AActor* TargetActor)
 {
     if (IsValid(TargetActor) && TargetActor->GetClass()->IsChildOf(EnemyFilterClass) && TargetList.Contains(TargetActor))
     {
@@ -200,19 +200,38 @@ bool AEnemyTargetingSystem::IsValidTarget(AActor* TargetActor)
 
 // Cycles through TargetList to find the next target in line.
 // Uses the index of the current target to determine the next target.
-AActor* AEnemyTargetingSystem::GetNextTarget()
+void ATargetingSystem::GetNextTarget(float SearchValue)
 {
-    if (TargetList.IsEmpty()) return nullptr;
+    if (!TargetList.IsEmpty())
+    {
+        if (CurrentTarget)
+        {
+            int32 CurrentTargetIndex = TargetList.IndexOfByKey(CurrentTarget);
+            if (SearchValue > 0)
+            {
+                int32 NextTargetIndex = (CurrentTargetIndex + 1) % TargetList.Num();
+                GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Get Next Target Index: %d"), NextTargetIndex));
+                ClearCurrentTarget();
+                SelectTarget(TargetList[NextTargetIndex]);
+                SpawnTargetIndicator(TargetList[NextTargetIndex]);
+            }
+            else
+            {
+                int32 NextTargetIndex = (CurrentTargetIndex - TargetList.Max()) % TargetList.Num();
+                GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Get Next Target TargetList Size: %d"), TargetList.Max()));
+                GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Get Next Target Index: %d"), NextTargetIndex));
+                ClearCurrentTarget();
+                SelectTarget(TargetList[FMath::Abs(NextTargetIndex)]);
+                SpawnTargetIndicator(TargetList[FMath::Abs(NextTargetIndex)]);
 
-    int32 CurrentTargetIndex = TargetList.IndexOfByKey(CurrentTarget);
-    int32 NextTargetIndex = (CurrentTargetIndex + 1) % TargetList.Num();
-
-    return TargetList[NextTargetIndex];
+            }
+        }
+    }
 }
 
 // Sets CurrentTarget to the specified target.
 // Manages the spawning and attachment of an Target Indicator as an indicator over the current target.
-void AEnemyTargetingSystem::SelectTarget(AActor* NewTarget)
+void ATargetingSystem::SelectTarget(AActor* NewTarget)
 {
     if (!TargetList.IsEmpty())
     {
@@ -233,28 +252,42 @@ void AEnemyTargetingSystem::SelectTarget(AActor* NewTarget)
             {
                 SpawnTargetIndicator(CurrentTarget);
             }
+            else
+            {
+                SpawnTargetIndicator(CurrentTarget);
+            }
         }
     }
 }
 
 // Spawns and configures an arrow component above the specified target.
 // Sets the location and orientation of the arrow to indicate the current target.
-void AEnemyTargetingSystem::SpawnTargetIndicator(AActor* Target)
+void ATargetingSystem::SpawnTargetIndicator(AActor* Target)
 {
-    FVector TargetLocation = Target->GetActorLocation();
-    FVector IndicatorLocation = TargetLocation + FVector(0, 0, 130.f); // Adjust this offset as needed
+    if (Target)
+    {   
+        // Clear existing target indicator if it exists
+        if (CurrentTargetIndicator)
+        {
+            CurrentTargetIndicator->DestroyComponent();
+            CurrentTargetIndicator = nullptr;
+        }
 
-    CurrentTargetIndicator = NewObject<UArrowComponent>(this);
-    CurrentTargetIndicator->RegisterComponent();
-    CurrentTargetIndicator->AttachToComponent(Target->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
-    CurrentTargetIndicator->SetWorldLocation(IndicatorLocation);
-    CurrentTargetIndicator->SetWorldRotation(FRotator(-90.f, 0, 0));
-    CurrentTargetIndicator->SetHiddenInGame(false);
-    // Additional setup for the indicator as needed
+        FVector TargetLocation = Target->GetActorLocation();
+        FVector IndicatorLocation = TargetLocation + FVector(0, 0, 160.f); // Adjust this offset as needed
+
+        CurrentTargetIndicator = NewObject<UArrowComponent>(this);
+        CurrentTargetIndicator->RegisterComponent();
+        CurrentTargetIndicator->AttachToComponent(Target->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+        CurrentTargetIndicator->SetWorldLocation(IndicatorLocation);
+        CurrentTargetIndicator->SetWorldRotation(FRotator(-90.f, 0, 0));
+        CurrentTargetIndicator->SetHiddenInGame(false);
+        // Additional setup for the indicator as needed
+    }
 }
 
 // Clears the current target and removes the target indicator if it exists.
-void AEnemyTargetingSystem::ClearCurrentTarget()
+void ATargetingSystem::ClearCurrentTarget()
 {
     CurrentTarget = nullptr;
 

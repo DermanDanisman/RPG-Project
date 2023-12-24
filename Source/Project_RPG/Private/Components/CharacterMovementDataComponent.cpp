@@ -105,7 +105,7 @@ void UCharacterMovementDataComponent::SetMovementSpeed(ELocomotionState Locomoti
 	default:
 		break;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Movement Speed: %f"), Character->GetCharacterMovement()->MaxWalkSpeed));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Movement Speed: %f"), Character->GetCharacterMovement()->MaxWalkSpeed));
 }
 
 

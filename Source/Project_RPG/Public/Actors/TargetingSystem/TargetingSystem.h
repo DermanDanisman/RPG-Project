@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "EnemyTargetingSystem.generated.h"
+#include "TargetingSystem.generated.h"
 
 UCLASS()
-class PROJECT_RPG_API AEnemyTargetingSystem : public AActor
+class PROJECT_RPG_API ATargetingSystem : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AEnemyTargetingSystem();
+	ATargetingSystem();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -47,7 +47,7 @@ public:
 	AActor* GetTargetInLineOfSight(const TArray<AActor*>& PotentialTargets);
 
 	UFUNCTION()
-	AActor* GetNextTarget();
+	void GetNextTarget(float SearchValue);
 
 	UFUNCTION()
 	void SelectTarget(AActor* NewTarget);

@@ -222,6 +222,7 @@ If the hit actor implements the UWeaponInterface, it calls the WI_GetWeaponHit()
 This is used for detecting when the weapon hits an enemy or object. */
 FHitResult UWeaponComponent::BoxTrace()
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Box Trace Triggered")));
 	FVector Start;
 	FVector End;
 
@@ -242,6 +243,14 @@ FHitResult UWeaponComponent::BoxTrace()
 
 		IgnoreActors.Add(GetOwner());
 		IgnoreActors.Add(OwnerCharacter);
+		TArray<AActor*> OwnerCharacterChildActors;
+		// This for exculuding Target System from the box trace query. 
+		OwnerCharacter->GetAllChildActors(OwnerCharacterChildActors);
+		for (int i = 0; i < OwnerCharacterChildActors.Num(); i++)
+		{
+			IgnoreActors.Add(OwnerCharacterChildActors[i]);
+		}
+		
 
 		if (!IgnoreActors.IsEmpty())
 		{
@@ -277,7 +286,7 @@ FHitResult UWeaponComponent::BoxTrace()
 			TraceObjectTypes,
 			false,
 			ActorsToIgnore,
-			EDrawDebugTrace::None,
+			EDrawDebugTrace::ForDuration,
 			HitResult,
 			true,
 			FLinearColor::Red,
@@ -285,9 +294,9 @@ FHitResult UWeaponComponent::BoxTrace()
 			5.0f
 		);
 
-		if (HitResult.GetActor() && HitResult.GetActor()->Implements<UWeaponInterface>())
+		if (HitResult.GetActor())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Weapon Box Trace Hit Actor Name: %s"), *HitResult.GetActor()->GetName()));
 			// Pure C++ Interface Usage
 			if (HitResult.GetActor()->Implements<UWeaponInterface>())
 			{
@@ -296,10 +305,15 @@ FHitResult UWeaponComponent::BoxTrace()
 				{
 					WeaponInterface->WI_GetWeaponHit(HitResult.ImpactPoint);
 				}
+				else
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("HitResult.GetActor()->Implements<UWeaponInterface>() IS NOT VALID")));
+				}
 				// This is for player to stop hitting multiple times to the same actor.
 				IgnoreActors.AddUnique(HitResult.GetActor());
 			}
 		}
+
 		return HitResult;
 	}
 	return HitResult;

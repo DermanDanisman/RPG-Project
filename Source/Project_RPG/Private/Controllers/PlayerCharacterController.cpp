@@ -71,6 +71,8 @@ void APlayerCharacterController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_HolsterDrawWeapon, ETriggerEvent::Started, this, &APlayerCharacterController::DrawWeapon);
 		// Focus On Target
 		EnhancedInputComponent->BindAction(IA_FocusOnTarget, ETriggerEvent::Started, this, &APlayerCharacterController::FocusOnTarget);
+		// Focused Target Cycle
+		EnhancedInputComponent->BindAction(IA_FocusedTargetCycle, ETriggerEvent::Started, this, &APlayerCharacterController::FocusedTargetCycle);
 
 	}
 }
@@ -235,6 +237,20 @@ void APlayerCharacterController::FocusOnTarget(const FInputActionValue& Value)
 		if (PlayerInputInterface)
 		{
 			PlayerInputInterface->PII_FocusOnTarget();
+		}
+		//IPlayerInputInterface::Execute_PII_DrawWeapon(ControlledCharacter, bShouldDraw);
+	}
+}
+
+void APlayerCharacterController::FocusedTargetCycle(const FInputActionValue& Value)
+{
+	float MouseWheelValue = Value.Get<float>();
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Focused Target Cycle Wheel Value: %f"), MouseWheelValue));
+	if (ControlledCharacter->GetClass()->ImplementsInterface(UPlayerInputInterface::StaticClass()))
+	{
+		if (PlayerInputInterface)
+		{
+			PlayerInputInterface->PII_FocusedTargetCycle(MouseWheelValue);
 		}
 		//IPlayerInputInterface::Execute_PII_DrawWeapon(ControlledCharacter, bShouldDraw);
 	}

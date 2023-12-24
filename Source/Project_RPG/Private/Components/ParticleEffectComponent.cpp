@@ -45,7 +45,7 @@ void UParticleEffectComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Particle Effect Component Tick")));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Particle Effect Component Tick")));
 }
 
 // When Character is hit spawn Hit Particle Effect
