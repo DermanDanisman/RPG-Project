@@ -9,7 +9,7 @@
 #include "Structures/WeaponMontages.h"
 #include "Structures/WeaponData.h"
 /* Enums */
-//#include "Field/FieldSystemTypes.h"
+#include "Field/FieldSystemTypes.h"
 #include "WeaponComponent.generated.h"
 
 
@@ -169,44 +169,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon: Trail Effects")
 	class UParticleSystem* WeaponTrailEffect = nullptr;
-
-	/**
-	* Weapon Field System For Destructible Objects
-	*/
-
-	UPROPERTY(VisibleAnywhere)
-	class UFieldSystemComponent* FieldSystemComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	class URadialFalloff* RadialFalloff;
-
-	UPROPERTY(VisibleAnywhere)
-	class URadialVector* RadialVector;
-
-	UPROPERTY(VisibleAnywhere)
-	class UFieldSystemMetaDataFilter* FieldSystemMetaDataFilter;
-
-	UPROPERTY(EditAnywhere, Category = "Field System: Radial Falloff")
-	float RadialFalloffMagnitude = 1000000.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Field System: Radial Falloff")
-	float RadialFalloffMinRange = 0.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Field System: Radial Falloff")
-	float RadialFalloffMaxRange = 1.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Field System: Radial Falloff")
-	float RadialFalloffDefaultValue = 0.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Field System: Radial Falloff")
-	float RadialFalloffSphereRadius = 0.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Field System: Radial Falloff")
-	FVector RadialFalloffCenterPosition = OwnerActor->GetActorLocation();
-
-	/*UPROPERTY(EditAnywhere, Category = "Field System: Radial Falloff")
-	EFieldFalloffType RadialFalloffFieldFalloffType = EFieldFalloffType::Field_FallOff_None;*/
-
-	UFUNCTION()
-	void CreateFields(const FVector& FieldLocation);
 };

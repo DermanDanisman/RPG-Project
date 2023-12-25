@@ -17,9 +17,6 @@
 #include "Interfaces/WeaponInterface.h"
 /* Particles */
 #include "Particles/ParticleSystemComponent.h"
-/* Field */
-#include "Field/FieldSystemComponent.h"
-#include "Field/FieldSystemObjects.h"
 
 
 
@@ -29,11 +26,6 @@ UWeaponComponent::UWeaponComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-	
-	FieldSystemComponent = CreateDefaultSubobject<UFieldSystemComponent>(TEXT("FieldSystemComponent"));
-	RadialFalloff = CreateDefaultSubobject<URadialFalloff>(TEXT("RadialFalloff"));
-	RadialVector = CreateDefaultSubobject<URadialVector>(TEXT("RadialVector"));
-	FieldSystemMetaDataFilter = CreateDefaultSubobject<UFieldSystemMetaDataFilter>(TEXT("FieldSystemMetaDataFilter"));
 }
 
 
@@ -53,7 +45,7 @@ void UWeaponComponent::BeginPlay()
 	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1); // World Static
 	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery2); // World Dynamic
 	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery3); // Pawn
-	//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4); // Physics Body
+	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery4); // Physics Body
 	//TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery5); // Vehicle
 	TraceObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery6); // Destructible
 }
@@ -319,11 +311,8 @@ FHitResult UWeaponComponent::BoxTrace()
 				}
 				// This is for player to stop hitting multiple times to the same actor.
 				IgnoreActors.AddUnique(HitResult.GetActor());
-
-				CreateFields(HitResult.ImpactPoint);
 			}
 		}
-
 		return HitResult;
 	}
 	return HitResult;
@@ -358,13 +347,5 @@ void UWeaponComponent::DespawnWeaponTrailEffect()
 	{
 		WeaponTrailEffectSystem->SetHiddenInGame(true);
 	}
-}
-
-void UWeaponComponent::CreateFields(const FVector& FieldLocation)
-{
-	//RadialFalloff->SetRadialFalloff(RadialFalloffMagnitude, RadialFalloffMinRange, RadialFalloffMaxRange, 
-		//RadialFalloffDefaultValue, RadialFalloffSphereRadius, RadialFalloffCenterPosition, RadialFalloffFieldFalloffType);
-
-	//FieldSystemComponent->AddFieldCommand(true, EFieldPhysicsType::Field_ExternalClusterStrain, nullptr, );
 }
 
