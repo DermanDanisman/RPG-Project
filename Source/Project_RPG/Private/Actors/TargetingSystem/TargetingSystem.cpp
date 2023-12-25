@@ -54,7 +54,7 @@ void ATargetingSystem::Tick(float DeltaTime)
         FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(OwnerCharacterLocation, CurrentTarget->GetActorLocation());
 
         // Interpolate only the Yaw component to smoothly rotate towards the target
-        FRotator LookAtInterp = UKismetMathLibrary::RInterpTo(ControlRotation, FRotator(0.f, LookAt.Yaw, 0.f), DeltaTime, 8.0f);
+        FRotator LookAtInterp = UKismetMathLibrary::RInterpTo(ControlRotation, FRotator(0.f, LookAt.Yaw, 0.f), DeltaTime, 3.0f);
 
         // Combine the original Pitch with the new Yaw
         FRotator NewControlRotation = FRotator(ControlRotation.Pitch, LookAtInterp.Yaw, 0.f);
@@ -207,27 +207,71 @@ void ATargetingSystem::GetNextTarget(float SearchValue)
         if (CurrentTarget)
         {
             int32 CurrentTargetIndex = TargetList.IndexOfByKey(CurrentTarget);
+            int32 NextTargetIndex;
+
             if (SearchValue > 0)
             {
-                int32 NextTargetIndex = (CurrentTargetIndex + 1) % TargetList.Num();
-                GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Get Next Target Index: %d"), NextTargetIndex));
-                ClearCurrentTarget();
-                SelectTarget(TargetList[NextTargetIndex]);
-                SpawnTargetIndicator(TargetList[NextTargetIndex]);
+                // Move to the next target in the list
+                NextTargetIndex = (CurrentTargetIndex + 1) % TargetList.Num();
             }
             else
             {
-                int32 NextTargetIndex = (CurrentTargetIndex - TargetList.Max()) % TargetList.Num();
-                GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Get Next Target TargetList Size: %d"), TargetList.Max()));
-                GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Get Next Target Index: %d"), NextTargetIndex));
-                ClearCurrentTarget();
-                SelectTarget(TargetList[FMath::Abs(NextTargetIndex)]);
-                SpawnTargetIndicator(TargetList[FMath::Abs(NextTargetIndex)]);
-
+                // Move to the previous target in the list
+                NextTargetIndex = (CurrentTargetIndex - 1 + TargetList.Num()) % TargetList.Num();
             }
+
+            // Log for debugging
+            GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Get Next Target Index: %d"), NextTargetIndex));
+
+            // Clear the current target and select the new one
+            SelectTarget(TargetList[NextTargetIndex]);
+            SpawnTargetIndicator(TargetList[NextTargetIndex]);
         }
     }
 }
+
+//void ATargetingSystem::UpdateTargetBasedOnViewDirection()
+//{
+//    if (!OwnerCharacter) return;
+//
+//    FVector PlayerViewLocation;
+//    FRotator PlayerViewRotation;
+//    OwnerCharacter->GetController()->GetPlayerViewPoint(PlayerViewLocation, PlayerViewRotation);
+//
+//    FVector ViewDirection = PlayerViewRotation.Vector();
+//
+//    AActor* BestTarget = nullptr;
+//    float BestScore = FLT_MAX; // Lower scores are better
+//
+//    for (AActor* TargetActor : TargetList)
+//    {
+//        if (IsValidTarget(TargetActor))
+//        {
+//            FVector DirectionToTarget = (TargetActor->GetActorLocation() - PlayerViewLocation).GetSafeNormal();
+//            float DotProduct = FVector::DotProduct(ViewDirection, DirectionToTarget);
+//
+//            // Adjust this threshold to control the field of view for target selection
+//            const float ViewAngleThreshold = cos(FMath::DegreesToRadians(45.0f));
+//
+//            if (DotProduct > ViewAngleThreshold)
+//            {
+//                float Distance = (TargetActor->GetActorLocation() - PlayerViewLocation).Size();
+//                if (Distance < BestScore)
+//                {
+//                    BestScore = Distance;
+//                    BestTarget = TargetActor;
+//                }
+//            }
+//        }
+//    }
+//
+//    if (BestTarget)
+//    {
+//        // Switch to the new target
+//        SelectTarget(BestTarget);
+//        SpawnTargetIndicator(BestTarget);
+//    }
+//}
 
 // Sets CurrentTarget to the specified target.
 // Manages the spawning and attachment of an Target Indicator as an indicator over the current target.
@@ -295,5 +339,6 @@ void ATargetingSystem::ClearCurrentTarget()
     {
         CurrentTargetIndicator->DestroyComponent();
         CurrentTargetIndicator = nullptr;
+        //bLockedOnTarget = false;
     }
 }

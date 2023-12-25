@@ -31,15 +31,24 @@ protected:
 
 public:
 
+	UPROPERTY()
+	class ACharacter* OwnerCharacter = nullptr;
+
+	UPROPERTY()
+	bool bLockedOnTarget = false;
+
+public:
+
 	UFUNCTION()
 	FORCEINLINE AActor* GetCurrentTarget() { return CurrentTarget; }
 
 	UFUNCTION()
 	FORCEINLINE TArray<AActor*> GetTargetList() { return TargetList; }
 
-	UPROPERTY()
-	class ACharacter* OwnerCharacter = nullptr;
 
+	/**
+	* Exposed Functions 
+	*/
 	UFUNCTION()
 	void GetTargetsInRange();
 
@@ -48,6 +57,9 @@ public:
 
 	UFUNCTION()
 	void GetNextTarget(float SearchValue);
+
+	//UFUNCTION()
+	//void UpdateTargetBasedOnViewDirection();
 
 	UFUNCTION()
 	void SelectTarget(AActor* NewTarget);

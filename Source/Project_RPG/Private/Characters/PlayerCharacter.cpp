@@ -255,18 +255,18 @@ void APlayerCharacter::PII_FocusOnTarget()
 		TargetSystem->GetTargetsInRange();
 		AActor* TargetInSight = TargetSystem->GetTargetInLineOfSight(TargetSystem->GetTargetList());
 
-		if (bLockedOnTarget && TargetInSight == TargetSystem->GetCurrentTarget())
+		if (TargetSystem->bLockedOnTarget && TargetInSight == TargetSystem->GetCurrentTarget())
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("")));
 			// If currently locked onto a target and it's the same as the one in line of sight, unlock
 			TargetSystem->ClearCurrentTarget();
-			bLockedOnTarget = false;
+			TargetSystem->bLockedOnTarget = false;
 		}
 		else if (TargetInSight)
 		{
 			// If there is a different target in line of sight, lock onto it
 			TargetSystem->SelectTarget(TargetInSight);
-			bLockedOnTarget = true;
+			TargetSystem->bLockedOnTarget = true;
 		}
 		else
 		{
@@ -278,10 +278,10 @@ void APlayerCharacter::PII_FocusOnTarget()
 
 void APlayerCharacter::PII_FocusedTargetCycle(float InputValue)
 {
-	if (bLockedOnTarget)
+	ATargetingSystem* TargetSystem = Cast<ATargetingSystem>(TargetingSystemComponent->GetChildActor());
+	if (TargetSystem)
 	{	
-		ATargetingSystem* TargetSystem = Cast<ATargetingSystem>(TargetingSystemComponent->GetChildActor());
-		if (TargetSystem)
+		if (TargetSystem->bLockedOnTarget)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("Focused Target Cycle Function")));
 			TargetSystem->GetNextTarget(InputValue);

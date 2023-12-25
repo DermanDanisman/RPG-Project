@@ -105,9 +105,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Targeting System")
 	UChildActorComponent* TargetingSystemComponent;
 
-	UPROPERTY()
-	bool bLockedOnTarget = false;
-
 
 private:
 
