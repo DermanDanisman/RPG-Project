@@ -11,6 +11,8 @@
 #include "KismetAnimationLibrary.h"
 /* Animation */
 #include "Animation/CachedAnimData.h"
+/* Targeting System */
+#include "Actors/TargetingSystem/TargetingSystem.h"
 
 
 void UPlayerCharacterAnimInstance::NativeInitializeAnimation()
@@ -77,11 +79,24 @@ void UPlayerCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 void UPlayerCharacterAnimInstance::NativePostEvaluateAnimation()
 {
-	if (PlayerCharacter && !bOrientRotationToMovement && CharacterState == ECharacterState::ECS_Unequipped)
+	if (PlayerCharacter && PlayerCharacter->GetTargetingSystem())
 	{
-		// Disable Character Rotation When Strafing
-		UpdateCharacterRotation();
-		ResetTransitions();
+		if (PlayerCharacter->GetTargetingSystem()->bLockedOnTarget)
+		{
+			if (CharacterState == ECharacterState::ECS_Unequipped)
+			{
+				UpdateCharacterRotation();
+				ResetTransitions();
+			}
+		}
+		else
+		{
+			if (CharacterState == ECharacterState::ECS_Unequipped)
+			{
+				UpdateCharacterRotation();
+				ResetTransitions();
+			}
+		}
 	}
 }
 

@@ -32,6 +32,9 @@ public:
 	UFUNCTION()
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetCharacterState(ECharacterState CharacterStateEnum) { CharacterState = CharacterStateEnum; }
+
 	UFUNCTION()
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 
@@ -44,8 +47,9 @@ public:
 	UFUNCTION()
 	FORCEINLINE void SetActionState(EActionState NewActionState) { ActionState = NewActionState; }
 
-	UFUNCTION(BlueprintCallable)
-	void SetCharacterState(ECharacterState CharacterStateEnum);
+	UFUNCTION()
+	FORCEINLINE ATargetingSystem* GetTargetingSystem() { return TargetSystem; }
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -104,6 +108,9 @@ private:
 	// Child Actor Component to hold the Targeting System
 	UPROPERTY(VisibleAnywhere, Category = "Targeting System")
 	UChildActorComponent* TargetingSystemComponent;
+
+	UPROPERTY()
+	class ATargetingSystem* TargetSystem;
 
 
 private:

@@ -91,6 +91,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerController = Cast<APlayerController>(GetController());
+	TargetSystem = Cast<ATargetingSystem>(TargetingSystemComponent->GetChildActor());
 
 	GetCharacterMovement()->JumpZVelocity = CharacterMovementDataComponent->GetJumpVelocity();
 	GetCharacterMovement()->MaxWalkSpeed = CharacterMovementDataComponent->GetWalkSpeed();
@@ -249,7 +250,6 @@ void APlayerCharacter::PII_Attack()
 
 void APlayerCharacter::PII_FocusOnTarget()
 {
-	ATargetingSystem* TargetSystem = Cast<ATargetingSystem>(TargetingSystemComponent->GetChildActor());
 	if (TargetSystem)
 	{
 		TargetSystem->GetTargetsInRange();
@@ -272,13 +272,13 @@ void APlayerCharacter::PII_FocusOnTarget()
 		{
 			TargetSystem->ClearCurrentTarget();
 		}
+		SetCharacterState(CharacterState);
 		// If no target in line of sight and not currently locked on, do nothing
 	}
 }
 
 void APlayerCharacter::PII_FocusedTargetCycle(float InputValue)
 {
-	ATargetingSystem* TargetSystem = Cast<ATargetingSystem>(TargetingSystemComponent->GetChildActor());
 	if (TargetSystem)
 	{	
 		if (TargetSystem->bLockedOnTarget)
@@ -357,9 +357,10 @@ void APlayerCharacter::WI_GetWeaponHit(const FVector& ImpactPoint)
 }
 
 // Setting Character State by weapon type
-void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
+/*void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 {
-	switch (CharacterStateEnum)
+	CharacterState = CharacterStateEnum;
+	/*switch (CharacterStateEnum)
 	{
 	case ECharacterState::ECS_Unequipped:
 	{
@@ -374,8 +375,16 @@ void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_OneHandedSword)
 			{
 				CharacterState = ECharacterState::ECS_OneHandedSword;
-				CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+				if (!TargetSystem->bLockedOnTarget)
+				{
+					CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, false, 360.f);
+				}
+				else
+				{
+					CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+				}
 			}
+
 		}
 		break;
 	}
@@ -385,7 +394,14 @@ void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_TwoHandedSword)
 			{
 				CharacterState = ECharacterState::ECS_TwoHandedSword;
-				CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+				if (!TargetSystem->bLockedOnTarget)
+				{
+					CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, false, 360.f);
+				}
+				else
+				{
+					CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+				}
 			}
 		}
 		break;
@@ -395,7 +411,14 @@ void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 			if (GrabbedWeapon->GetWeaponType() == EWeaponType::EWT_SwordAndShield)
 			{
 				CharacterState = ECharacterState::ECS_SwordAndShield;
-				CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+				if (!TargetSystem->bLockedOnTarget)
+				{
+					CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, false, 360.f);
+				}
+				else
+				{
+					CharacterMovementDataComponent->SetCharacterMovementRotationSettings(false, true, 360.f);
+				}
 			}
 		}
 		break;
@@ -403,6 +426,6 @@ void APlayerCharacter::SetCharacterState(ECharacterState CharacterStateEnum)
 		break;
 	default:
 		break;
-	}
-}
+	}*/
+}*/
 

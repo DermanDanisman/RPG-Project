@@ -54,10 +54,10 @@ void ATargetingSystem::Tick(float DeltaTime)
         FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(OwnerCharacterLocation, CurrentTarget->GetActorLocation());
 
         // Interpolate only the Yaw component to smoothly rotate towards the target
-        FRotator LookAtInterp = UKismetMathLibrary::RInterpTo(ControlRotation, FRotator(0.f, LookAt.Yaw, 0.f), DeltaTime, 3.0f);
+        //FRotator LookAtInterp = UKismetMathLibrary::RInterpTo(ControlRotation, FRotator(0.f, LookAt.Yaw, 0.f), DeltaTime, 3.0f);
 
         // Combine the original Pitch with the new Yaw
-        FRotator NewControlRotation = FRotator(ControlRotation.Pitch, LookAtInterp.Yaw, 0.f);
+        FRotator NewControlRotation = FRotator(ControlRotation.Pitch, LookAt.Yaw, 0.f);
 
         // Set the new control rotation
         OwnerCharacter->GetController()->SetControlRotation(NewControlRotation);
